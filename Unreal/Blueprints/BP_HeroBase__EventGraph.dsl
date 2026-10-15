@@ -13,7 +13,6 @@
   (if (Variables|Default|GetSkydiving)
     (CallFunction|EndSkydive)))
 
-; TODO(GAS): hits from creeps (UE ApplyDamage) only add up in DamageTaken and print until AS_Hero exists
+; Total of UE ApplyDamage taken (tests read it). The real damage goes to the GAS through the Habilidades component.
 (event Game|Damage|EventAnyDamage (Damage DamageType InstigatedBy DamageCauser)
-  (Variables|Default|SetDamageTaken (+ (Variables|Default|GetDamageTaken) Damage))
-  (Development|PrintString :InString (Utilities|String|Append "Dano: -" (Utilities|String|ToString(Float) Damage)) :TextColor (Math|Color|MakeColor :R 1.0 :G 0.3 :B 0.2 :A 1.0) :Duration 1.0))
+  (Variables|Default|SetDamageTaken (+ (Variables|Default|GetDamageTaken) Damage)))

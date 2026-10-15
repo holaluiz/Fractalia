@@ -1,5 +1,6 @@
 #include "Combat/NRProjetilMagico.h"
 
+#include "Combat/NRChuvaMeteoros.h"
 #include "Combat/NREstruturaMagica.h"
 #include "Components/PointLightComponent.h"
 #include "Components/SphereComponent.h"
@@ -148,6 +149,10 @@ void ANRProjetilMagico::Explodir(AActor* Alvo, const FVector& Ponto)
 		{
 			UGameplayStatics::ApplyDamage(Alvo, Dano, Quem, this, UDamageType::StaticClass());
 		}
+		if (DuracaoChamas > 0.f)
+		{
+			DeixarChamas(Ponto);
+		}
 	}
 
 	// Clarão: a esfera cresce até o tamanho da explosão e some logo depois.
@@ -159,4 +164,30 @@ void ANRProjetilMagico::Explodir(AActor* Alvo, const FVector& Ponto)
 	Luz->SetIntensity(Luz->Intensity * 4.f);
 	Luz->SetAttenuationRadius(FMath::Max(Diametro * 2.f, 400.f));
 	SetLifeSpan(0.15f);
+}
+
+void ANRProjetilMagico::DeixarChamas(const FVector& Ponto)
+{
+	// Explodiu num creep ou numa parede: as chamas vão para o chão logo abaixo (só cenário, até 4 m).
+	FHitResult Chao;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(NRChamasBola), false, this);
+	if (GetInstigator())
+	{
+		Params.AddIgnoredActor(GetInstigator());
+	}
+	if (!GetWorld()->LineTraceSingleByObjectType(Chao, Ponto + FVector(0.f, 0.f, 50.f), Ponto - FVector(0.f, 0.f, 400.f),
+	                                             FCollisionObjectQueryParams(ECC_WorldStatic), Params))
+	{
+		return;
+	}
+	FActorSpawnParameters Spawn;
+	Spawn.Owner = GetOwner();
+	Spawn.Instigator = GetInstigator();
+	Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ANRChuvaMeteoros* Chamas = GetWorld()->SpawnActor<ANRChuvaMeteoros>(ANRChuvaMeteoros::StaticClass(), Chao.ImpactPoint,
+		FRotationMatrix::MakeFromZ(Chao.ImpactNormal).Rotator(), Spawn);
+	if (Chamas)
+	{
+		Chamas->IniciarSoChamas(FMath::Max(RaioExplosao, 100.f), DuracaoChamas, DanoChamasPorSegundo, 1.f, CorAtual, Material);
+	}
 }

@@ -8,13 +8,17 @@ Os valores globais vêm da Material Parameter Collection MPC_Mapa (o WBP_Mapa at
 Proxima, Rota, Marcador, RotaLigada. O que muda entre os mapas fica em duas instâncias: MI_UI_Minimapa (Vista com
 modo 0 e 150 m, 260 px) e MI_UI_MapaCompleto (modo 1, ilha inteira, 900 px). Parâmetros:
   Jogador     (X cm, Y cm, yaw graus, -)       X = norte, Y = leste (coordenadas da Unreal)
-  Vista       (centro X, centro Y, meia largura em cm, modo)   modo 0 = minimapa redondo centrado no jogador,
-                                                               modo 1 = mapa quadrado (tela cheia e queda)
+  Vista       (centro X, centro Y, meia largura em cm)
+  Modo        0 = minimapa redondo centrado no jogador, 1 = mapa quadrado (tela cheia e queda)
   Tempestade  (X, Y, raio cm) + TempestadeLigada     Proxima (X, Y, raio) + ProximaLigada
   RotaInicio, RotaFim (X, Y) + RotaLigada           Marcador (X, Y, ligado)
   Extensao    metade do lado coberto pela textura (63000 cm)
   Girar       1 = minimapa gira com a câmera; 0 = norte sempre para cima (padrão, como no Fortnite)
   PixelsWidget  tamanho do widget em pixels (só para a espessura das linhas)
+
+O HLSL só lê .x/.y/.z dos vetores: no SM6 (DXC, o do jogo empacotado) os vetores chegam como float3 e um ".w" não
+compila ("vector swizzle 'w' is out of bounds"); a Unreal troca pelo material padrão e o mapa some. Foi o bug do
+minimapa invisível na 0.1.0. Por isso o modo é um escalar à parte.
 """
 import unreal
 
@@ -27,7 +31,7 @@ MAP_TEX = f"{FOLDER}/T_Mapa_UI"
 GEN = r"D:\meus documentos\Fortnite\Unreal\Data\Mapa\gerado"
 
 HLSL = r"""
-float modo = Vista.w;
+float modo = Modo;
 float2 d = UV - 0.5;
 float2 s = d * 2.0 * Vista.z;
 float px = 2.0 * Vista.z / max(PixelsWidget, 64.0);
@@ -87,11 +91,11 @@ MPC_VECTORS = {  # globais, atualizados pelo WBP_Mapa (nome: padrão). Na 5.8 o 
     "Marcador": (0.0, 0.0, 0.0, 0.0),        # X, Y, ligado
 }
 MPC_SCALARS = {"RotaLigada": 0.0, "TempestadeLigada": 0.0, "ProximaLigada": 0.0}
-VEC_PARAMS = {"Vista": (0.0, 0.0, 15000.0, 0.0)}  # por instância
-SCALAR_PARAMS = {"Extensao": 63000.0, "Girar": 0.0, "PixelsWidget": 280.0}
-INSTANCES = {  # nome: (Vista, PixelsWidget)
-    "MI_UI_Minimapa": ((0.0, 0.0, 15000.0, 0.0), 260.0),
-    "MI_UI_MapaCompleto": ((0.0, 0.0, 56000.0, 1.0), 900.0),
+VEC_PARAMS = {"Vista": (0.0, 0.0, 15000.0, 0.0)}  # por instância (só X, Y e meia largura)
+SCALAR_PARAMS = {"Extensao": 63000.0, "Girar": 0.0, "PixelsWidget": 280.0, "Modo": 0.0}
+INSTANCES = {  # nome: (Vista, PixelsWidget, Modo)
+    "MI_UI_Minimapa": ((0.0, 0.0, 15000.0, 0.0), 260.0, 0.0),
+    "MI_UI_MapaCompleto": ((0.0, 0.0, 56000.0, 0.0), 900.0, 1.0),
 }
 
 
@@ -140,15 +144,16 @@ def build_mpc():
 
 
 def build_instances(mat):
-    for name, (vista, pixels) in INSTANCES.items():
+    for name, (vista, pixels, modo) in INSTANCES.items():
         path = f"{FOLDER}/{name}"
         mi = eal.load_asset(path) if eal.does_asset_exist(path) else             at.create_asset(name, FOLDER, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
         mel.set_material_instance_parent(mi, mat)
         mel.set_material_instance_vector_parameter_value(mi, "Vista", unreal.LinearColor(*vista))
         mel.set_material_instance_scalar_parameter_value(mi, "PixelsWidget", pixels)
+        mel.set_material_instance_scalar_parameter_value(mi, "Modo", modo)
         mel.update_material_instance(mi)
         eal.save_asset(path)
-        print("instância:", path, vista, pixels)
+        print("instância:", path, vista, pixels, modo)
 
 
 def build_material(tex, mpc):
@@ -200,12 +205,7 @@ def build_material(tex, mpc):
         e = mel.create_material_expression(mat, unreal.MaterialExpressionVectorParameter, -1100, y)
         e.set_editor_property("parameter_name", n)
         e.set_editor_property("default_value", unreal.LinearColor(*v))
-        # a saída padrão do VectorParameter é RGB (float3); o HLSL usa os 4 componentes
-        if not mel.connect_material_expressions(e, "RGBA", custom, n):
-            app = mel.create_material_expression(mat, unreal.MaterialExpressionAppendVector, -800, y)
-            mel.connect_material_expressions(e, "", app, "A")
-            mel.connect_material_expressions(e, "A", app, "B")
-            link(app, n)
+        link(e, n)  # RGB (float3): o HLSL só usa .xyz
         y += 150
     for n, v in SCALAR_PARAMS.items():
         e = mel.create_material_expression(mat, unreal.MaterialExpressionScalarParameter, -900, y)

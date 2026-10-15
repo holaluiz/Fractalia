@@ -13,10 +13,16 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Engine/CurveTable.h"
+#include "EngineUtils.h"
+#include "GameFramework/GameStateBase.h"
 #include "GameFramework/Pawn.h"
 #include "GAS/NRAbilitySystemComponent.h"
 #include "Items/NRInventoryComponent.h"
+#include "Items/NRItemLibrary.h"
+#include "Progression/NRMutacoesComponent.h"
 #include "Styling/CoreStyle.h"
+#include "UObject/UnrealType.h"
 
 namespace
 {
@@ -32,6 +38,70 @@ namespace
 		Opcoes.MinimumFractionalDigits = 1;
 		Opcoes.MaximumFractionalDigits = 1;
 		return FText::Format(NSLOCTEXT("Nexus", "Segundos", "{0} s"), FText::AsNumber(Valor, &Opcoes));
+	}
+
+	FText MinutosSegundos(float Valor)
+	{
+		const int32 Total = FMath::CeilToInt(FMath::Max(0.f, Valor));
+		return FText::FromString(FString::Printf(TEXT("%d:%02d"), Total / 60, Total % 60));
+	}
+
+	// Variáveis de Blueprint lidas pelo nome (BP_StormController, BP_HeroBase, BP_Interactable).
+	bool LerBool(const UObject* Objeto, FName Nome, bool& Saida)
+	{
+		const FBoolProperty* P = Objeto ? FindFProperty<FBoolProperty>(Objeto->GetClass(), Nome) : nullptr;
+		if (P)
+		{
+			Saida = P->GetPropertyValue_InContainer(Objeto);
+		}
+		return P != nullptr;
+	}
+
+	bool LerNumero(const UObject* Objeto, FName Nome, double& Saida)
+	{
+		const FNumericProperty* P = Objeto ? FindFProperty<FNumericProperty>(Objeto->GetClass(), Nome) : nullptr;
+		if (!P)
+		{
+			return false;
+		}
+		const void* Valor = P->ContainerPtrToValuePtr<void>(Objeto);
+		Saida = P->IsFloatingPoint() ? P->GetFloatingPointPropertyValue(Valor) : static_cast<double>(P->GetSignedIntPropertyValue(Valor));
+		return true;
+	}
+
+	bool LerVetor(const UObject* Objeto, FName Nome, FVector& Saida)
+	{
+		const FStructProperty* P = Objeto ? FindFProperty<FStructProperty>(Objeto->GetClass(), Nome) : nullptr;
+		if (!P || P->Struct != TBaseStructure<FVector>::Get())
+		{
+			return false;
+		}
+		Saida = *P->ContainerPtrToValuePtr<FVector>(Objeto);
+		return true;
+	}
+
+	UObject* LerObjeto(const UObject* Objeto, FName Nome)
+	{
+		const FObjectPropertyBase* P = Objeto ? FindFProperty<FObjectPropertyBase>(Objeto->GetClass(), Nome) : nullptr;
+		return P ? P->GetObjectPropertyValue_InContainer(Objeto) : nullptr;
+	}
+
+	FText LerTexto(const UObject* Objeto, FName Nome)
+	{
+		const FTextProperty* P = Objeto ? FindFProperty<FTextProperty>(Objeto->GetClass(), Nome) : nullptr;
+		return P ? P->GetPropertyValue_InContainer(Objeto) : FText::GetEmpty();
+	}
+
+	FString LerString(const UObject* Objeto, FName Nome)
+	{
+		const FStrProperty* P = Objeto ? FindFProperty<FStrProperty>(Objeto->GetClass(), Nome) : nullptr;
+		return P ? P->GetPropertyValue_InContainer(Objeto) : FString();
+	}
+
+	float ValorTabela(UCurveTable* Tabela, const TCHAR* Linha, int32 Fase)
+	{
+		const FRealCurve* Curva = Tabela ? Tabela->FindCurve(FName(Linha), TEXT("HUD"), false) : nullptr;
+		return Curva ? Curva->Eval(static_cast<float>(Fase), 0.f) : 0.f;
 	}
 }
 
@@ -145,6 +215,218 @@ void UNRHudWidget::MontarLayoutPadrao()
 	SlotAviso->SetAnchors(FAnchors(0.5f, 0.32f));
 	SlotAviso->SetAlignment(FVector2D(0.5f, 0.5f));
 	SlotAviso->SetAutoSize(true);
+
+	// Topo, no centro: relógio da tempestade e, embaixo, o aviso de fora da zona.
+	UVerticalBox* Topo = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Topo"));
+	TextoTempestade = Texto(TEXT("TextoTempestade"), 14, FLinearColor(0.88f, 0.75f, 1.f));
+	Topo->AddChildToVerticalBox(TextoTempestade)->SetHorizontalAlignment(HAlign_Center);
+	TextoForaDaZona = Texto(TEXT("TextoForaDaZona"), 20, FLinearColor(1.f, 0.35f, 0.9f));
+	UVerticalBoxSlot* SlotFora = Topo->AddChildToVerticalBox(TextoForaDaZona);
+	SlotFora->SetHorizontalAlignment(HAlign_Center);
+	SlotFora->SetPadding(FMargin(0.f, 4.f, 0.f, 0.f));
+	UCanvasPanelSlot* SlotTopo = Raiz->AddChildToCanvas(Topo);
+	SlotTopo->SetAnchors(FAnchors(0.5f, 0.f));
+	SlotTopo->SetAlignment(FVector2D(0.5f, 0.f));
+	SlotTopo->SetPosition(FVector2D(0.f, 18.f));
+	SlotTopo->SetAutoSize(true);
+
+	// Logo abaixo da mira: o que o F faz.
+	TextoPrompt = Texto(TEXT("TextoPrompt"), 14, FLinearColor(1.f, 0.95f, 0.7f));
+	UCanvasPanelSlot* SlotPrompt = Raiz->AddChildToCanvas(TextoPrompt);
+	SlotPrompt->SetAnchors(FAnchors(0.5f, 0.5f));
+	SlotPrompt->SetAlignment(FVector2D(0.5f, 0.f));
+	SlotPrompt->SetPosition(FVector2D(0.f, 36.f));
+	SlotPrompt->SetAutoSize(true);
+
+	// Direita, um pouco abaixo do meio (o minimapa fica no canto de cima): a escolha de mutação.
+	TextoMutacoes = Texto(TEXT("TextoMutacoes"), 13, FLinearColor(0.75f, 1.f, 0.85f));
+	UCanvasPanelSlot* SlotMutacoes = Raiz->AddChildToCanvas(TextoMutacoes);
+	SlotMutacoes->SetAnchors(FAnchors(1.f, 0.5f));
+	SlotMutacoes->SetAlignment(FVector2D(1.f, 0.5f));
+	SlotMutacoes->SetPosition(FVector2D(-24.f, 60.f));
+	SlotMutacoes->SetAutoSize(true);
+
+	// Esquerda, no meio da altura: as mutações já escolhidas.
+	TextoMutacoesEscolhidas = Texto(TEXT("TextoMutacoesEscolhidas"), 11, FLinearColor(0.75f, 1.f, 0.85f));
+	UCanvasPanelSlot* SlotEscolhidas = Raiz->AddChildToCanvas(TextoMutacoesEscolhidas);
+	SlotEscolhidas->SetAnchors(FAnchors(0.f, 0.5f));
+	SlotEscolhidas->SetAlignment(FVector2D(0.f, 0.5f));
+	SlotEscolhidas->SetPosition(FVector2D(24.f, 0.f));
+	SlotEscolhidas->SetAutoSize(true);
+}
+
+UNRMutacoesComponent* UNRHudWidget::GetMutacoesDoJogador() const
+{
+	const APawn* Pawn = GetOwningPlayerPawn();
+	return Pawn ? Pawn->FindComponentByClass<UNRMutacoesComponent>() : nullptr;
+}
+
+void UNRHudWidget::AtualizarTempestade()
+{
+	UWorld* World = GetWorld();
+	if (!World || (!TextoTempestade && !TextoForaDaZona))
+	{
+		return;
+	}
+	if (!Tempestade.IsValid() && World->GetTimeSeconds() >= ProximaBuscaTempestade)
+	{
+		ProximaBuscaTempestade = World->GetTimeSeconds() + 2.0;
+		for (TActorIterator<AActor> It(World); It; ++It)
+		{
+			if (It->GetClass()->GetName().StartsWith(TEXT("BP_StormController")))
+			{
+				Tempestade = *It;
+				break;
+			}
+		}
+	}
+
+	FText Relogio, Fora;
+	AActor* T = Tempestade.Get();
+	bool bComecou = false;
+	if (T && LerBool(T, TEXT("bStarted"), bComecou) && bComecou)
+	{
+		bool bFechando = false;
+		double Inicio = 0.0, FaseNum = 0.0, Raio = 0.0;
+		FVector Centro = FVector::ZeroVector;
+		LerBool(T, TEXT("bClosing"), bFechando);
+		LerNumero(T, TEXT("StartTime"), Inicio);
+		LerNumero(T, TEXT("CurPhase"), FaseNum);
+		LerNumero(T, TEXT("CurRadius"), Raio);
+		LerVetor(T, TEXT("CurCenter"), Centro);
+		UCurveTable* Tabela = Cast<UCurveTable>(LerObjeto(T, TEXT("StormTable")));
+		const AGameStateBase* GameState = World->GetGameState();
+		const double Agora = (GameState ? GameState->GetServerWorldTimeSeconds() : World->GetTimeSeconds()) - Inicio;
+		const int32 Fase = static_cast<int32>(FaseNum);
+
+		// Mesma conta do BP_StormController.UpdateCircle: fase 7 = fechou de vez.
+		if (Fase < 1 || Fase > 6)
+		{
+			Relogio = NSLOCTEXT("Nexus", "TempestadeFechou", "A tempestade fechou");
+		}
+		else
+		{
+			const float Alvo = ValorTabela(Tabela, bFechando ? TEXT("ShrinkEnd") : TEXT("ShrinkStart"), Fase);
+			Relogio = FText::Format(bFechando
+				? NSLOCTEXT("Nexus", "TempestadeFechando", "Fase {0}  ·  a tempestade está fechando: {1}")
+				: NSLOCTEXT("Nexus", "TempestadeFechaEm", "Fase {0}  ·  a tempestade fecha em {1}"),
+				Fase, MinutosSegundos(static_cast<float>(Alvo - Agora)));
+		}
+
+		const APawn* Pawn = GetOwningPlayerPawn();
+		const UNRAbilitySystemComponent* ASC = GetASCDoJogador();
+		if (Pawn && !Pawn->IsHidden() && !(ASC && ASC->IsMorto()))
+		{
+			const double Distancia = FVector::Dist2D(Pawn->GetActorLocation(), Centro);
+			if (Distancia > Raio)
+			{
+				Fora = FText::Format(NSLOCTEXT("Nexus", "ForaDaZona", "FORA DA ZONA: {0} m até o círculo  ·  −{1}% da vida por segundo"),
+					FText::AsNumber(FMath::CeilToInt((Distancia - Raio) / 100.0)),
+					FText::AsNumber(ValorTabela(Tabela, TEXT("DamagePct"), FMath::Min(Fase, 6))));
+			}
+		}
+	}
+	if (TextoTempestade) TextoTempestade->SetText(Relogio);
+	if (TextoForaDaZona) TextoForaDaZona->SetText(Fora);
+}
+
+void UNRHudWidget::AtualizarPrompt()
+{
+	if (!TextoPrompt)
+	{
+		return;
+	}
+	FText Prompt;
+	APawn* Pawn = GetOwningPlayerPawn();
+	const UNRAbilitySystemComponent* ASC = GetASCDoJogador();
+	if (Pawn && !Pawn->IsHidden() && !(ASC && ASC->IsMorto()))
+	{
+		// O interativo atual do herói; sem ele (o último pickup sumiu), o primeiro sobreposto, como o F faz.
+		AActor* Alvo = Cast<AActor>(LerObjeto(Pawn, TEXT("CurrentInteractable")));
+		if (!IsValid(Alvo) || LerTexto(Alvo, TEXT("Prompt")).IsEmpty())
+		{
+			Alvo = nullptr;
+			TArray<AActor*> Perto;
+			Pawn->GetOverlappingActors(Perto);
+			for (AActor* Ator : Perto)
+			{
+				if (IsValid(Ator) && !LerTexto(Ator, TEXT("Prompt")).IsEmpty())
+				{
+					Alvo = Ator;
+					break;
+				}
+			}
+		}
+		if (Alvo)
+		{
+			// Pickup (BP_Pickup): "Pegar: Anel do Foco (Raro)".
+			FText Acao = LerTexto(Alvo, TEXT("Prompt"));
+			const FString Item = LerString(Alvo, TEXT("ItemName"));
+			double Raridade = 0.0;
+			if (!Item.IsEmpty() && LerNumero(Alvo, TEXT("Rarity"), Raridade))
+			{
+				Acao = FText::Format(NSLOCTEXT("Nexus", "PromptItem", "{0}: {1} ({2})"), Acao, FText::FromString(Item),
+					UNRItemLibrary::NomeDaRaridade(static_cast<int32>(Raridade)));
+			}
+			Prompt = FText::Format(NSLOCTEXT("Nexus", "PromptF", "[F] {0}"), Acao);
+		}
+	}
+	TextoPrompt->SetText(Prompt);
+}
+
+void UNRHudWidget::AtualizarMutacoes()
+{
+	const UNRMutacoesComponent* Mutacoes = GetMutacoesDoJogador();
+	FText Painel, Lista;
+	if (Mutacoes)
+	{
+		if (Mutacoes->TemEscolhaPendente())
+		{
+			TArray<FString> Linhas;
+			FString Titulo = FText::Format(NSLOCTEXT("Nexus", "MutacaoTitulo", "MUTAÇÃO DO NÍVEL {0}"), Mutacoes->NivelDaEscolha()).ToString();
+			if (Mutacoes->NiveisPendentes.Num() > 1)
+			{
+				Titulo += FText::Format(NSLOCTEXT("Nexus", "MutacaoFila", "  (+{0} na fila)"), Mutacoes->NiveisPendentes.Num() - 1).ToString();
+			}
+			Linhas.Add(Titulo);
+			for (int32 i = 0; i < Mutacoes->Opcoes.Num(); ++i)
+			{
+				const ENRMutacao M = Mutacoes->Opcoes[i];
+				Linhas.Add(FText::Format(NSLOCTEXT("Nexus", "MutacaoOpcao", "[Alt+{0}] {1}: {2}"),
+					i + 1, UNRMutacoesComponent::Nome(M), Mutacoes->Descrever(M)).ToString());
+			}
+			Linhas.Add(Mutacoes->TrocasRestantes > 0
+				? FText::Format(NSLOCTEXT("Nexus", "MutacaoTrocar", "[Alt+4] trocar as opções ({0} restante)"), Mutacoes->TrocasRestantes).ToString()
+				: NSLOCTEXT("Nexus", "MutacaoSemTroca", "(sem trocas de opções)").ToString());
+			Painel = FText::FromString(FString::Join(Linhas, TEXT("\n")));
+		}
+		if (Mutacoes->Escolhidas.Num() > 0)
+		{
+			// Atributos repetidos viram uma linha só ("Intelecto +4").
+			TArray<ENRMutacao> Ordem;
+			TMap<ENRMutacao, int32> Vezes;
+			for (ENRMutacao M : Mutacoes->Escolhidas)
+			{
+				if (!Vezes.Contains(M))
+				{
+					Ordem.Add(M);
+				}
+				++Vezes.FindOrAdd(M);
+			}
+			TArray<FString> Linhas;
+			Linhas.Add(NSLOCTEXT("Nexus", "MutacoesEscolhidas", "Mutações:").ToString());
+			for (ENRMutacao M : Ordem)
+			{
+				Linhas.Add(UNRMutacoesComponent::Categoria(M) == ENRCategoriaMutacao::Atributo
+					? FString::Printf(TEXT("%s +%d"), *UNRMutacoesComponent::Nome(M).ToString(),
+						FMath::RoundToInt(Mutacoes->PontosPorAtributo * Vezes[M]))
+					: UNRMutacoesComponent::Nome(M).ToString());
+			}
+			Lista = FText::FromString(FString::Join(Linhas, TEXT("\n")));
+		}
+	}
+	if (TextoMutacoes) TextoMutacoes->SetText(Painel);
+	if (TextoMutacoesEscolhidas) TextoMutacoesEscolhidas->SetText(Lista);
 }
 
 UNRAbilitySystemComponent* UNRHudWidget::GetASCDoJogador() const
@@ -201,7 +483,10 @@ void UNRHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		TempoAvisoNivel = FMath::Max(0.f, TempoAvisoNivel - InDeltaTime);
 		if (TempoAvisoNivel > 0.f)
 		{
-			Aviso = FText::Format(NSLOCTEXT("Nexus", "SubiuNivel", "Nível {0}!"), ASC->Nivel);
+			const UNRMutacoesComponent* Mutacoes = GetMutacoesDoJogador();
+			Aviso = Mutacoes && Mutacoes->TemEscolhaPendente()
+				? FText::Format(NSLOCTEXT("Nexus", "SubiuNivelMutacao", "Nível {0}!\nEscolha uma mutação: Alt+1, Alt+2 ou Alt+3"), ASC->Nivel)
+				: FText::Format(NSLOCTEXT("Nexus", "SubiuNivel", "Nível {0}!"), ASC->Nivel);
 			CorAviso = FLinearColor(1.f, 0.8f, 0.2f);
 		}
 		if (ASC->IsMorto())
@@ -290,4 +575,8 @@ void UNRHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			TextoEquipados->SetText(FText::FromString(FString::Join(Linhas, TEXT("\n"))));
 		}
 	}
+
+	AtualizarTempestade();
+	AtualizarPrompt();
+	AtualizarMutacoes();
 }

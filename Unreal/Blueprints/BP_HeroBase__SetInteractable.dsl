@@ -1,4 +1,4 @@
-; Called by BP_Interactable when the hero enters its sphere. TODO(HUD): prompt na tela em vez de PrintString
+; Called by BP_Interactable when the hero enters its sphere. The HUD (UNRHudWidget) reads CurrentInteractable.Prompt
+; and shows "[F] ..." under the crosshair.
 (fn SetInteractable (Target)
-  (Variables|Default|SetCurrentInteractable Target)
-  (Development|PrintString :InString (Utilities|String|Append "[F] " (Utilities|String|ToString(Text) (Class|BPInteractable|GetPrompt :self Target))) :Duration 2.0))
+  (Variables|Default|SetCurrentInteractable Target))

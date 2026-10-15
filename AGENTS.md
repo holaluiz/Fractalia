@@ -6,7 +6,10 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 17:35 (horário de Brasília), por Claude (Claude Code), sessão "Instalador com atualização automática".
+Última atualização: 2026-10-15, por volta de 19:00 (horário de Brasília), por Claude (Claude Code), sessão "Plano de melhorias e versão 0.1.1".
+
+> **Plano de trabalho:** [PLANO.md](PLANO.md) (diagnóstico, fases e decisões para o usuário revisar). Marque lá o
+> que ficar pronto.
 
 ---
 
@@ -61,12 +64,30 @@
 
 ### Pronto
 
+- **Fase 1 do PLANO.md, para a versão 0.1.1** (sessão "Plano de melhorias e versão 0.1.1", 15/10; testado em PIE
+  das 18:30 às 18:50, detalhes na seção 9):
+  - **Mutações** (GDD §7.4), no componente C++ novo `Mutacoes` (`UNRMutacoesComponent`, em `Progression/`):
+    3 opções por nível, fila sem limite de tempo, **Alt+1/2/3** escolhe (com Alt e escolha pendente; senão 1-3
+    usam o consumível) e **Alt+4** troca as opções (1 por partida, `IA_TrocarMutacoes` na tecla 4). Existem as que
+    o kit atual usa: +2 pontos efetivos num atributo, Bola de Fogo com chão em chamas por 3 s, Muralha de Gelo +50%
+    de largura, as três de ultimate (só nos níveis 8 e 10), +8% de velocidade fora de combate e +15% de cura.
+  - **Piso de nível** (GDD §7.3): o `BP_StormController.CheckPhaseEvents` chama
+    `UNRAbilitySystemComponent::AplicarPisoDeNivel` no fim de cada fase.
+  - **HUD:** relógio da tempestade no topo, aviso "FORA DA ZONA" com a distância e o % por segundo, prompt do F
+    ("[F] Pegar: Anel do Foco (Raro)"), painel de mutação à direita e a lista das escolhidas à esquerda. O C++ lê o
+    `BP_StormController` e o `Prompt` dos interativos pelo nome das variáveis (veja o header do `UNRHudWidget`).
+  - **Sem `PrintString` de debug:** saíram o "Tempestade: -X%", o "Dano: -X" e o "[F] …".
+  - **Minimapa:** dois bugs corrigidos (seção 5): o `.w` no HLSL (não compilava no SM6) e a ordem das chamadas de
+    viewport no `HUD_NexusRoyale` (o mapa ia para fora da tela, também no editor).
+  - **`L_Island`:** 6 acampamentos (4 pequenos, 2 médios nas pontas leste e oeste), com o drop do GDD §12 (pequeno:
+    50% de consumível; médio: grimório Comum–Raro), e sem os 107 atores da v1.
 - **Instalador e atualização automática** (sessão "Instalador com atualização automática", 15/10).
   - **Versão 0.1.0 empacotada** (Development, 1,33 GB; zip de 1,07 GB) em `D:\NexusRoyale_Builds\0.1.0`.
     Aberta direto da pasta do build às 17:22: carrega o `L_Island` sem erro de Blueprint, com o herói, o
     HUD, os Imps e o visual aquarela.
-  - **Publicação:** Release `v0.1.0` no repositório privado `holaluiz/MOBA-BR`, com o
-    `NexusRoyale-Instalador.exe`, o zip e o `manifest.json` (veja a seção 9 para o que foi testado).
+  - **Publicação:** Releases `v0.1.0` e **`v0.1.1`** (15/10, 19:09) no repositório privado `holaluiz/MOBA-BR`, com
+    o `NexusRoyale-Instalador.exe`, o zip e o `manifest.json` (veja a seção 9 para o que foi testado).
+    **A atualização automática foi testada** de 0.1.0 para 0.1.1 neste PC: 123 s do clique no atalho ao jogo aberto.
   - **Instalador/launcher** (`Launcher/NexusRoyaleLauncher.cs`, um `.exe` só):
     - instala em `<disco com mais espaço>:\Jogos\NexusRoyale`, cria os atalhos "Nexus Royale" e a
       entrada em Aplicativos;
@@ -186,7 +207,8 @@
       foi posto).
   - **Posição por dados:** `Unreal/Data/Camps_L_Island.json` tem o mesmo formato de
     `mapa_ue.json` → `acampamentos`. O `place_camps()` do script solta cada acampamento no chão.
-    - No `L_Island` há **um acampamento pequeno** a 18 m da praça do PlayerStart, em (-1560, -700).
+    - No `L_Island` há **6 acampamentos** (desde 15/10, 18:30): o pequeno a 18 m da praça do PlayerStart, em
+      (-1560, -700), mais 3 pequenos e 2 médios em clareiras achadas pelo `ue_l_island_011.py clareiras`.
   - **`BP_HeroBase`** ganhou `DamageTaken` e um `EventAnyDamage` que soma o dano e mostra
     "Dano: -X". O dano de verdade agora vai para o GAS pelo componente `Habilidades`.
   - **Corrigido em 15/10, às 13:00:** um golpe que tirasse metade ou mais da vida restante matava o
@@ -273,16 +295,30 @@
 
 ### Sem verificação ou com problema conhecido
 
+- **BUG GRAVE, achado em 15/10 às 19:25: no jogo empacotado (0.1.0 e 0.1.1) as teclas de combate não funcionam.**
+  O `IMC_Default.uasset` no disco é o das 11:38 e só tem `IA_Jump`, `IA_Look`, `IA_Mapa` e `IA_Move`. Botão
+  esquerdo, Q, E, X, F, 1-3 e 4 só existiam na memória do editor (por isso tudo funcionava no PIE). Causa: o
+  `ue_mvp_setup.py` chama `imc.map_key(...)`, que não marca o pacote como alterado, e depois
+  `save_loaded_asset(imc)`, que só salva pacote marcado. Explica a partida da 0.1.0 sem nenhum creep morto.
+  **Correção:** marcar o IMC (`imc.modify()`) ou salvar com `only_if_is_dirty=False`, rodar o setup, conferir no
+  arquivo e lançar a 0.1.2 (PLANO.md, item 1.9).
+
+- **Fase 1 / 0.1.1** (PLANO.md): **publicada** (Release `v0.1.1`, 15/10, 19:09) e instalada neste PC pela
+  atualização automática do launcher. Sem verificar: Alt+1/2/3 e Alt+4 no teclado; as chamas da Bola de Fogo
+  ferindo creeps. **O código da 0.1.1 não foi commitado** (a tag aponta para o `2ff3965`). **O fundo do minimapa é a
+  ilha v2**, não o `L_Island` (a seta e o círculo estão certos); PLANO.md, item 1.8.
+
 - **Creeps** (o que foi testado está na seção 9, entrada das 10:55):
   - o XP já chega ao herói pelo `DarXP` no `Die` (testado: +30 por Imp). O dispatcher
     `OnCreepKilled` continua sem ninguém escutando;
-  - **não tem drop** (GDD §12: 50% de comida ou poção no pequeno, grimório no médio);
+  - ~~não tem drop~~ **tem drop desde 15/10, às 18:40** (`BP_CreepCamp.DropLoot`), no ponto onde um creep caiu;
   - não tem rede: o `Think` só roda com autoridade e os creeps não estão marcados para replicar;
   - o Imp usa só `Imp_Body`. As malhas `Imp_Chains`, `Imp_Mace`, `Imp_Shorts` e `Imp_SpikedCollar`
     (e as do Puglin) não estão no BP;
   - **sem NavMesh,** o creep anda em linha reta e pode enroscar em árvore ou pedra. Os acampamentos
     precisam ficar em clareiras;
-  - o Puglin e o acampamento médio não foram testados em PIE;
+  - o acampamento médio rodou em PIE em 15/10 (18:40): o Puglin persegue e bate, e o drop é um grimório. Não foi
+    testado o Puglin contra a muralha nem com o golpe visto de perto;
   - o ataque acerta no início da animação, sem esperar o golpe.
 - **Cópia da ilha.** `Content/NexusRoyale/Map/_tmp/` tem uma cópia de `SM_Island` e `M_Island`. O
   último passo, renomear a ilha nova, falhou porque sobrou um redirector. É preciso:
@@ -302,9 +338,8 @@
   - o **nível 2 em diante**, na prática: o `GanharXP` foi conferido no código, e o teste chegou a 90 XP;
   - equipamento **trocando** com o do slot (`Trocou`) e consumíveis cheios (`Cheio`);
   - o Puglin contra as magias;
-  - **no jogo empacotado (0.1.0), o minimapa do canto superior direito não aparece.** O log não cita
-    `WBP_Mapa` nem `HUD_NexusRoyale`. Confira se o `HUD Class` chega ao jogo cozido. A praça também mostra
-    as estátuas dos heróis da v1;
+  - ~~no jogo empacotado (0.1.0), o minimapa não aparece~~ **corrigido em 15/10** (dois bugs, seção 5). A praça
+    não tem mais as estátuas da v1;
   - o jogo empacotado só foi aberto por 40 s: não foi jogado de ponta a ponta.
 - **Muralha de Gelo e Chuva de Meteoros.** Testadas em PIE nas sessões "Kit do Feiticeiro" (seção 9,
   entrada das 13:52) e "Testar muralha contra creeps e chão em chamas" (entrada das 15:37). Já
@@ -342,14 +377,10 @@
   - mira de terceira pessoa: a magia vai até o ponto sob a mira e sai do herói, então perto de
     paredes pode bater nelas;
   - creeps continuam batendo no corpo depois da morte (o dano é ignorado);
-  - a mensagem `PrintString` do `StormTick` e o "Dano: -X" do herói continuam na tela (debug).
 - **Lacunas do loop da partida** (marcadas com `TODO` nas DSLs):
   - **não tem rede:** o salto, o F e as magias não são RPC. Funciona só no PIE solo;
-  - o HUD ainda não tem prompt do F nem relógio da tempestade;
   - **os raios da tempestade, a rota do dirigível e o `DropRadius` (190 m) são da ilha de 400 m.**
     Ajustar no `CT_Storm.csv` e nos valores padrão quando o mapa v2 entrar;
-  - **o `L_Island` ainda tem os restos da v1:** Nexus, torres, fragmentos, poções de escudo e
-    plataformas de salto;
   - o PIE avisa que a memória de vídeo estourou em cerca de 500 MB na RX 570. **Às 15:44 o editor
     caiu** ao recomeçar o PIE ("Out of video memory", D3D12), **e de novo às 16:17**. Veja a
     pegadinha na seção 5.
@@ -395,13 +426,14 @@ XP e nível (o MVP em "Pronto"). Falta:
    lançar e devolver a ultimate ao nível 6 quando houver mais acampamentos (`NIVEL_ULTIMATE` no
    `ue_mvp_setup.py`). A migração para Gameplay Abilities (`GA_*`, GDD §16) fica para a etapa 2, junto
    com os grimórios trocando E e R. Os creeps já batem na muralha que os bloqueia (feito às 16:35).
-3. ~~Acampamento de Imps~~ (feito, com GAS). Falta: drop dos creeps, levar os 21 acampamentos para o
-   `L_Ilha` com `place_camps()` e o `mapa_ue.json`, e o elite (Puglin Ancião).
-4. XP e nível: falta o `OnPhaseEnded` (piso de nível) e a escolha de mutação a cada nível (GDD §7).
-5. Grimórios virando as magias E e R; tela de montagem (arquétipo + 20 pontos); prompt do F e relógio
-   da tempestade no HUD.
-6. Corrigir o minimapa no jogo empacotado e publicar a 0.1.1 com `Publicar-versao.bat`. Isso também
-   testa a atualização de uma versão para outra pelo launcher.
+3. ~~Acampamento de Imps~~ (feito, com GAS) e ~~drop dos creeps~~ (15/10). Falta: levar os 21 acampamentos para
+   o `L_Ilha` com `place_camps()` e o `mapa_ue.json`, e o elite (Puglin Ancião).
+4. ~~XP e nível: piso de nível e mutações~~ (15/10). Faltam as mutações que dependem do que ainda não existe
+   (PLANO.md, 2.7).
+5. Grimórios virando as magias E e R; tela de montagem (arquétipo + 20 pontos). (~~Prompt do F e relógio da
+   tempestade no HUD~~: feitos em 15/10.)
+6. ~~Corrigir o minimapa e publicar a 0.1.1~~ (15/10, 19:09; a atualização pelo launcher funcionou). Falta
+   commitar o código da 0.1.1 (com o OK do usuário) e o fundo do minimapa do `L_Island` (PLANO.md, 1.8).
 7. Multiplayer (o usuário perguntou em 15/10 se já dava para jogar online; não dá). Há um cartão de
    sessão proposto: listen server com a Steam (app 480) ou EOS.
 
@@ -579,6 +611,26 @@ use os scripts de `Unreal/`:
   entre um lote e outro.
 - **Se o MCP parar de responder,** veja se o editor fechou. Ele fecha sozinho quando o usuário
   instala alguma coisa ou quando falta memória. O log fica em `Unreal/NexusRoyale/Saved/Logs/`.
+- **Compilar o C++ pode levar muito mais que os 1,5–3 min de antes** (15/10, 17:57). O D: é um **HD mecânico**
+  (WDC WD10SPZX); o C: é o SSD de 128 GB, quase cheio. Com a memória apertada (outros apps abertos, 25 de 28 GB
+  comprometidos), o `cl.exe` lê o PCH da engine por falta de página, a ~3 MB/s, com o disco a 99% e o Windows
+  Defender a ~70% de CPU. Parece travado (uma thread em espera "Executive", quase sem CPU), mas está andando.
+  **Remédio que funcionou:** ler o PCH em sequência para o cache do Windows (37 s para 2,5 GB); depois disso o
+  `cl.exe` deslancha. No Git Bash:
+  `cat "Unreal/NexusRoyale/Intermediate/Build/Win64/x64/NexusRoyaleEditor/Development/UnrealEd/SharedPCH.UnrealEd.Project.ValApi.ValExpApi.Cpp20.h.pch" > /dev/null`
+  (o do jogo empacotado fica em `.../x64/NexusRoyale/Development/Engine/SharedPCH.Engine.*.pch`).
+  - Na 5.8 o UBT **sempre** usa o executor do UBA. O `-NoUBA` só desliga o detour (`ExecutorFactory.cs`).
+  - O `ue_gas_compilar.py` agora passa `-NoUBA -MaxParallelActions=2` (dois `cl.exe` de ~2,5 GB cada, no máximo).
+  - Fechar outros apps antes de compilar ajuda; isso é com o usuário (regra 6).
+- **Salvar pelo Python não salva o que não foi marcado como alterado.** `EditorAssetLibrary.save_loaded_asset` e
+  `save_asset` têm `only_if_is_dirty=True` por padrão, e algumas funções mexem no asset sem marcar o pacote (como o
+  `InputMappingContext.map_key`). O asset fica certo na memória do editor (o PIE funciona) e errado no disco (o jogo
+  empacotado não tem a mudança). Depois de salvar, **confira o arquivo** (data ou conteúdo) ou o `git status`.
+- **Material com nó Custom (HLSL) precisa compilar no SM6.** O jogo empacotado roda em **SM6** (DXC) e o editor em
+  SM5. Vetores de parâmetro e de MPC chegam ao HLSL como float3: `.w` compila no editor e quebra no SM6 ("vector
+  swizzle 'w' is out of bounds"). A Unreal troca pelo material padrão e o widget some, sem erro no jogo. O aviso só
+  aparece no log do editor ou do cook ("Failed to compile Material … for platform PCD3D_SM6"). Foi o minimapa
+  invisível da 0.1.0. Procure esse aviso no log do cook antes de publicar.
 
 ### Release (versão instalável)
 
@@ -661,6 +713,7 @@ use os scripts de `Unreal/`:
 | Caminho | Conteúdo |
 |---|---|
 | `AGENTS.md` | Este arquivo: o contexto para IAs |
+| `PLANO.md` | Plano de melhorias por fases (criado em 15/10, 18:10). Marque `[x]` no que ficar pronto |
 | `CLAUDE.md` | Lido automaticamente pelo Claude Code. Só aponta para este arquivo |
 | `README.md` | Visão geral para humanos |
 | `Design/GDD.md` | Design oficial (v2). `GDD_v1.md` é o antigo, abandonado |
@@ -676,8 +729,10 @@ use os scripts de `Unreal/`:
 | `Unreal/Data/Camps_L_Island.json` | Acampamentos do `L_Island`, no formato de `mapa_ue.json` → `acampamentos` |
 | `Unreal/Blueprints/*.dsl` | Grafos de Blueprint em DSL, para o `write_graph_dsl` |
 | `Unreal/Data/` | Tabelas de balanceamento em CSV para importar como CurveTable ou DataTable (`CT_Storm.csv`, `DT_Itens.csv` + `gerar_dt_itens.py`) |
-| `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h) e `UI/` (NRHudWidget) |
-| `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py`, `Unreal/pie_gravar.py` | Setup do combate (material, teclas e componente), teste do MVP no PIE e o gravador quadro a quadro do PIE |
+| `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h), `Progression/` (UNRMutacoesComponent) e `UI/` (NRHudWidget) |
+| `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py`, `Unreal/pie_gravar.py` | Setup do combate (material, teclas e os componentes Combate e Mutacoes), teste do MVP no PIE (inclui mutações e piso de nível) e o gravador quadro a quadro do PIE |
+| `Unreal/ue_dsl_grafos.py` | Grava só alguns grafos DSL de um BP, compila e (com `--ler`) lê de volta |
+| `Unreal/ue_l_island_011.py` | `L_Island`: lista e apaga os restos da v1, e acha clareiras para acampamentos |
 | `Unreal/ue_gas_compilar.py`, `Unreal/ue_gas_setup.py` | Compilar o módulo (com o editor fechado) e depois configurar o DT_Itens e os componentes do herói (com o editor aberto) |
 | `Launcher/` | Instalador/launcher (`NexusRoyaleLauncher.cs`), o `LEIA-ME.txt` e `bin/` (o `.exe` compilado, fora do git) |
 | `Unreal/ue_release.py`, `Publicar-versao.bat` | Empacotar e publicar uma versão (seção 5, "Release"). Os builds ficam em `D:\NexusRoyale_Builds\<versão>` |
@@ -1123,4 +1178,60 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
   - o pedido de token num PC sem `gh`, o `/desinstalar` e o Visual C++ num PC que não o tenha;
   - o minimapa, que não aparece no jogo empacotado (seção 3).
 - **Ao sair:** a Unreal continua **fechada** desde 16:52, sem nada sujo, e está livre para abrir.
-  Nada foi commitado.
+- **Commit `2ff3965` na `main`, enviado ao GitHub** (17:40, a pedido do usuário), junto com o
+  `74f7ed1` e o `82b22bc`, que estavam só aqui. Entraram só o `Launcher/`, o `ue_release.py`, o
+  `Publicar-versao.bat`, o `DefaultGame.ini`, o `.gitignore` e o `AGENTS.md`. A tag `v0.1.0`
+  continua no `e26d174`. Esta linha ficou fora do commit.
+
+### 2026-10-15 17:41 → 19:15 · Claude (Claude Code) · Plano de melhorias e versão 0.1.1
+- **Pedido do usuário:** "continue melhorando o game" e, logo depois, "analise tudo, crie um plano, guarde o plano
+  na pasta e comece a seguir esse plano". O plano ficou em [PLANO.md](PLANO.md), e esta sessão fez a fase 1.
+- **O que a análise achou** (PLANO.md, seção 1): no log do jogo instalado, a partida de 8,5 min do usuário teve 4
+  baús, 0 creeps e terminou na tempestade da fase 3, sem minimapa nem relógio. A causa do minimapa sumido são dois
+  bugs (seção 5): o `.w` no HLSL do `M_UI_Mapa` (o jogo roda em SM6) e a ordem das chamadas de viewport no
+  `HUD_NexusRoyale` (o minimapa ficava fora da tela também no editor; o mapa completo, com um quarto à vista).
+- **Feito** (detalhes na seção 3, "Fase 1 do PLANO.md"):
+  - C++: `UNRMutacoesComponent` (novo), piso de nível, pontos efetivos extras e velocidade fora de combate no ASC,
+    Alt+1/2/3/4 e a mana devolvida no `UNRCombateComponent`, chão em chamas da Bola de Fogo (no projétil e no
+    `ANRChuvaMeteoros::IniciarSoChamas`) e o HUD novo. Compilou na primeira tentativa;
+  - DSLs: `StormTick`, `SetInteractable` e `EventAnyDamage` sem `PrintString`; `CheckPhaseEvents` com o piso;
+    `CheckCamp` e `DropLoot` (novo) no `BP_CreepCamp`; a ordem nova no `HUD_NexusRoyale`;
+  - scripts: `ue_mapa_ui_material.py` (escalar `Modo`), `ue_mvp_setup.py` (Mutacoes e tecla 4), `ue_br_build.py`
+    e `ue_creeps_camp.py` (drop), `ue_l_island_011.py` e `ue_dsl_grafos.py` (novos), `pie_combate.py` (mutações);
+  - `L_Island`: 107 atores da v1 apagados e 6 acampamentos.
+- **Testado em PIE** (18:28–18:50; capturas em `Export/Previews/teste_011_*.png`):
+  - piso de nível pelo relógio da tempestade (`DebugSkipTo`): fim da fase 1 → nível 2; fim da fase 2 → nível 3;
+  - mutações: fila (2 a 5 de uma vez), a troca uma vez só, ultimate só no 8 e no 10, e todos os efeitos com número
+    (muralha 6 → 9 m, velocidade 618 → 666, Vitalidade +60 de vida, raio da ultimate 4 → 4,56 m, recarga 80 → 64 s,
+    mana −60 em vez de −120, chamas da Bola de Fogo no chão sem ferir quem lança);
+  - drop: os 2 médios soltaram grimório e 3 dos 4 pequenos, consumível;
+  - HUD: relógio, "FORA DA ZONA: 16 m até o círculo · −2% da vida por segundo", "[F] Pegar: Grimório: Coração
+    Gélido (Comum)", painel com "(+3 na fila)" e a lista das escolhidas;
+  - minimapa: com as âncoras certas (corrigidas ao vivo no PIE) ele aparece no canto. Nenhum erro de Blueprint.
+- **Versão 0.1.1 empacotada** (18:40–18:57, sem publicar): `ue_release.py versao 0.1.1` e `empacotar` (compilar
+  6 min, cook 7 min). O cook compilou o `M_UI_Mapa` para SM6 sem aviso ("0 error(s), 0 warning(s)"). Aberta em
+  janela às 18:58 e capturada pela janela (`Export/Previews/teste_011_empacotado_queda.png`): **o minimapa aparece**
+  no canto, com a seta e o círculo; relógio e HUD certos; o log não tem erro de Blueprint nem `PrintString`. A pasta
+  `Saved` que o teste criou dentro do build foi apagada (o log ficou em
+  `D:\NexusRoyale_Builds\0.1.1\teste_empacotado.log`).
+  - **Achado:** o fundo do minimapa é a ilha v2, não o `L_Island` (PLANO.md, 1.1 e 1.8).
+  - Ao abrir o executável novo, o Windows mostrou o alerta do Firewall. **Não mexi nele** (é configuração de
+    segurança; o usuário decide).
+- **Sem verificar:** Alt+1/2/3 e Alt+4 no teclado (o Python não injeta o Alt); as chamas da Bola de Fogo ferindo
+  creeps; o mapa em tela cheia (M e queda) com a ordem nova (é o mesmo conserto do minimapa, que foi conferido);
+  a atualização 0.1.0 → 0.1.1 pelo launcher, que depende de publicar.
+- **19:05–19:15, a pedido do usuário ("pode publicar a 0.1.1… e depois testar a atualização pelo launcher"):**
+  - `zipar` (976 MB, uma parte) e `publicar` com notas próprias (`D:\NexusRoyale_Builds\0.1.1\notas_release.md`).
+    A Release `v0.1.1` tem os três arquivos nos tamanhos certos. A tag ficou no `2ff3965` (o último commit no
+    GitHub), porque o código da 0.1.1 não foi commitado; as notas dizem isso;
+  - **atualização testada:** abri o `NexusRoyaleLauncher.exe` instalado (o alvo do atalho). Em 123 s ele baixou a
+    0.1.1, trocou a pasta `game` (`versao.txt` = 0.1.1) e abriu o jogo. Capturado pela janela
+    (`Export/Previews/teste_011_instalado_atualizado.png`): **o mapa da queda aparece inteiro e centralizado**
+    (conferindo o conserto das âncoras também no mapa grande), com o relógio da tempestade. Log sem erros;
+  - o jogo ficou aberto para o usuário jogar. Feche-o antes de um PIE (a placa de vídeo é pouca).
+- **Ao sair:** a Unreal está **fechada**, sem nada sujo. O código da 0.1.1 **não foi commitado**. A sessão
+  "Fase 2.1: grimórios viram as magias E e R" (proposta por esta) está trabalhando no mesmo checkout.
+- **No caminho:**
+  - a compilação travou duas vezes no HD lento; a saída foi pôr o PCH no cache (pegadinha nova na seção 5);
+  - o herói morreu uma vez no PIE (a tempestade, depois de um `DebugSkipTo`), e a partida recomeçou num mundo novo
+    sem derrubar o editor. Depois disso, zerei o relógio da tempestade entre os testes.

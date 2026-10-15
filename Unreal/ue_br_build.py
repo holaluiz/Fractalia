@@ -53,7 +53,7 @@ SPEC = {
         "fns": {"StormTick": [("DamagePercent", "float")], "EnterShip": [("Ship", ("obj", "BP_DropShip"))],
                 "ExitShip": [("DropLocation", "Vector")], "SetInteractable": [("Target", ("obj", "BP_Interactable"))],
                 "ClearInteractable": [("Target", ("obj", "BP_Interactable"))], "HandleJumpStarted": [],
-                "HandleJumpCompleted": [], "HandleInteract": [], "UpdateSkydive": [], "EndSkydive": []},
+                "HandleJumpCompleted": [], "HandleInteract": [], "InteractNearby": [], "UpdateSkydive": [], "EndSkydive": []},
     },
     "BP_DropShip": {
         "vars": [("StartPoint", "Vector", "rep"), ("EndPoint", "Vector", "rep"), ("Speed", "float", "edit"),
@@ -114,8 +114,9 @@ SPEC = {
     "BP_CreepCamp": {  # CreepClasses is a class<BP_Creep> array: ue_creeps_camp.py fixes its type after "members"
         "vars": [("CreepClasses[]", ("obj", "BP_Creep"), "edit"), ("Creeps[]", ("obj", "BP_Creep")),
                  ("SpawnRadius", "float", "edit"), ("RespawnDelay", "float", "edit"), ("bRespawnPending", "bool"),
-                 ("AliveCount", "int")],
-        "fns": {"SpawnCamp": [], "CheckCamp": [], "Respawn": []},
+                 ("AliveCount", "int"), ("DropChance", "float", "edit"), ("bDropGrimoire", "bool", "edit"),
+                 ("DropLocation", "Vector")],
+        "fns": {"SpawnCamp": [], "CheckCamp": [], "Respawn": [], "DropLoot": []},
     },
     "GM_NexusRoyale": {
         "vars": [("ShipAltitude", "float"), ("ShipPathHalfLength", "float"), ("ShipLateralSpread", "float")],

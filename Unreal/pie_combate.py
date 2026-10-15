@@ -21,6 +21,12 @@ ACT:  heroi        vida, mana, nível, XP, morto, recargas
       bau          teleporta para o baú fechado mais perto e aperta F (IA_Interact)
       pegar        teleporta para o pickup mais perto e aperta F
       inventario   consumíveis, equipados, grimórios e a última mensagem do inventário
+      mutacoes     fila de níveis, opções da vez (com a descrição), trocas restantes e as escolhidas
+      escolher     Escolher(N) (padrão 0) direto no componente Mutacoes, sem o Alt
+      trocar       TrocarOpcoes() direto no componente
+      piso         AplicarPisoDeNivel(N) (padrão 4), como o fim de fase da tempestade faz
+      atributos    pontos efetivos (For, Agi, Vit, Int, Esp), velocidade máxima, bônus fora de combate e o que
+                   mudou nas magias (largura da muralha, chamas da Bola de Fogo, recarga/raio da ultimate)
 Junto com pie_creeps.py (land/near/state) para pôr o herói no acampamento.
 O Python remoto do editor guarda as variáveis entre chamadas: as opções (SO_TECLA, PITCH, DANO, N) são apagadas
 no começo de cada execução, para não valerem na próxima sem ninguém pedir.
@@ -156,6 +162,27 @@ elif ACT == "xp":
     asc.ganhar_xp(int(OPCOES.get("N", 100)))
 elif ACT.startswith("tecla"):
     apertar("IA_Consumivel" + ACT[-1])
+elif ACT in ("mutacoes", "escolher", "trocar", "piso", "atributos"):
+    mut = hero.get_component_by_class(unreal.NRMutacoesComponent)
+    if ACT == "escolher":
+        print("escolheu:", mut.escolher(int(OPCOES.get("N", 0))))
+    elif ACT == "trocar":
+        print("trocou:", mut.trocar_opcoes())
+    elif ACT == "piso":
+        unreal.NRAbilitySystemComponent.aplicar_piso_de_nivel(w, int(OPCOES.get("N", 4)))
+    print("MUTACOES fila", list(mut.get_editor_property("NiveisPendentes")), "trocas", mut.get_editor_property("TrocasRestantes"))
+    for i, m in enumerate(mut.get_editor_property("Opcoes")):
+        print("  opcao %d: %s: %s" % (i, unreal.NRMutacoesComponent.nome(m), mut.descrever(m)))
+    print("  escolhidas:", [str(unreal.NRMutacoesComponent.nome(m)) for m in mut.get_editor_property("Escolhidas")])
+    print("ATRIBUTOS", [round(asc.get_pontos_efetivos(i), 2) for i in range(5)],
+          "veloc max %.0f" % hero.get_component_by_class(unreal.CharacterMovementComponent).get_editor_property("max_walk_speed"),
+          "fora de combate +%.2f" % asc.get_editor_property("BonusVelocForaDeCombate"),
+          "| muralha %.0f cm, chamas Q %.1f s, ult recarga %.1f s raio %.0f, mana devolvida %.2f" % (
+              cb.get_editor_property("Magia2").get_editor_property("Tamanho").y,
+              cb.get_editor_property("MagiaPrincipal").get_editor_property("DuracaoChamas"),
+              cb.get_editor_property("Ultimate").get_editor_property("Recarga"),
+              cb.get_editor_property("Ultimate").get_editor_property("RaioArea"),
+              cb.get_editor_property("ManaDevolvidaUltimate")))
 elif ACT in ("bau", "pegar"):  # vai até o baú fechado (ou o pickup) mais perto e aperta F
     cls_name = "BP_LootChest_C" if ACT == "bau" else "BP_Pickup_C"
     alvos = [a for a in unreal.GameplayStatics.get_all_actors_of_class(w, unreal.Actor) if a.get_class().get_name() == cls_name]

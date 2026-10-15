@@ -55,6 +55,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Combate", meta = (ClampMin = "1", ClampMax = "10"))
 	int32 NivelUltimate = 6;
 
+	/** Fração da mana da ultimate devolvida logo depois de lançar (mutação "a ultimate devolve 50% da mana gasta"). */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Combate")
+	float ManaDevolvidaUltimate = 0.f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Combate")
 	TSubclassOf<ANRProjetilMagico> ClasseProjetil;
 
@@ -84,6 +88,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Nexus|Input") TObjectPtr<UInputAction> AcaoConsumivel1;
 	UPROPERTY(EditAnywhere, Category = "Nexus|Input") TObjectPtr<UInputAction> AcaoConsumivel2;
 	UPROPERTY(EditAnywhere, Category = "Nexus|Input") TObjectPtr<UInputAction> AcaoConsumivel3;
+	/**
+	 * Alt+4: troca as opções de mutação (GDD §7.4, 1 por partida). Com Alt apertado, as teclas 1-3 escolhem a mutação
+	 * em vez de usar o consumível (se houver escolha pendente no UNRMutacoesComponent).
+	 */
+	UPROPERTY(EditAnywhere, Category = "Nexus|Input") TObjectPtr<UInputAction> AcaoTrocarMutacoes;
 
 	// ---------------------------------------------------------------- Partida
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Partida")
@@ -145,9 +154,13 @@ private:
 	void AoMagiaPrincipal() { UsarMagiaPrincipal(); }
 	void AoMagia2() { UsarMagia2(); }
 	void AoUltimate() { UsarUltimate(); }
-	void AoConsumivel1() { UsarConsumivel(0); }
-	void AoConsumivel2() { UsarConsumivel(1); }
-	void AoConsumivel3() { UsarConsumivel(2); }
+	void AoConsumivel1() { UsarSlot(0); }
+	void AoConsumivel2() { UsarSlot(1); }
+	void AoConsumivel3() { UsarSlot(2); }
+	void AoTrocarMutacoes();
+	/** Tecla 1-3: com Alt e mutação pendente, escolhe a mutação; senão, usa o consumível. */
+	void UsarSlot(int32 Slot);
+	bool AltApertado() const;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UNRHudWidget> Hud;

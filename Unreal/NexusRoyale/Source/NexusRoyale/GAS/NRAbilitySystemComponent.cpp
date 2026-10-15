@@ -2,6 +2,8 @@
 
 #include "GAS/AS_Hero.h"
 #include "GAS/NRGameplayEffects.h"
+#include "Engine/Engine.h"
+#include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -129,11 +131,11 @@ void UNRAbilitySystemComponent::InicializarHeroi(const FNRArquetipoBase& NovoArq
 	Build = NovaBuild;
 	Nivel = FMath::Clamp(NovoNivel, 1, 10);
 
-	const float For = PontosEfetivos(Build.Forca);
-	const float Agi = PontosEfetivos(Build.Agilidade);
-	const float Vit = PontosEfetivos(Build.Vitalidade);
-	const float Int = PontosEfetivos(Build.Intelecto);
-	const float Esp = PontosEfetivos(Build.Espirito);
+	const float For = PontosEfetivos(Build.Forca) + PontosExtras(0);
+	const float Agi = PontosEfetivos(Build.Agilidade) + PontosExtras(1);
+	const float Vit = PontosEfetivos(Build.Vitalidade) + PontosExtras(2);
+	const float Int = PontosEfetivos(Build.Intelecto) + PontosExtras(3);
+	const float Esp = PontosEfetivos(Build.Espirito) + PontosExtras(4);
 	const float NiveisExtras = static_cast<float>(Nivel - 1);
 
 	SetBase(UAS_Hero::GetForcaAttribute(), For);
@@ -217,6 +219,63 @@ void UNRAbilitySystemComponent::ProgressoXP(int32& NoNivel, int32& ParaProximo) 
 	ParaProximo = Proximo - Base;
 }
 
+void UNRAbilitySystemComponent::SubirAteNivel(int32 Piso)
+{
+	Piso = FMath::Clamp(Piso, 1, 10);
+	if (!IsOwnerActorAuthoritative() || bMorto || Piso <= Nivel)
+	{
+		return;
+	}
+	if (XPAcumuladoPorNivel.IsValidIndex(Piso - 2))
+	{
+		XP = FMath::Max(XP, XPAcumuladoPorNivel[Piso - 2]);
+	}
+	UE_LOG(LogNexus, Log, TEXT("%s: piso de nivel %d (estava no %d)"), *GetNameSafe(GetOwner()), Piso, Nivel);
+	DefinirNivel(Piso);
+	OnSubiuNivel.Broadcast(Nivel);
+}
+
+void UNRAbilitySystemComponent::AplicarPisoDeNivel(const UObject* WorldContextObject, int32 Piso)
+{
+	const UWorld* World = GEngine ? GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull) : nullptr;
+	if (!World || Piso <= 1)
+	{
+		return;
+	}
+	for (TActorIterator<APawn> It(World); It; ++It)
+	{
+		if (UNRAbilitySystemComponent* ASC = It->FindComponentByClass<UNRAbilitySystemComponent>())
+		{
+			ASC->SubirAteNivel(Piso);
+		}
+	}
+}
+
+void UNRAbilitySystemComponent::SomarBonusVelocForaDeCombate(float Bonus)
+{
+	BonusVelocForaDeCombate += Bonus;
+	AtualizarVelocidade();
+}
+
+float UNRAbilitySystemComponent::PontosExtras(int32 Indice) const
+{
+	return PontosEfetivosExtras.IsValidIndex(Indice) ? PontosEfetivosExtras[Indice] : 0.f;
+}
+
+void UNRAbilitySystemComponent::AdicionarPontosEfetivos(int32 Indice, float Pontos)
+{
+	if (!IsOwnerActorAuthoritative() || Indice < 0 || Indice > 4)
+	{
+		return;
+	}
+	if (PontosEfetivosExtras.Num() < 5)
+	{
+		PontosEfetivosExtras.SetNumZeroed(5);
+	}
+	PontosEfetivosExtras[Indice] += Pontos;
+	InicializarHeroi(Arquetipo, Build, Nivel);
+}
+
 float UNRAbilitySystemComponent::GetVida() const { return GetNumericAttribute(UAS_Hero::GetVidaAttribute()); }
 float UNRAbilitySystemComponent::GetVidaMax() const { return GetNumericAttribute(UAS_Hero::GetVidaMaxAttribute()); }
 float UNRAbilitySystemComponent::GetMana() const { return GetNumericAttribute(UAS_Hero::GetManaAttribute()); }
@@ -254,7 +313,8 @@ void UNRAbilitySystemComponent::AtualizarVelocidade()
 {
 	if (ACharacter* Personagem = Cast<ACharacter>(GetAvatarActor()))
 	{
-		const float Bonus = GetNumericAttribute(UAS_Hero::GetVelocMovAttribute());
+		bEmCombateAntes = IsEmCombate();
+		const float Bonus = GetNumericAttribute(UAS_Hero::GetVelocMovAttribute()) + (bEmCombateAntes ? 0.f : BonusVelocForaDeCombate);
 		Personagem->GetCharacterMovement()->MaxWalkSpeed = Arquetipo.Velocidade * 100.f * FMath::Max(0.1f, 1.f + Bonus);
 	}
 }
@@ -410,6 +470,10 @@ void UNRAbilitySystemComponent::TickRegen()
 	if (bMorto || !bInicializado)
 	{
 		return;
+	}
+	if (BonusVelocForaDeCombate != 0.f && IsEmCombate() != bEmCombateAntes)
+	{
+		AtualizarVelocidade();
 	}
 	const float RegenVida = GetNumericAttribute(UAS_Hero::GetRegenVidaAttribute());
 	if (RegenVida > 0.f && GetVida() < GetVidaMax())

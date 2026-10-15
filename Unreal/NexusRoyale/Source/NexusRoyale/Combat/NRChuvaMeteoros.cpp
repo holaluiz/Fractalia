@@ -61,13 +61,9 @@ ANRChuvaMeteoros::ANRChuvaMeteoros()
 	Luz->SetCastShadows(false);
 }
 
-void ANRChuvaMeteoros::Iniciar(const FNRMagiaChuva& Config, float MultiplicadorDano, UMaterialInterface* Material)
+void ANRChuvaMeteoros::PrepararDisco(UMaterialInterface* Material)
 {
-	Cfg = Config;
-	Cfg.Meteoros = FMath::Max(1, Cfg.Meteoros);
-	Multiplicador = FMath::Max(0.f, MultiplicadorDano);
 	const float R = FMath::Max(50.f, Cfg.RaioArea);
-
 	// O cilindro da engine tem 1 m de diâmetro e de altura: vira um disco de 3 cm do tamanho da área.
 	Disco->SetRelativeScale3D(FVector(2.f * R / 100.f, 2.f * R / 100.f, 0.03f));
 	Disco->SetRelativeLocation(FVector(0.f, 0.f, 3.f));
@@ -77,6 +73,30 @@ void ANRChuvaMeteoros::Iniciar(const FNRMagiaChuva& Config, float MultiplicadorD
 	}
 	Luz->SetLightColor(Cfg.Cor);
 	Luz->SetAttenuationRadius(R * 2.5f);
+}
+
+void ANRChuvaMeteoros::IniciarSoChamas(float Raio, float Duracao, float DanoPorSegundo, float MultiplicadorDano,
+                                       const FLinearColor& Cor, UMaterialInterface* Material)
+{
+	Cfg = FNRMagiaChuva();
+	Cfg.RaioArea = Raio;
+	Cfg.Aviso = 0.f;
+	Cfg.DuracaoChamas = Duracao;
+	Cfg.DanoChamasPorSegundo = DanoPorSegundo;
+	Cfg.Cor = Cor;
+	Multiplicador = FMath::Max(0.f, MultiplicadorDano);
+	PrepararDisco(Material);
+	bIniciada = true; // sem meteoros: o Tick já começa no chão em chamas
+	SetActorTickEnabled(true);
+}
+
+void ANRChuvaMeteoros::Iniciar(const FNRMagiaChuva& Config, float MultiplicadorDano, UMaterialInterface* Material)
+{
+	Cfg = Config;
+	Cfg.Meteoros = FMath::Max(1, Cfg.Meteoros);
+	Multiplicador = FMath::Max(0.f, MultiplicadorDano);
+	const float R = FMath::Max(50.f, Cfg.RaioArea);
+	PrepararDisco(Material);
 
 	// Meteoros a meio raio do centro, em ângulos iguais (um só cai no centro), vindo todos da mesma diagonal.
 	const FVector Centro = GetActorLocation();
@@ -161,7 +181,7 @@ void ANRChuvaMeteoros::Tick(float DeltaTime)
 	// Disco: aviso piscando até o primeiro impacto, depois chão em chamas.
 	const float FimChamas = InstanteImpacto(0) + FMath::Max(0.f, Cfg.DuracaoChamas);
 	FLinearColor CorDisco;
-	if (ProximoImpacto == 0)
+	if (ProximoImpacto == 0 && Meteoros.Num() > 0)
 	{
 		CorDisco = Cfg.Cor * (0.12f + 0.08f * FMath::Sin(Tempo * 20.f));
 	}

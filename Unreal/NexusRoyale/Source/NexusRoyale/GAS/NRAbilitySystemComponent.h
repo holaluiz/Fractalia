@@ -138,6 +138,34 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Nexus|Heroi")
 	void ProgressoXP(int32& NoNivel, int32& ParaProximo) const;
 
+	/** Sobe até o Piso (o XP vai junto, para a barra não andar para trás). Abaixo do piso não faz nada. Só no servidor. */
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Heroi")
+	void SubirAteNivel(int32 Piso);
+
+	/**
+	 * Piso de nível do fim de fase da tempestade (GDD §7.3): todo herói vivo abaixo do Piso sobe até ele.
+	 * O BP_StormController chama no CheckPhaseEvents, com o LevelFloor do CT_Storm.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Heroi", meta = (WorldContext = "WorldContextObject"))
+	static void AplicarPisoDeNivel(const UObject* WorldContextObject, int32 Piso);
+
+	/**
+	 * Pontos efetivos somados por fora da build (mutações de atributo, GDD §7.4: "+2 pontos efetivos").
+	 * Índice 0 Força, 1 Agilidade, 2 Vitalidade, 3 Intelecto, 4 Espírito. Recalcula na hora.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Heroi")
+	void AdicionarPontosEfetivos(int32 Indice, float Pontos);
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
+	TArray<float> PontosEfetivosExtras;
+
+	/** Bônus de velocidade só fora de combate (mutação "+8% de velocidade fora de combate"). Fração. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
+	float BonusVelocForaDeCombate = 0.f;
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Heroi")
+	void SomarBonusVelocForaDeCombate(float Bonus);
+
 	/** Pontos investidos -> pontos efetivos: 1-5 valem 1,0; 6-8 valem 0,6; 9-10 valem 0,3 (GDD §4.2). */
 	UFUNCTION(BlueprintPure, Category = "Nexus|Heroi")
 	static float PontosEfetivos(int32 PontosInvestidos);
@@ -235,8 +263,12 @@ private:
 	void OnManaAtributo(const FOnAttributeChangeData& Dados);
 	void OnVelocAtributo(const FOnAttributeChangeData& Dados);
 
+	float PontosExtras(int32 Indice) const;
+
 	FTimerHandle TimerRegen;
 	double UltimoCombate = -1000.0;
 	bool bMorto = false;
 	bool bInicializado = false;
+	/** Para refazer a velocidade quando o herói entra ou sai de combate. */
+	bool bEmCombateAntes = false;
 };

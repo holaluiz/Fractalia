@@ -1,0 +1,5 @@
+; Usa o primeiro BP_Interactable cuja esfera o herói está sobrepondo (baú aberto não conta: a esfera dele desliga)
+(fn InteractNearby ()
+  (bind perto (Collision|GetOverlappingActors :ClassFilter "/Game/NexusRoyale/Blueprints/Loot/BP_Interactable.BP_Interactable_C"))
+  (if (> (Utilities|Array|Length perto) 0)
+    (Class|BPInteractable|Interact :self (Utilities|Array|Get(acopy) perto 0) :Hero self)))

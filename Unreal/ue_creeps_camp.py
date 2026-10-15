@@ -38,6 +38,10 @@ CAMP_KINDS = {  # GDD 12: small = 3 Imps / 90 s, medium = Puglin + 2 Imps / 150 
     "pequeno": (["Imp", "Imp", "Imp"], 90.0),
     "medio": (["Puglin", "Imp", "Imp"], 150.0),
 }
+CAMP_DROPS = {  # GDD 12: (DropChance, bDropGrimoire). Small: 50% food or potion; medium: a grimoire (Comum-Raro), always
+    "pequeno": (0.5, False),
+    "medio": (1.0, True),
+}
 
 
 def cdo(path):
@@ -117,6 +121,9 @@ def camp_defaults():
     c.set_editor_property("CreepClasses", [creep_class(n) for n in classes])
     c.set_editor_property("SpawnRadius", 250.0)
     c.set_editor_property("RespawnDelay", delay)
+    chance, grimoire = CAMP_DROPS["pequeno"]
+    c.set_editor_property("DropChance", chance)
+    c.set_editor_property("bDropGrimoire", grimoire)
     save(path)
     print("camp:", [x.get_name() for x in c.get_editor_property("CreepClasses")], c.get_editor_property("RespawnDelay"))
 
@@ -151,6 +158,9 @@ def place_camps(level, camps):
             a.set_folder_path("Gameplay/creeps")
             a.set_editor_property("CreepClasses", [creep_class(c) for c in classes])
             a.set_editor_property("RespawnDelay", delay)
+            chance, grimoire = CAMP_DROPS[kind]
+            a.set_editor_property("DropChance", chance)
+            a.set_editor_property("bDropGrimoire", grimoire)
             n += 1
             print("camp", a.get_actor_label(), a.get_actor_location())
     les.save_current_level()

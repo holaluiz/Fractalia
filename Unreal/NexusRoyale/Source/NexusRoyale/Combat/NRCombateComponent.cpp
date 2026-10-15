@@ -15,6 +15,7 @@
 #include "Items/NRInventoryComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NexusRoyale.h"
+#include "Progression/NRMutacoesComponent.h"
 #include "TimerManager.h"
 #include "UI/NRHudWidget.h"
 
@@ -116,6 +117,7 @@ void UNRCombateComponent::TentarLigarInput()
 	if (AcaoConsumivel1) Input->BindAction(AcaoConsumivel1, ETriggerEvent::Started, this, &ThisClass::AoConsumivel1);
 	if (AcaoConsumivel2) Input->BindAction(AcaoConsumivel2, ETriggerEvent::Started, this, &ThisClass::AoConsumivel2);
 	if (AcaoConsumivel3) Input->BindAction(AcaoConsumivel3, ETriggerEvent::Started, this, &ThisClass::AoConsumivel3);
+	if (AcaoTrocarMutacoes) Input->BindAction(AcaoTrocarMutacoes, ETriggerEvent::Started, this, &ThisClass::AoTrocarMutacoes);
 	bInputLigado = true;
 	UE_LOG(LogNexus, Log, TEXT("%s: teclas de combate ligadas"), *GetNameSafe(Pawn));
 }
@@ -246,9 +248,13 @@ bool UNRCombateComponent::UsarUltimate()
 	{
 		return false;
 	}
-	const UNRAbilitySystemComponent* ASC = ASCDoDono();
+	UNRAbilitySystemComponent* ASC = ASCDoDono();
 	const float Poder = ASC ? ASC->GetNumericAttribute(UAS_Hero::GetPoderMagicoAttribute()) : 0.f;
 	Chuva->Iniciar(Ultimate, 1.f + Poder, MaterialProjetil);
+	if (ASC && ManaDevolvidaUltimate > 0.f)
+	{
+		ASC->RestaurarMana(Ultimate.Custo * ManaDevolvidaUltimate);
+	}
 	UE_LOG(LogNexus, Log, TEXT("%s: %s a %.1f m"), *GetNameSafe(Pawn), *Ultimate.Nome.ToString(),
 		FVector::Dist2D(Pawn->GetActorLocation(), Ponto) / 100.f);
 	return true;
@@ -262,6 +268,33 @@ bool UNRCombateComponent::UsarConsumivel(int32 Slot)
 	}
 	UNRInventoryComponent* Inventario = GetOwner()->FindComponentByClass<UNRInventoryComponent>();
 	return Inventario && Inventario->UsarConsumivel(Slot);
+}
+
+bool UNRCombateComponent::AltApertado() const
+{
+	const APawn* Pawn = Cast<APawn>(GetOwner());
+	const APlayerController* PC = Pawn ? Cast<APlayerController>(Pawn->GetController()) : nullptr;
+	return PC && (PC->IsInputKeyDown(EKeys::LeftAlt) || PC->IsInputKeyDown(EKeys::RightAlt));
+}
+
+void UNRCombateComponent::UsarSlot(int32 Slot)
+{
+	UNRMutacoesComponent* Mutacoes = GetOwner()->FindComponentByClass<UNRMutacoesComponent>();
+	if (Mutacoes && Mutacoes->TemEscolhaPendente() && AltApertado())
+	{
+		Mutacoes->Escolher(Slot);
+		return;
+	}
+	UsarConsumivel(Slot);
+}
+
+void UNRCombateComponent::AoTrocarMutacoes()
+{
+	UNRMutacoesComponent* Mutacoes = GetOwner()->FindComponentByClass<UNRMutacoesComponent>();
+	if (Mutacoes && AltApertado())
+	{
+		Mutacoes->TrocarOpcoes();
+	}
 }
 
 float UNRCombateComponent::RecargaRestante(int32 Slot) const
@@ -323,6 +356,8 @@ bool UNRCombateComponent::Lancar(const FNRMagiaProjetil& Magia, double& ProximoU
 	}
 	Projetil->Dano = Magia.Dano * (1.f + Poder);
 	Projetil->RaioExplosao = Magia.RaioExplosao;
+	Projetil->DuracaoChamas = Magia.DuracaoChamas;
+	Projetil->DanoChamasPorSegundo = Magia.DanoChamasPorSegundo * (1.f + Poder);
 	if (MaterialProjetil)
 	{
 		Projetil->Material = MaterialProjetil;

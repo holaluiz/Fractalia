@@ -1,4 +1,13 @@
 {
-  "_doc": "Creep camps of L_Island (test level, 400 m island). Same shape as mapa_ue.json 'acampamentos': cm, z is only a hint (ue_creeps_camp.py drops the camp onto the ground). One small camp 18 m west of the plaza PlayerStart, in a flat clearing.",
-  "pequeno": [{"x": -1560, "y": -700, "z": 700}]
+  "_doc": "Creep camps of L_Island (test level, 400 m island). Same shape as mapa_ue.json 'acampamentos': cm, z is only a hint (ue_creeps_camp.py drops the camp onto the ground). The first small camp is 18 m west of the plaza PlayerStart; the others came from ue_l_island_011.py ACT='clareiras' (flat, 8 m clear of anything with collision, 60 m apart) on 2026-10-15. Medium camps (Puglin) sit at the east and west ends, away from the start.",
+  "pequeno": [
+    {"x": -1560, "y": -700, "z": 700},
+    {"x": 0, "y": 9000, "z": 746},
+    {"x": 0, "y": -10000, "z": 587},
+    {"x": 6000, "y": 6000, "z": 553}
+  ],
+  "medio": [
+    {"x": 10000, "y": 0, "z": 660},
+    {"x": -10000, "y": 0, "z": 746}
+  ]
 }

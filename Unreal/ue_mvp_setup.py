@@ -5,7 +5,9 @@
 - cria as Input Actions IA_AtaqueBasico, IA_MagiaPrincipal, IA_Magia2, IA_Ultimate e IA_Consumivel1..3 e mapeia
   no IMC_Default: botão esquerdo, Q, E, X e 1/2/3 (GDD §14). Também mapeia o IA_Interact no F, que tinha ficado de fora;
 - põe no BP_HeroBase o componente "Combate" (UNRCombateComponent): ataque básico, Bola de Fogo, Muralha de Gelo (E),
-  Chuva de Meteoros (X), consumíveis, HUD e morte (animação Death01 da UAL1).
+  Chuva de Meteoros (X), consumíveis, HUD e morte (animação Death01 da UAL1);
+- põe o componente "Mutacoes" (UNRMutacoesComponent, GDD §7.4) e a IA_TrocarMutacoes na tecla 4: com Alt apertado,
+  1/2/3 escolhem a mutação e o 4 troca as opções (o Combate confere o Alt).
 - MVP: a ultimate fica liberada desde o nível 1 (NIVEL_ULTIMATE). O GDD §4.4 pede o nível 6, que é o padrão do C++;
   com um acampamento de Imps só, o nível 6 (1.040 XP) não chega numa partida de teste.
 Idempotente.
@@ -34,6 +36,7 @@ TECLAS = [  # (Input Action, tecla)
     ("IA_Consumivel1", "One"),
     ("IA_Consumivel2", "Two"),
     ("IA_Consumivel3", "Three"),
+    ("IA_TrocarMutacoes", "Four"),
 ]
 
 # --- material dos projéteis: brilha na cor da magia
@@ -124,6 +127,8 @@ combate.set_editor_property("AcaoUltimate", acoes["IA_Ultimate"])
 combate.set_editor_property("AcaoConsumivel1", acoes["IA_Consumivel1"])
 combate.set_editor_property("AcaoConsumivel2", acoes["IA_Consumivel2"])
 combate.set_editor_property("AcaoConsumivel3", acoes["IA_Consumivel3"])
+combate.set_editor_property("AcaoTrocarMutacoes", acoes["IA_TrocarMutacoes"])
+add_component(unreal.NRMutacoesComponent, "Mutacoes")
 
 unreal.BlueprintEditorLibrary.compile_blueprint(bp)
 eal.save_loaded_asset(bp)

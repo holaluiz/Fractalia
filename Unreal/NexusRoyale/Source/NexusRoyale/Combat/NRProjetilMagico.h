@@ -49,6 +49,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nexus|Projetil")
 	TObjectPtr<UMaterialInterface> Material;
 
+	/** Segundos de chão em chamas no raio da explosão, no chão sob o ponto onde explodiu. 0 = nada. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nexus|Projetil")
+	float DuracaoChamas = 0.f;
+
+	/** Dano por segundo das chamas (já multiplicado pelo Poder Mágico de quem lançou). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Nexus|Projetil")
+	float DanoChamasPorSegundo = 0.f;
+
 	/**
 	 * Lança na Direcao. Alcance em cm (some depois de voar essa distância). Escala = diâmetro em metros.
 	 * Com Alvo e Teleguiado > 0, curva na direção do alvo com essa aceleração (cm/s²).
@@ -68,6 +76,7 @@ protected:
 
 private:
 	void Explodir(AActor* Alvo, const FVector& Ponto);
+	void DeixarChamas(const FVector& Ponto);
 
 	FLinearColor CorAtual = FLinearColor::White;
 	bool bExplodiu = false;

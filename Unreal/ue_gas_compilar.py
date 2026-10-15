@@ -73,7 +73,10 @@ def main():
     if editor_aberto():
         falhar("a Unreal está aberta. Salve tudo, feche o editor e rode de novo.")
     ajustar_uproject()
-    cmd = [BUILD, "NexusRoyaleEditor", "Win64", "Development", f"-Project={UPROJECT}", "-WaitMutex", "-NoHotReloadFromIDE"]
+    # -NoUBA: com pouca memória virtual (arquivo de paginação no C: cheio) o UBA trava o cl.exe sem erro (15/10, 18:10).
+    # -MaxParallelActions=2: cada cl.exe da Unreal reserva até ~2,5 GB; quatro de uma vez estouram a memória virtual.
+    cmd = [BUILD, "NexusRoyaleEditor", "Win64", "Development", f"-Project={UPROJECT}", "-WaitMutex", "-NoHotReloadFromIDE",
+           "-NoUBA", "-MaxParallelActions=2"]
     print("compilando:", " ".join(cmd))
     r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     linhas = (r.stdout + r.stderr).splitlines()

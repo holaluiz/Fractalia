@@ -28,6 +28,13 @@ struct NEXUSROYALE_API FNRMagiaProjetil
 	/** Aceleração em cm/s² na direção do inimigo mais perto da mira (até ConeTeleguiado graus). 0 = reto. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magia") float Teleguiado = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magia") float ConeTeleguiado = 12.f;
+	/**
+	 * Segundos de chão em chamas no raio da explosão (mutação da Bola de Fogo, GDD §7.4: "deixa chão em chamas por 3 s").
+	 * 0 = sem chamas.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magia") float DuracaoChamas = 0.f;
+	/** O GDD não dá o número; usa os 20/s da Chuva de Meteoros. Também multiplica pelo Poder Mágico. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Magia") float DanoChamasPorSegundo = 20.f;
 };
 
 /** Magia de campo que ergue uma estrutura no chão, de frente para quem lança (Muralha de Gelo, GDD §6.2 e §6.3). */
