@@ -6,7 +6,7 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 15:35 (horário de Brasília), por Claude (Claude Code), sessão "Kit do Feiticeiro etapa 1".
+Última atualização: 2026-10-15, por volta de 16:45 (horário de Brasília), por Claude (Claude Code), sessão "Testar muralha contra creeps e chão em chamas".
 
 ---
 
@@ -142,6 +142,11 @@
     - **`Think`** roda a cada 0,3 s no servidor:
       - sem alvo, volta para casa e pega o primeiro herói a menos de `AggroRadius` (7 m);
       - com alvo, persegue e bate dentro de `AttackRange` (1,7 m), com `ApplyDamage` da Unreal;
+      - **se uma estrutura mágica (Muralha de Gelo) bloqueia o caminho até o alvo, bate nela** com o
+        mesmo dano e a mesma recarga, até ela quebrar. Isso tem prioridade sobre bater no alvo, então
+        o creep não acerta o herói através da muralha. O `FindBlocker` confere no espaço local da
+        estrutura (encostado numa face, dentro da largura, do lado oposto ao alvo), e o `AttackActor`
+        é o golpe, no alvo ou na estrutura (escolha do usuário em 15/10, às 16:15);
       - se o alvo se afasta mais de `LeashRadius` (15 m) do ponto de origem, solta o alvo, volta com
         a vida cheia e anda para casa (corrente do GDD §12).
     - **Andar:** o `EventTick` dirige com `AddMovementInput` até o `MoveGoal`. Não precisa de NavMesh,
@@ -283,19 +288,32 @@
   - equipamento **trocando** com o do slot (`Trocou`) e consumíveis cheios (`Cheio`);
   - o Puglin contra as magias;
   - o empacotado (a sessão "Git e versão jogável" está fazendo).
-- **Muralha de Gelo e Chuva de Meteoros (sessão "Kit do Feiticeiro"), sem verificar** (o que foi
-  testado está na seção 9, entrada das 13:52):
-  - **creeps esbarrando na muralha:** a caixa bloqueia pawns, mas não foi visto um Imp parar nela.
-    Como o creep anda em linha reta (`AddMovementInput`), ele pode ficar empurrando a parede;
-  - a Bola de Fogo (dano em área) contra a muralha e alguém atrás dela;
-  - o **chão em chamas** (20/s): os meteoros mataram os Imps antes, então o dano das chamas não foi visto;
-  - o visual dos meteoros caindo e do disco de aviso: só o log e o dano foram conferidos. A muralha
-    foi vista na captura;
-  - "sem mana" no E e no X, e a ultimate presa até o nível 6 ("nível 6" no HUD): no MVP o
-    `BP_HeroBase` libera a ultimate no nível 1;
-  - **mistério da câmera:** no primeiro PIE da sessão (15:04), o braço da câmera do herói estava em
-    0 m (`DefaultCameraDistance` 0), e a muralha ia parar a 15 m, longe da mira. Depois que a partida
-    recomeçou (15:19), o braço voltou a 4 m e a mira acertou. A causa não foi achada; se a câmera
+- **Muralha de Gelo e Chuva de Meteoros.** Testadas em PIE nas sessões "Kit do Feiticeiro" (seção 9,
+  entrada das 13:52) e "Testar muralha contra creeps e chão em chamas" (entrada das 15:37). Já
+  conferidos: Bola de Fogo contra a muralha, chão em chamas e o visual dos meteoros e do disco.
+  - **Creeps contra a muralha: corrigido às 16:35.** Antes, eles paravam encostados nela e ficavam
+    empurrando enquanto ela durasse. Agora batem nela (veja "Creeps" acima). Testado em PIE, com a
+    muralha durando 30 s só no PIE:
+    - os 3 Imps tiram 12 por golpe, 36 a cada ~1,7 s, e a muralha quebra em ~18 s;
+    - com o herói colado na muralha, a 0,8–1,6 m dos Imps (dentro do alcance), ele não levou dano;
+    - quando a muralha quebrou, eles foram para o herói na hora.
+
+    Com os 6 s do GDD, 3 Imps tiram ~130 e a muralha aguenta;
+  - **visual:** os meteoros e o clarão da explosão saem creme/amarelo-claros, não laranja (material
+    unlit `M_Projetil` estourando no tonemapper). O chão em chamas é o mesmo disco do aviso, só mais
+    claro, sem efeito de fogo, e de longe vira uma linha fina. Capturas em
+    `Export/Previews/teste_chuva_*.png` (a pasta `Export/` fica fora do git);
+  - **sem verificar:**
+    - "sem mana" no E e no X, e a ultimate presa até o nível 6 ("nível 6" no HUD): no MVP o
+      `BP_HeroBase` libera a ultimate no nível 1;
+    - quem lança dentro do próprio chão em chamas (o código ignora o instigador, mas não foi testado);
+    - meteoros e chamas contra uma muralha (os meteoros ferem estruturas; as chamas, só pawns);
+    - a animação de golpe dos creeps contra a muralha (só o dano foi conferido), o Puglin batendo
+      nela e a muralha com os 6 s de verdade (a conta está acima);
+  - **mistério da câmera:** no primeiro PIE da sessão "Kit do Feiticeiro" (15:04), o braço da câmera
+    do herói estava em 0 m (`DefaultCameraDistance` 0), e a muralha ia parar a 15 m, longe da mira.
+    Depois que a partida recomeçou (15:19), o braço voltou a 4 m e a mira acertou. **Não se repetiu**
+    nos três inícios de partida das 15:38–16:03 (braço em 4 m). A causa não foi achada; se a câmera
     aparecer colada no herói, comece por aí;
   - "queima vegetação" (GDD §6.4) não existe, porque ainda não há vegetação que queime. Também não
     há rede.
@@ -314,7 +332,9 @@
     Ajustar no `CT_Storm.csv` e nos valores padrão quando o mapa v2 entrar;
   - **o `L_Island` ainda tem os restos da v1:** Nexus, torres, fragmentos, poções de escudo e
     plataformas de salto;
-  - o PIE avisa que a memória de vídeo estourou em cerca de 500 MB na RX 570.
+  - o PIE avisa que a memória de vídeo estourou em cerca de 500 MB na RX 570. **Às 15:44 o editor
+    caiu** ao recomeçar o PIE ("Out of video memory", D3D12), **e de novo às 16:17**. Veja a
+    pegadinha na seção 5.
 
 ### Próximos passos
 
@@ -356,7 +376,7 @@ XP e nível (o MVP em "Pronto"). Falta:
    `UNRCombateComponent` (veja "MVP jogável" em "Pronto"). Faltam a passiva Canalizador, a animação de
    lançar e devolver a ultimate ao nível 6 quando houver mais acampamentos (`NIVEL_ULTIMATE` no
    `ue_mvp_setup.py`). A migração para Gameplay Abilities (`GA_*`, GDD §16) fica para a etapa 2, junto
-   com os grimórios trocando E e R.
+   com os grimórios trocando E e R. Os creeps já batem na muralha que os bloqueia (feito às 16:35).
 3. ~~Acampamento de Imps~~ (feito, com GAS). Falta: drop dos creeps, levar os 21 acampamentos para o
    `L_Ilha` com `place_camps()` e o `mapa_ue.json`, e o elite (Puglin Ancião).
 4. XP e nível: falta o `OnPhaseEnded` (piso de nível) e a escolha de mutação a cada nível (GDD §7).
@@ -422,6 +442,7 @@ use os scripts de `Unreal/`:
 | `Unreal/pie_capture.py` (via `ue_py.py -c`) | Screenshot do **jogo** durante o PIE, opcionalmente virando a câmera (`AIM`) e com atraso (`DELAY`) |
 | `Unreal/pie_creeps.py` (via `ue_py.py -c "ACT='...'"`) | Testa os acampamentos no PIE: `land`, `near`, `away`, `poke`, `kill` e `state` |
 | `Unreal/pie_combate.py` (via `ue_py.py -c "ACT='...'"`) | Testa o MVP no PIE: `heroi` (vida, mana, XP, recargas), `dardo`, `fogo`, `muralha`, `meteoros`, `tecla1..3` (input de verdade), `mirar_chao` e `mirar_acampamento` (só a mira), `*_direto` (sem input), `estruturas`, `muralha_dano`, `chuvas`, `xp`, `bau`, `pegar` e `inventario`. A lista completa está no docstring |
+| `Unreal/pie_gravar.py` (via `ue_py.py -c "ACT='iniciar'; SEG=8; ..."`) | Grava quadro a quadro, pelo callback de pós-tick do Slate: a vida dos creeps e do herói a cada mudança, a posição dos creeps em relação à muralha, as estruturas, as chuvas e os projéteis (onde nasceram e onde sumiram). `ACT='mostrar'` imprime. Os tempos são do relógio do jogo |
 
 **Pegadinhas:**
 
@@ -477,6 +498,39 @@ use os scripts de `Unreal/`:
   `Combate` religa as teclas. O Blueprint fica marcado como sujo no editor, mesmo sem o asset mudar.
   Para mudar um número só no PIE (como a duração da muralha), tudo bem, mas confira os pacotes sujos
   depois.
+  - **Melhor:** `set_editor_property(nome, valor, unreal.PropertyAccessChangeNotifyMode.NEVER)` não
+    dispara o PostEditChange, então não reconstrói o ator nem suja o Blueprint. Para um struct, leia,
+    mude o campo e grave o struct inteiro (assim a muralha durou 30 s só no PIE).
+- **Variável de Blueprint que não é "Instance Editable"** (como a `Health` do creep) dá "cannot be
+  edited on instances" no `set_editor_property`. Num teste, um `ApplyDamage` **negativo sem
+  instigador** sobe a vida pela lógica do próprio BP, sem alertar o acampamento. Para prender um creep
+  no lugar, use `CharacterMovementComponent.disable_movement()` (e `set_movement_mode(MOVE_WALKING)`
+  para soltar).
+- **Com o editor em segundo plano, o PIE roda a cerca de 3 quadros por segundo** (o log diz
+  `max tick rate 3`). Cada chamada do `ue_py.py` leva ~2 s de jogo, e o tempo entre uma chamada e
+  outra também passa no jogo. A muralha de 6 s some antes da próxima chamada, e os creeps matam o
+  herói se ninguém olhar. Por isso:
+  - faça a sequência inteira num comando só;
+  - veja o que aconteceu entre as chamadas com o `Unreal/pie_gravar.py`;
+  - para capturar coisa rápida (meteoros caindo), deixe o jogo lento com
+    `unreal.GameplayStatics.set_global_time_dilation(w, 0.1)` e volte a 1.0 no fim.
+- **O segundo ou terceiro mundo de PIE na mesma abertura do editor derruba o editor por falta de
+  memória de vídeo.** O erro é "Out of video memory trying to allocate a rendering resource" (D3D12,
+  na RX 570):
+  - às 15:44, no segundo PIE;
+  - às 16:17, no terceiro mundo de PIE. O recomeço da partida depois da morte do herói também cria
+    um mundo novo.
+
+  Por isso:
+  - **um PIE por abertura do editor.** Para outro PIE, confira os pacotes sujos, feche com
+    `unreal.SystemLibrary.quit_editor()` e reabra com `-culture=en` (de 3 a 6 min);
+  - **não deixe o herói morrer** no meio de um teste;
+  - **num editor recém-aberto, o PIE demora a começar.** Espere o relógio do jogo passar de 3 s antes
+    do `pie_creeps.py land`. Senão, o GameMode embarca o herói no dirigível depois do pouso.
+- **A mira do `mirar_acampamento` pode cair curta** quando a câmera ainda não se ajustou: o pitch sai
+  da posição antiga da câmera, e a chuva caiu a 6 m do herói em vez de 12 m. Confira onde a chuva
+  apareceu (`ACT='chuvas'` ou o `pie_gravar.py`). Com o braço em 4 m e o chão plano, o pitch para
+  acertar o centro do acampamento a 12 m é cerca de -4,9°.
 - **Captura com HUD:** `ue_capture.py <png> --editor` mostra o UMG. O `pie_capture.py` (screenshot de
   alta resolução) renderiza só a cena, sem interface.
 - **Iniciar e parar o PIE pelo Python:** `LevelEditorSubsystem.editor_request_begin_play()` e
@@ -575,7 +629,7 @@ use os scripts de `Unreal/`:
 | `Unreal/Blueprints/*.dsl` | Grafos de Blueprint em DSL, para o `write_graph_dsl` |
 | `Unreal/Data/` | Tabelas de balanceamento em CSV para importar como CurveTable ou DataTable (`CT_Storm.csv`, `DT_Itens.csv` + `gerar_dt_itens.py`) |
 | `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h) e `UI/` (NRHudWidget) |
-| `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py` | Setup do combate (material, teclas e componente) e teste do MVP no PIE |
+| `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py`, `Unreal/pie_gravar.py` | Setup do combate (material, teclas e componente), teste do MVP no PIE e o gravador quadro a quadro do PIE |
 | `Unreal/ue_gas_compilar.py`, `Unreal/ue_gas_setup.py` | Compilar o módulo (com o editor fechado) e depois configurar o DT_Itens e os componentes do herói (com o editor aberto) |
 | `Blender/` | `NexusRoyale_Assets.blend` e os scripts de geração procedural (da v1) |
 | `Export/` | FBX da v1, `map_layout.json` e as capturas de conferência em `Previews/` |
@@ -907,5 +961,75 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
 - **Ao sair:** PIE parado. Salvei só o `BP_HeroBase`, que ficou sujo por causa da reconstrução no PIE
   e manteve os mesmos valores. Não sobrou nada sem salvar. O editor continua aberto, em inglês e no
   `L_Island`. Avisei a sessão "Design system MCP motor", a única aberta, de que o editor está livre.
-- **Não feito:** commit no git. As mudanças desta sessão estão no working tree, junto com as das
-  outras sessões.
+- **Commit `74f7ed1` na `main`, sem push** (15:40, a pedido do usuário). Entraram só `Combat/`,
+  `NRHudWidget.cpp`, `ue_mvp_setup.py`, `pie_combate.py` e o `AGENTS.md`, que foi inteiro, com as
+  notas das outras sessões desde o primeiro commit.
+  - **Ficaram fora** os assets desta sessão: `IA_Magia2`, `IA_Ultimate`, `M_Estrutura` e o
+    `BP_HeroBase.uasset`. O `ue_mvp_setup.py` recria todos eles.
+  - O commit foi na `main` e não numa branch porque o checkout é compartilhado com outras sessões.
+
+### 2026-10-15 15:37 → 16:10 · Claude (Claude Code) · Teste da muralha contra creeps e do chão em chamas
+- **Pedido** (sessão lateral da "Kit do Feiticeiro etapa 1"): testar em PIE o que tinha ficado sem
+  verificar na Muralha de Gelo e na Chuva de Meteoros. Não mexi em C++, Blueprint nem números do GDD.
+  Os números trocados (duração da muralha, vida e movimento dos Imps) valeram só dentro do PIE.
+- **Ferramenta nova:** `Unreal/pie_gravar.py`, um gravador quadro a quadro (seção 5).
+- **Creeps contra a muralha** (muralha a 3,8 m do herói, durando 30 s só no PIE, e Imps provocados a
+  12 m): eles param a 0,7 m do plano da muralha e ficam empurrando por todo o tempo dela, com
+  `bMoving` True. Os dois dos lados escorregaram de ±1,1 m para ±0,8 m, rumo ao meio. Nenhum
+  contornou e nenhum bateu na muralha. No primeiro PIE, com os 6 s de verdade, foi igual. Quando a
+  muralha sumiu, os três alcançaram o herói em ~0,7 s e bateram juntos (−36 a cada ~1,7 s). Há
+  uma proposta de correção esperando o usuário (seção 3).
+- **Bola de Fogo contra a muralha:** com os Imps encostados do outro lado, o Q pelo teclado explodiu
+  a 0,50 m do plano da muralha, do lado do herói (0,20 m da face, como no código). Os Imps estavam a
+  ~1,2 m da explosão, dentro dos 3 m de raio, e **nenhum perdeu vida**. A muralha **ficou com
+  400/400**. Deu o mesmo duas vezes, antes e depois do recomeço da partida (o herói morreu no meio). Contraprova: no primeiro PIE, o mesmo Q sem a muralha
+  tirou 165,4 de cada Imp em volta do herói e matou os três.
+- **Chão em chamas** (Imps presos no lugar com `disable_movement()` e com a vida subida a 1000 por
+  `ApplyDamage` negativo, para sobreviverem aos meteoros; jogo a 0,1× durante as capturas):
+  - a chuva caiu a 0,26 m do centro do acampamento. No primeiro impacto (t = 1,0 s), um Imp levou
+    meteoro + chamas (−165,4) e o outro só chamas (−12,7). O segundo meteoro acertou o outro Imp
+    (−152,6), e o terceiro não acertou ninguém (cada alvo leva um meteoro só);
+  - **as chamas tiram 12,7 a cada 0,5 s** (= 20/s × 0,5 s × 1,27), **8 pulsos** do primeiro impacto
+    até 5,0 s (101,8 no total por Imp). A chuva some em 5,1 s. O Imp fora da área não levou nada.
+  - Antes disso, uma chuva mirada errado caiu a 6 m do herói, longe dos Imps: 0 alvos e nenhuma
+    chama, como devia (seção 5, pegadinha da mira).
+- **Visual** (capturas com `ue_capture.py --editor`, copiadas para `Export/Previews/teste_chuva_*.png`):
+  - o disco de aviso aparece laranja, sólido;
+  - o meteoro cai como esfera com contorno preto (stencil 4);
+  - a explosão é um domo de 7 m;
+  - o chão em chamas é o disco mais claro;
+  - meteoros e clarões saem creme, não laranja (seção 3).
+- **O editor caiu às 15:44,** ao recomeçar o PIE: "Out of video memory" (D3D12). Não havia pacote
+  sujo antes do PIE. O processo fechou sozinho, e o editor foi reaberto às 15:47 com `-culture=en`.
+  A sessão "Design system MCP motor" foi avisada. Depois disso, todos os testes foram num PIE só (seção 5).
+- **Sem verificar:** está na seção 3, "Muralha de Gelo e Chuva de Meteoros".
+- **Ao sair:** PIE parado às 16:03, sem pacotes sujos. Nada foi salvo. O editor continua aberto, em
+  inglês e no `L_Island`. As gravações e uma nota de passagem ficaram na pasta de notas
+  compartilhada (`side-session-notes\local_5af47a64-…\teste_muralha_chuva.md`). Sem commit.
+
+### 2026-10-15 16:15 → 16:45 · Claude (Claude Code) · Creeps batem na muralha que os bloqueia
+- **Pedido do usuário:** "quando a muralha bloquear, os creeps devem bater nela (mesmo dano e recarga
+  do ataque). Implemente no Think do BP_Creep e teste no PIE." A alternativa era contornar.
+- **Feito no `BP_Creep`** (DSLs em `Unreal/Blueprints/`; variável e funções novas no `ue_br_build.py`):
+  - a variável `BlockingStructure` (Actor);
+  - a função `FindBlocker(TargetLocation)`: uma `NREstruturaMagica` que não esteja se desfazendo, com
+    o creep encostado numa face (raio da cápsula + 40 cm), dentro da largura e do lado oposto ao alvo,
+    tudo no espaço local da estrutura;
+  - a função `AttackActor(Victim, LookAt)`: o golpe que antes ficava no `Think`;
+  - o `Think`, que testa o bloqueio antes do alcance do alvo.
+  - Cada grafo foi gravado sozinho, com o `ue_write_dsl.py`, e lido de volta. O `ue_br_build.py graphs`
+    regrava todos os grafos do BP. Os filhos `_Imp` e `_Puglin` compilaram, e salvei só o `BP_Creep`.
+- **Testado em PIE no `L_Island`** (muralha de 30 s só no PIE, com `PropertyAccessChangeNotifyMode.NEVER`;
+  gravação em `gravacao_creeps_batem.txt`, na pasta de notas):
+  - a muralha perdeu 12 por golpe (36 a cada ~1,7 s com 3 Imps) e quebrou ~18 s depois do primeiro golpe;
+  - com o herói colado na muralha, a 0,8–1,6 m dos Imps, ele não levou dano enquanto ela estava de pé;
+  - quando ela sumiu, os Imps foram para o herói na hora (−24/−12, o ataque normal);
+  - o leash continuou funcionando (vida cheia ao afastar o herói);
+  - nenhum erro de Blueprint no log.
+- **Sem verificar:** a animação de golpe contra a muralha (sem captura), o Puglin e os 6 s de verdade.
+- **O editor caiu de novo às 16:17** (falta de memória de vídeo, no terceiro mundo de PIE da
+  abertura). O `BP_Creep` já estava salvo. Reabri às 16:22.
+  - O primeiro PIE depois disso não serviu: o GameMode embarcou o herói no dirigível depois do pouso.
+  - Fechei o editor limpo às 16:31 (sem pacotes sujos), reabri, e o teste rodou no primeiro PIE.
+  - A pegadinha da seção 5 foi reescrita.
+- **Ao sair:** PIE parado, sem pacotes sujos. O editor continua aberto, em inglês e no `L_Island`. Sem commit.

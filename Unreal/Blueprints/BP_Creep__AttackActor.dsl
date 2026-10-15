@@ -1,0 +1,12 @@
+; Melee hit on Victim (the target, or the spell structure blocking the way): stop, face LookAt and, once AttackCooldown
+; allows, play the attack and apply AttackDamage (UE ApplyDamage until GAS; structures take it through TakeDamage)
+(fn AttackActor (Victim LookAt)
+  (Variables|Default|SetMoving false)
+  (bind look (Math|Rotator|FindLookatRotation :Start (Transformation|GetActorLocation) :Target LookAt))
+  (Transformation|SetActorRotation :NewRotation (Math|Rotator|MakeRotator :Roll 0.0 :Pitch 0.0 :Yaw (.yaw look)) :bTeleportPhysics false)
+  (bind now (Utilities|Time|GetGameTimeinSeconds))
+  (if (> (- now (Variables|Default|GetLastAttackTime)) (Variables|Default|GetAttackCooldown))
+    (Variables|Default|SetLastAttackTime now)
+    (bind anim (Components|SkeletalMesh|GetAnimInstance :self (Variables|Character|GetMesh)))
+    (Animation|Montage|PlaySlotAnimationasDynamicMontage :self anim :Asset (Variables|Default|GetAttackAnim) :SlotNodeName "DefaultSlot")
+    (Game|Damage|ApplyDamage :DamagedActor Victim :BaseDamage (Variables|Default|GetAttackDamage) :EventInstigator (Pawn|GetController) :DamageCauser self)))
