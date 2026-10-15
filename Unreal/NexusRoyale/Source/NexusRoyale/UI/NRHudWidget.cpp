@@ -104,6 +104,7 @@ void UNRHudWidget::MontarLayoutPadrao()
 	Linha(BarraCom(TEXT("BarraVida"), TEXT("TextoVida"), FLinearColor(0.85f, 0.12f, 0.1f), 24.f, BarraVida, TextoVida), 6.f);
 	Linha(BarraCom(TEXT("BarraMana"), TEXT("TextoMana"), FLinearColor(0.15f, 0.4f, 1.f), 16.f, BarraMana, TextoMana), 3.f);
 	TextoMagias = Texto(TEXT("TextoMagias"), 12);
+	TextoMagias->SetJustification(ETextJustify::Center);
 	Linha(TextoMagias, 6.f);
 	UHorizontalBox* Consumiveis = WidgetTree->ConstructWidget<UHorizontalBox>(UHorizontalBox::StaticClass());
 	TObjectPtr<UTextBlock>* Slots[3] = { &TextoConsumivel0, &TextoConsumivel1, &TextoConsumivel2 };
@@ -227,22 +228,35 @@ void UNRHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 	if (Combate && TextoMagias)
 	{
-		const float RecargaQ = Combate->RecargaRestante(1);
-		FText EstadoQ;
-		if (RecargaQ > 0.f)
+		// "[Q] Bola de Fogo (55 de mana): pronta" / "4,2 s" / "sem mana" / "nível 6" (ultimate ainda presa).
+		auto Magia = [&](const TCHAR* Tecla, int32 Indice, const FText& Nome, float Custo, bool bLiberada)
 		{
-			EstadoQ = Segundos(RecargaQ);
-		}
-		else if (ASC && ASC->GetMana() < Combate->MagiaPrincipal.Custo)
-		{
-			EstadoQ = NSLOCTEXT("Nexus", "SemMana", "sem mana");
-		}
-		else
-		{
-			EstadoQ = NSLOCTEXT("Nexus", "Pronta", "pronta");
-		}
-		TextoMagias->SetText(FText::Format(NSLOCTEXT("Nexus", "Magias", "[Botão esq.] {0}     [Q] {1} ({2} de mana): {3}"),
-			Combate->AtaqueBasico.Nome, Combate->MagiaPrincipal.Nome, FText::AsNumber(FMath::RoundToInt(Combate->MagiaPrincipal.Custo)), EstadoQ));
+			FText Estado;
+			const float Recarga = Combate->RecargaRestante(Indice);
+			if (!bLiberada)
+			{
+				Estado = FText::Format(NSLOCTEXT("Nexus", "LiberaNoNivel", "nível {0}"), Combate->NivelUltimate);
+			}
+			else if (Recarga > 0.f)
+			{
+				Estado = Segundos(Recarga);
+			}
+			else if (ASC && ASC->GetMana() < Custo)
+			{
+				Estado = NSLOCTEXT("Nexus", "SemMana", "sem mana");
+			}
+			else
+			{
+				Estado = NSLOCTEXT("Nexus", "Pronta", "pronta");
+			}
+			return FText::Format(NSLOCTEXT("Nexus", "Magia", "[{0}] {1} ({2} de mana): {3}"),
+				FText::FromString(Tecla), Nome, FText::AsNumber(FMath::RoundToInt(Custo)), Estado);
+		};
+		TextoMagias->SetText(FText::Format(NSLOCTEXT("Nexus", "Magias", "[Botão esq.] {0}     {1}\n{2}     {3}"),
+			Combate->AtaqueBasico.Nome,
+			Magia(TEXT("Q"), 1, Combate->MagiaPrincipal.Nome, Combate->MagiaPrincipal.Custo, true),
+			Magia(TEXT("E"), 2, Combate->Magia2.Nome, Combate->Magia2.Custo, true),
+			Magia(TEXT("X"), 3, Combate->Ultimate.Nome, Combate->Ultimate.Custo, Combate->UltimateLiberada())));
 	}
 
 	if (const UNRInventoryComponent* Inventario = GetInventarioDoJogador())

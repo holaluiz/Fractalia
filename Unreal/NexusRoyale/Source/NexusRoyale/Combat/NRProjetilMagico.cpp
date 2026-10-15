@@ -1,5 +1,6 @@
 #include "Combat/NRProjetilMagico.h"
 
+#include "Combat/NREstruturaMagica.h"
 #include "Components/PointLightComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -143,7 +144,7 @@ void ANRProjetilMagico::Explodir(AActor* Alvo, const FVector& Ponto)
 			}
 			UGameplayStatics::ApplyRadialDamage(this, Dano, Ponto, RaioExplosao, UDamageType::StaticClass(), Ignorar, this, Quem, true);
 		}
-		else if (Alvo && Alvo != GetInstigator() && Alvo->IsA<APawn>())
+		else if (Alvo && Alvo != GetInstigator() && (Alvo->IsA<APawn>() || Alvo->IsA<ANREstruturaMagica>()))
 		{
 			UGameplayStatics::ApplyDamage(Alvo, Dano, Quem, this, UDamageType::StaticClass());
 		}

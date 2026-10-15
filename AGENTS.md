@@ -6,7 +6,7 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 11:35 (horário de Brasília), por Claude (Claude Code).
+Última atualização: 2026-10-15, por volta de 15:35 (horário de Brasília), por Claude (Claude Code), sessão "Kit do Feiticeiro etapa 1".
 
 ---
 
@@ -61,6 +61,71 @@
 
 ### Pronto
 
+- **MVP jogável no `L_Island`** (testado em PIE em 15/10, de 12:12 a 13:33). Basta abrir o editor e
+  dar Play. O ciclo completo funciona: dirigível → salto e planagem → baú → itens → creeps → XP e
+  nível → tempestade → morte → a partida recomeça sozinha em 6 s.
+  - **Módulo C++ `NexusRoyale` compilado** (VS 2026, MSVC 14.50.35717) e listado no `.uproject`,
+    com o plugin GameplayAbilities. Para recompilar: feche o editor e rode
+    `python -I Unreal/ue_gas_compilar.py`. A primeira compilação levou 7 min; as seguintes, de 1,5 a 3 min.
+  - **Herói (`BP_HeroBase`)** com três componentes C++:
+    - **`Habilidades`** (`UNRAbilitySystemComponent`): Feiticeiro de Fogo do GDD §4.2, com vida 520,
+      mana 430 e Poder Mágico +27%. Todo `ApplyDamage` da Unreal no herói (creeps, projéteis) vira
+      `AplicarDano` (`bReceberDanoDaUnreal`). Ganhou `GastarMana`, `XP`, `GanharXP`, `DarXP` (estático,
+      chamado no `Die` do creep), `ProgressoXP` e `OnSubiuNivel`. O XP acumulado por nível é o do GDD §7.1.
+    - **`Inventario`** (`UNRInventoryComponent`): ganhou `PegarDoChao` (sem pinos de saída, para a
+      DSL), `ItemQueFicaNoChao`, `RaridadeQueFicaNoChao` e `MensagemRecente` ("Pegou: …", "Usou: …").
+    - **`Combate`** (`UNRCombateComponent`, novo, em `Source/NexusRoyale/Combat/`):
+      - botão esquerdo: dardo arcano (60 mágico, 35 m, 1/s, levemente teleguiado num cone de 12°);
+      - **Q:** Bola de Fogo (130 em área de 3 m, 55 de mana, recarga de 7 s);
+      - **E:** Muralha de Gelo (GDD §6.3): parede de 6 × 3,5 m no chão sob a mira, a até 15 m (no
+        mínimo 2,5 m), com 400 de vida, por 6 s, 50 de mana e recarga de 12 s. Vira um `ANREstruturaMagica`;
+      - **X:** Chuva de Meteoros (GDD §6.4): área de 8 m de diâmetro sob a mira, a até 30 m (o alcance
+        é chute: o GDD não diz). Tem 1 s de aviso, 3 meteoros de 120 (cada alvo leva no máximo um) e
+        chão em chamas por 4 s, com 20/s (chute, como a vegetação queimando do §6.5). Custa 120 de
+        mana, com recarga de 80 s. Vira um `ANRChuvaMeteoros`. A ultimate é liberada no `NivelUltimate`:
+        6 no C++, como no GDD, mas **1 no `BP_HeroBase`** (MVP), porque um acampamento só não leva ao nível 6;
+      - **1, 2 e 3:** consumíveis.
+      - A configuração das magias fica em structs editáveis no Details (`Combat/NRMagiaTypes.h`):
+        `FNRMagiaProjetil`, `FNRMagiaEstrutura` e `FNRMagiaChuva`.
+      - **Ainda não é Gameplay Ability (`GA_*`).** Decisão desta etapa: com o kit fixo e a partida solo,
+        o GAS não muda o comportamento e custaria refazer custo, recarga e mira com tags e efeitos. A
+        migração fica para a etapa 2 (grimórios trocando E e R, mutações e rede). O motivo está no
+        header do `UNRCombateComponent`.
+      - As teclas vêm de Input Actions novas no `IMC_Default` e são ligadas em C++ no InputComponent
+        do herói.
+      - Também cria o HUD do jogador e, na morte, toca o `Death01` em todas as malhas, tira movimento
+        e input e recomeça o nível depois de `TempoParaRecomecar` (6 s).
+    - O dano das magias é multiplicado por (1 + Poder Mágico), e a recarga diminui com a Redução de Recarga.
+  - **`ANRProjetilMagico`** (C++): esfera unlit (`/Game/NexusRoyale/VFX/M_Projetil`, parâmetro "Cor")
+    com luz. Bloqueia o cenário e sobrepõe pawns, ignora quem lançou e explode na hora se nasceu
+    encostado num inimigo. Aplica `ApplyDamage` (em pawns e estruturas mágicas) ou `ApplyRadialDamage`.
+    Usa custom depth com stencil 4 (pedido da sessão do visual).
+  - **`ANREstruturaMagica`** (C++, o `BP_SpellStructure_*` do GDD §16): uma caixa `BlockAllDynamic`
+    (bloqueia pawns, projéteis e a linha de visão do dano em área; a câmera atravessa) com o cubo da
+    engine e o material `/Game/NexusRoyale/VFX/M_Estrutura` (iluminado, parâmetro "Cor").
+    - Tem vida e duração. Sobe do chão em 0,15 s, afunda em 0,3 s e escurece conforme perde vida.
+    - Toma dano pelo `ApplyDamage` da Unreal, mas **o dano do próprio dono não conta**: ela segura os
+      tiros dele sem se desfazer.
+    - Stencil 4.
+  - **`ANRChuvaMeteoros`** (C++): disco de aviso piscando na cor da escola. Depois vêm os meteoros
+    (esferas que caem na diagonal, a meio raio do centro, com clarão do tamanho da explosão) e o
+    disco vira chão em chamas, com luz. O dano vai por `ApplyDamage`, em pawns e estruturas; quem
+    lançou fica de fora. Stencil 4.
+  - **HUD (`UNRHudWidget`), sem Widget Blueprint:** o C++ monta o layout sozinho. No pé da tela ficam
+    a mensagem do inventário, "Nível N · a/b XP" com a barra dourada, a vida, a mana, a linha das
+    magias (botão esquerdo, Q, E e X, com a recarga em segundos, "sem mana" e "nível N" para a
+    ultimate presa) e os consumíveis. Também mostra a mira "+" no centro (some no
+    dirigível e na morte), os equipados no canto e avisos grandes ("Nível 3!", "VOCÊ FOI ELIMINADO —
+    recomeçando em N"). Para trocar o visual, crie um WBP filho com widgets de mesmo nome (lista no header).
+  - **Tempestade:** o `StormTick` chama `AplicarDanoTempestade` (% da vida máxima, sem armadura).
+  - **Loot com a tabela:** o baú sorteia IDs do `DT_Itens` (`SortearItem`) e cria os pickups com
+    `SpawnItem` → `BP_Pickup.SetupItem`, que tira malha e nome da tabela. O F chama `PegarDoChao`; se
+    o slot estava ocupado, o pickup passa a mostrar o item que saiu. O F agora pega um item
+    sobreposto quando o atual some (`InteractNearby`).
+  - **Scripts:** `Unreal/ue_gas_setup.py` (DT_Itens e os componentes Habilidades e Inventario) e
+    `Unreal/ue_mvp_setup.py` (M_Projetil, M_Estrutura, as teclas, inclusive E e X, e o componente
+    Combate), mais o `Unreal/pie_combate.py` para testar.
+  - **Teclas:** WASD, Espaço (salta do dirigível e plana), botão esquerdo, Q, E, X, F, 1-3 e M.
 - **Projeto Unreal** em `Unreal/NexusRoyale`:
   - criado a partir do template Third Person (Blueprint), UE 5.8.3;
   - plugins ativos: Model Context Protocol, All Toolsets, Python Editor Script e GameplayStateTree.
@@ -103,7 +168,9 @@
     `mapa_ue.json` → `acampamentos`. O `place_camps()` do script solta cada acampamento no chão.
     - No `L_Island` há **um acampamento pequeno** a 18 m da praça do PlayerStart, em (-1560, -700).
   - **`BP_HeroBase`** ganhou `DamageTaken` e um `EventAnyDamage` que soma o dano e mostra
-    "Dano: -X" (`TODO(GAS)`).
+    "Dano: -X". O dano de verdade agora vai para o GAS pelo componente `Habilidades`.
+  - **Corrigido em 15/10, às 13:00:** um golpe que tirasse metade ou mais da vida restante matava o
+    creep e não alertava o acampamento (nó puro recalculado depois do `SetHealth`, veja a seção 5).
 - **GDD v2** escrito e revisado: os nomes de assets conferem com os pacotes.
 - **Loop da partida, ainda sem GAS** (testado em PIE em 15/10, às 03:20). Os Blueprints ficam em
   `/Game/NexusRoyale/Blueprints/{Core,Match,Loot}`, e os grafos estão em DSL em `Unreal/Blueprints/<BP>__<Grafo>.dsl`.
@@ -187,10 +254,9 @@
 ### Sem verificação ou com problema conhecido
 
 - **Creeps** (o que foi testado está na seção 9, entrada das 10:55):
-  - ninguém escuta o `OnCreepKilled` ainda (XP e nível são o item 4 dos próximos passos). A chamada
-    roda, mas o Python não consegue se ligar a um dispatcher de BP para conferir os argumentos;
+  - o XP já chega ao herói pelo `DarXP` no `Die` (testado: +30 por Imp). O dispatcher
+    `OnCreepKilled` continua sem ninguém escutando;
   - **não tem drop** (GDD §12: 50% de comida ou poção no pequeno, grimório no médio);
-  - o dano no herói só soma em `DamageTaken`. Com o GAS, trocar por `AplicarDano`;
   - não tem rede: o `Think` só roda com autoridade e os creeps não estão marcados para replicar;
   - o Imp usa só `Imp_Body`. As malhas `Imp_Chains`, `Imp_Mace`, `Imp_Shorts` e `Imp_SpikedCollar`
     (e as do Puglin) não estão no BP;
@@ -211,11 +277,39 @@
   - `Blender/scripts/build_all.py` ainda gera os heróis e as peças de construção antigos.
 - O GameMode do template (`BP_ThirdPersonGameMode`) ainda usa o `BP_Hero_Brakka` da v1, mas o
   `L_Island` já usa o `GM_NexusRoyale`.
+- **MVP (sessão "MVP rollout"), sem verificar:**
+  - a morte pela **tempestade** (o dano está ligado, mas o teste foi pelos creeps);
+  - o **nível 2 em diante**, na prática: o `GanharXP` foi conferido no código, e o teste chegou a 90 XP;
+  - equipamento **trocando** com o do slot (`Trocou`) e consumíveis cheios (`Cheio`);
+  - o Puglin contra as magias;
+  - o empacotado (a sessão "Git e versão jogável" está fazendo).
+- **Muralha de Gelo e Chuva de Meteoros (sessão "Kit do Feiticeiro"), sem verificar** (o que foi
+  testado está na seção 9, entrada das 13:52):
+  - **creeps esbarrando na muralha:** a caixa bloqueia pawns, mas não foi visto um Imp parar nela.
+    Como o creep anda em linha reta (`AddMovementInput`), ele pode ficar empurrando a parede;
+  - a Bola de Fogo (dano em área) contra a muralha e alguém atrás dela;
+  - o **chão em chamas** (20/s): os meteoros mataram os Imps antes, então o dano das chamas não foi visto;
+  - o visual dos meteoros caindo e do disco de aviso: só o log e o dano foram conferidos. A muralha
+    foi vista na captura;
+  - "sem mana" no E e no X, e a ultimate presa até o nível 6 ("nível 6" no HUD): no MVP o
+    `BP_HeroBase` libera a ultimate no nível 1;
+  - **mistério da câmera:** no primeiro PIE da sessão (15:04), o braço da câmera do herói estava em
+    0 m (`DefaultCameraDistance` 0), e a muralha ia parar a 15 m, longe da mira. Depois que a partida
+    recomeçou (15:19), o braço voltou a 4 m e a mira acertou. A causa não foi achada; se a câmera
+    aparecer colada no herói, comece por aí;
+  - "queima vegetação" (GDD §6.4) não existe, porque ainda não há vegetação que queime. Também não
+    há rede.
+- **MVP, limites conhecidos:**
+  - a magia sai do peito do herói, sem animação de lançar;
+  - os grimórios vão para o inventário, mas ainda não viram magias E e R;
+  - o arquétipo e a build estão fixos no `Habilidades` (Feiticeiro de Fogo); não há tela de montagem;
+  - mira de terceira pessoa: a magia vai até o ponto sob a mira e sai do herói, então perto de
+    paredes pode bater nelas;
+  - creeps continuam batendo no corpo depois da morte (o dano é ignorado);
+  - a mensagem `PrintString` do `StormTick` e o "Dano: -X" do herói continuam na tela (debug).
 - **Lacunas do loop da partida** (marcadas com `TODO` nas DSLs):
-  - a tempestade e os pickups só mostram uma mensagem (`PrintString`). Ainda não tiram vida nem
-    entram no inventário, porque isso depende do GAS;
-  - **não tem rede:** o salto e o F não são RPC. Funciona só no PIE solo;
-  - não tem HUD: nem prompt do F, nem relógio da tempestade;
+  - **não tem rede:** o salto, o F e as magias não são RPC. Funciona só no PIE solo;
+  - o HUD ainda não tem prompt do F nem relógio da tempestade;
   - **os raios da tempestade, a rota do dirigível e o `DropRadius` (190 m) são da ilha de 400 m.**
     Ajustar no `CT_Storm.csv` e nos valores padrão quando o mapa v2 entrar;
   - **o `L_Island` ainda tem os restos da v1:** Nexus, torres, fragmentos, poções de escudo e
@@ -224,11 +318,12 @@
 
 ### Próximos passos
 
-Etapa 1 ("Núcleo") do roadmap, no GDD seção 15. Já estão feitos o baú comum e a tempestade, que
-ainda esperam o GAS para causar efeito. Falta:
+Etapa 1 ("Núcleo") do roadmap, no GDD seção 15. Já estão feitos: GAS com vida e mana, Feiticeiro
+fixo, Bola de Fogo, Muralha de Gelo, Chuva de Meteoros, acampamento de Imps, baú comum, tempestade,
+XP e nível (o MVP em "Pronto"). Falta:
 
-1. **GAS. O código C++ está escrito, mas não foi compilado,** porque falta o Visual Studio. Está em
-   `Unreal/NexusRoyale/Source/NexusRoyale/`:
+1. ~~**GAS**~~ **compilado e ligado em 15/10, às 12:00** (veja "MVP jogável" em "Pronto"). O que
+   segue é a descrição original do módulo, em `Unreal/NexusRoyale/Source/NexusRoyale/`:
    - **`GAS/AS_Hero`:** os atributos do GDD §16, com os nomes do GDD. Também tem os meta-atributos
      `Dano` (passa pela armadura, 0,04·A/(1+0,04·A)), `DanoVerdadeiro` e `Cura`.
    - **`GAS/NRAbilitySystemComponent`:** fica no próprio herói, e não no PlayerState como diz o GDD
@@ -254,20 +349,31 @@ ainda esperam o GAS para causar efeito. Falta:
      4. pela DSL: `StormTick` chamando `AplicarDanoTempestade`; o pickup com ItemId e raridade
         chamando `Inventario.Pegar`; o baú usando `SortearItem`; as teclas 1-3; `OnMorreu`; e o
         WBP_HUD na tela.
-   - **Atenção:** o `.uproject` ainda **não** lista o módulo, de propósito. Com o módulo listado e
-     sem compilador, o editor não abre.
-2. Arquétipo Feiticeiro e as magias Bola de Fogo, Muralha de Gelo e Chuva de Meteoros.
-3. ~~Acampamento de Imps~~ (feito, sem GAS). Falta: drop dos creeps, levar os 21 acampamentos para o
+   - **Os passos 1 a 4 acima foram feitos.** O `.uproject` agora lista o módulo e o plugin
+     GameplayAbilities. O editor carrega a DLL já compilada; se alguém mudar o C++, precisa
+     recompilar com o editor fechado antes de abrir.
+2. Feiticeiro: ~~Muralha de Gelo e Chuva de Meteoros~~ **feitas em 15/10, às 15:30**, no
+   `UNRCombateComponent` (veja "MVP jogável" em "Pronto"). Faltam a passiva Canalizador, a animação de
+   lançar e devolver a ultimate ao nível 6 quando houver mais acampamentos (`NIVEL_ULTIMATE` no
+   `ue_mvp_setup.py`). A migração para Gameplay Abilities (`GA_*`, GDD §16) fica para a etapa 2, junto
+   com os grimórios trocando E e R.
+3. ~~Acampamento de Imps~~ (feito, com GAS). Falta: drop dos creeps, levar os 21 acampamentos para o
    `L_Ilha` com `place_camps()` e o `mapa_ue.json`, e o elite (Puglin Ancião).
-4. XP e nível: ligar o `OnCreepKilled` e o `OnPhaseEnded` (piso de nível).
+4. XP e nível: falta o `OnPhaseEnded` (piso de nível) e a escolha de mutação a cada nível (GDD §7).
+5. Grimórios virando as magias E e R; tela de montagem (arquétipo + 20 pontos); prompt do F e relógio
+   da tempestade no HUD.
 
 A arquitetura alvo está no GDD, seção 16: `AS_Hero` em C++, `PS_Hero`, `BP_HeroBase`, `GA_*`/`GE_*`,
 `DT_*`/`DA_*`, `BP_StormController` e outros.
 
 ### Pendências do usuário
 
-- **Instalar o Visual Studio.** O usuário escolheu essa opção em 15/10. O `AttributeSet` do GAS só
-  pode ser escrito em C++, e hoje a máquina tem só o Visual Studio Installer.
+- ~~**Instalar o Visual Studio.**~~ **Instalado às 11:33:** VS Community 2026 18.11 em
+  `D:\VisualStudio\Community`, com o MSVC 14.50.35717 e o 14.51.36231. O UBT escolhe o 14.50.35717,
+  que o `Windows_SDK.json` marca como banido por erros internos de compilação, mas o módulo compilou
+  sem erro. Se aparecer "internal compiler error", force o 14.51 no `BuildConfiguration.xml`. O
+  histórico abaixo fica só como registro.
+  - O `AttributeSet` do GAS só pode ser escrito em C++.
   - A UE 5.8 aceita o VS 2026 (MSVC 14.50.35723 ou mais novo) ou o VS 2022 17.14 (MSVC 14.44.35211
     ou mais novo). Veja `Engine/Config/Windows/Windows_SDK.json`.
   - Comando sugerido, que instala tudo no D::
@@ -293,7 +399,7 @@ A arquitetura alvo está no GDD, seção 16: `AS_Hero` em C++, `PS_Hero`, `BP_He
 | Blender 5.2 | `D:\blender\blender.exe`. Python embutido: `D:\blender\5.2\python\bin\python.exe` |
 | Python do sistema | 3.14 (`python`) |
 | Máquina | Windows 10, 16 GB de RAM, Radeon RX 570 com 4 GB. O C: está quase cheio, então tudo vai no D: |
-| Git | O projeto **não** é um repositório git. Não dá para desfazer alterações por histórico |
+| Git | Repositório git criado em 15/10, por volta das 13:30, pela sessão "Git e versão jogável" (branch `main`, com LFS). Antes disso não havia histórico |
 
 ## 5. Como controlar a Unreal e o Blender
 
@@ -315,6 +421,7 @@ use os scripts de `Unreal/`:
 | `python Unreal/ue_capture.py saida.png [x y z pitch yaw]` | Captura o viewport **do mundo do editor**. Com `--editor`, captura a janela inteira (outra janela flutuante pode cobrir o PIE) |
 | `Unreal/pie_capture.py` (via `ue_py.py -c`) | Screenshot do **jogo** durante o PIE, opcionalmente virando a câmera (`AIM`) e com atraso (`DELAY`) |
 | `Unreal/pie_creeps.py` (via `ue_py.py -c "ACT='...'"`) | Testa os acampamentos no PIE: `land`, `near`, `away`, `poke`, `kill` e `state` |
+| `Unreal/pie_combate.py` (via `ue_py.py -c "ACT='...'"`) | Testa o MVP no PIE: `heroi` (vida, mana, XP, recargas), `dardo`, `fogo`, `muralha`, `meteoros`, `tecla1..3` (input de verdade), `mirar_chao` e `mirar_acampamento` (só a mira), `*_direto` (sem input), `estruturas`, `muralha_dano`, `chuvas`, `xp`, `bau`, `pegar` e `inventario`. A lista completa está no docstring |
 
 **Pegadinhas:**
 
@@ -344,6 +451,36 @@ use os scripts de `Unreal/`:
   - **Limpar uma variável de objeto:** `(Variables|Default|SetTarget)`, sem argumento. Não existe `None`.
   - **Chamar função do próprio BP em outra instância:** `(CallFunction|Alert :self outro …)`. O
     `Class|BPCreep|…` só aparece em grafos de outros BPs.
+  - **`bind` de expressão pura NÃO guarda o valor.** O Blueprint recalcula nós puros a cada uso.
+    `(bind hp (- (GetHealth) Damage)) (SetHealth hp) (if (<= hp 0) …)` testa "vida nova − dano" e
+    matava o creep. Depois de um `Set`, leia a variável de novo (`(<= (GetHealth) 0)`), ou guarde
+    em variável de verdade.
+  - **`Pawn|GetControlRotation` é a versão do Controller.** Com um pawn no `:self`, a DSL inventa uma
+    conversão por `LastHitBy` (nulo, e dá "Accessed None"). Passe o controller:
+    `(Pawn|GetControlRotation :self (Game|GetPlayerController :PlayerIndex 0))`.
+  - **Funções C++ com vários pinos de saída são ruins na DSL.** Prefira funções com só o retorno, mais
+    getters (`PegarDoChao` + `ItemQueFicaNoChao`).
+  - **Na leitura de volta, argumentos iguais ao padrão somem** (enum 0, int 0), e isso é normal.
+- **Injetar input no PIE:** filtre `EnhancedInputLocalPlayerSubsystem` sem o `Default__…`, porque o
+  nome do objeto padrão também contém "LocalPlayer" e a ordem do `ObjectIterator` varia. O
+  `pie_press.py` e o `pie_combate.py` já fazem isso. A injeção só vale no próximo frame; para ler o
+  efeito, faça outra chamada.
+  - **Girar a câmera e apertar a tecla na mesma chamada usa a direção antiga,** porque o input é
+    processado antes de a câmera se atualizar. Gire numa chamada (`mirar_chao`, `mirar_acampamento`) e
+    aperte na seguinte, com `SO_TECLA=1`.
+- **O Python remoto (`ue_py.py -c`) guarda as variáveis globais entre chamadas,** inclusive as de
+  outras sessões. Um `SO_TECLA=1` esquecido fazia o `pie_combate.py` pular a mira em silêncio. Agora
+  o script lê e apaga as opções (`SO_TECLA`, `PITCH`, `DANO`, `N`) no começo. Faça o mesmo em
+  scripts novos.
+- **`set_editor_property` num componente de ator durante o PIE reconstrói o ator** (roda o construction
+  script de novo). Os componentes C++ recomeçam: o `Habilidades` recalcula a vida e a mana e o
+  `Combate` religa as teclas. O Blueprint fica marcado como sujo no editor, mesmo sem o asset mudar.
+  Para mudar um número só no PIE (como a duração da muralha), tudo bem, mas confira os pacotes sujos
+  depois.
+- **Captura com HUD:** `ue_capture.py <png> --editor` mostra o UMG. O `pie_capture.py` (screenshot de
+  alta resolução) renderiza só a cena, sem interface.
+- **Iniciar e parar o PIE pelo Python:** `LevelEditorSubsystem.editor_request_begin_play()` e
+  `editor_request_end_play()` (o `EditorApp StartPIE` do MCP exige um JSON de opções).
 - **`add_object_variable` do MCP cria `int` para algumas classes**, como `CurveTable`. Corrija com
   Python: `BlueprintEditorLibrary.change_member_variable_type` usando um `EdGraphPinType` montado por
   `import_text`.
@@ -437,7 +574,8 @@ use os scripts de `Unreal/`:
 | `Unreal/Data/Camps_L_Island.json` | Acampamentos do `L_Island`, no formato de `mapa_ue.json` → `acampamentos` |
 | `Unreal/Blueprints/*.dsl` | Grafos de Blueprint em DSL, para o `write_graph_dsl` |
 | `Unreal/Data/` | Tabelas de balanceamento em CSV para importar como CurveTable ou DataTable (`CT_Storm.csv`, `DT_Itens.csv` + `gerar_dt_itens.py`) |
-| `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ (GAS, itens e base do HUD). Ainda não compilado nem listado no `.uproject` |
+| `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h) e `UI/` (NRHudWidget) |
+| `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py` | Setup do combate (material, teclas e componente) e teste do MVP no PIE |
 | `Unreal/ue_gas_compilar.py`, `Unreal/ue_gas_setup.py` | Compilar o módulo (com o editor fechado) e depois configurar o DT_Itens e os componentes do herói (com o editor aberto) |
 | `Blender/` | `NexusRoyale_Assets.blend` e os scripts de geração procedural (da v1) |
 | `Export/` | FBX da v1, `map_layout.json` e as capturas de conferência em `Previews/` |
@@ -679,3 +817,95 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
   ficou em `Config/DefaultEngine.ini.antes_aquarela`.
 - **Combinado:** o `BP_Pickup` e o `BP_LootChest` estão com a sessão "MVP rollout". O stencil do
   pickup só entra depois do aviso dela. O `ue_render_aquarela.py` ganhou `SO=[...]` para limitar os BPs.
+- **13:18 a 13:24, na Unreal** (editor reaberto pela "MVP rollout" com a config nova):
+  - os materiais `M_PP_Cel` / `MI_PP_Cel` e `M_PP_CartoonAquarela` / `MI_PP_CartoonAquarela`
+    compilam, com 91 e 111 instruções;
+  - stencil 1 no `BP_HeroBase` (corpo, roupa e cabelo), 2 no `BP_Creep`, `_Imp` e `_Puglin` e 3 no
+    `BP_Pickup`;
+  - no `L_Island`: o `PostProcessVolume` "PP_CartoonAquarela" infinito e o SkyLight com captura
+    estática. Só o mapa foi salvo, e ele estava limpo antes.
+  - Visto no viewport do editor, o cenário fica pintado, com contorno.
+  - **Ainda sem verificar:** os personagens fora da aquarela no PIE; o `L_Ilha`; o Nanite; a medição
+    do "depois".
+- **13:33, em andamento:** desligando o Nanite das 159 malhas, em lotes de 40 com save e coleta de
+  lixo. A sessão "Git e versão jogável" espera o meu "pode fechar" para fechar o editor e fazer o
+  cook.
+
+### 2026-10-15 11:48 → 13:40 · Claude (Claude Code) · MVP rollout: GAS compilado e MVP jogável
+- **Pedido do usuário:** "rode o MVP assim que possível".
+- **11:48:** o Visual Studio tinha terminado de instalar às 11:33. As sessões do GAS e do mapa
+  tinham batido no limite de uso às 11:39 (voltam às 15:50). Nada estava sujo e não havia PIE.
+  Então fechei o editor e compilei o módulo, que **passou na primeira vez** (7 min).
+- **Feito** (detalhes em "MVP jogável", seção 3):
+  - `ue_gas_setup.py` rodou;
+  - combate em C++ (`Combat/`), HUD montado em C++, XP e nível, morte e recomeço;
+  - `ue_mvp_setup.py` com as teclas (o **F não estava mapeado** no `IMC_Default`; agora está);
+  - DSLs: `StormTick` → `AplicarDanoTempestade`, `Die` do creep → `DarXP`, loot por ItemId e
+    `InteractNearby`.
+- **Bugs de outras sessões corrigidos no caminho:**
+  - **creep morria com qualquer golpe de metade da vida restante ou mais, sem alertar o acampamento**
+    (nó puro recalculado; `BP_Creep__EventGraph.dsl`);
+  - os ~355 erros "Accessed None … LastHitBy" do `WBP_Mapa.AtualizarJogador`, que também
+    derrubavam a captura pelo MCP (`WBP_Mapa__AtualizarJogador.dsl`);
+  - o injetor de teclas do `pie_press.py` às vezes mirava o objeto padrão da classe.
+- **Testado em PIE** (com `pie_combate.py` e `pie_creeps.py`):
+  - o herói nasce com vida 520, mana 430 e Poder Mágico +27%;
+  - os Imps tiram vida pelo GAS, e com 3 Imps o herói morre em ~20 s. Na morte: pose, sem
+    movimento, "VOCÊ FOI ELIMINADO" e o nível recomeça em 6 s;
+  - dardo pela tecla (com a recarga conferida) e direto: 76 de dano. Mirando 6° ao lado, curva e
+    acerta. O acampamento inteiro reage;
+  - Bola de Fogo pela tecla e direto: −55 de mana, recarga de 6 s, matou 2 Imps juntos (+60 XP);
+  - XP: +30 por Imp, e a barra no HUD mostra 90/100;
+  - baú aberto pelo F, com os itens da tabela. Pelo F: grimório, Amuleto do Erudito (equipado) e
+    Refeição (slot 1). A Couraça de Couro deu +60 de vida máxima. A tecla 1 usou a Poção de Pressa;
+  - o HUD na captura da janela: barras, nível/XP, linha das magias, consumíveis, equipados e a mira.
+- **Sem verificar:** está na seção 3, "MVP (sessão "MVP rollout"), sem verificar".
+- **Convivência com outras sessões:**
+  - a do **visual** trocou o `DefaultEngine.ini` (sem Lumen nem VSM, `r.CustomDepth=3`) na janela em
+    que o editor estava fechado para compilar, e pôs stencil nos BPs (1 herói, 2 creep, 3 pickup);
+  - pus o stencil 4 no projétil, a pedido dela;
+  - a sessão **Git e versão jogável** recebeu o "pode empacotar" às 13:34, para fazer o cook com o
+    editor fechado depois da medição da sessão do visual.
+- O editor continua aberto, em inglês e no `L_Island`. Ninguém devolveu a interface ao pt-BR.
+- **Próximo passo proposto ao usuário** (cartão de sessão, ainda não iniciado): Muralha de Gelo e
+  Chuva de Meteoros do Feiticeiro (item 2 dos próximos passos).
+
+### 2026-10-15 13:52 → 15:35 · Claude (Claude Code) · Kit do Feiticeiro: Muralha de Gelo e Chuva de Meteoros
+- **Pedido** (cartão da sessão "MVP rollout"): completar o kit do Feiticeiro da etapa 1, com a
+  Muralha de Gelo no E e a Chuva de Meteoros no X, os números do GDD §6 e as recargas no HUD.
+- **Decisão:** estender o `UNRCombateComponent` em vez de migrar para `GA_*`. O motivo está na seção
+  3, "MVP jogável".
+- **Feito:**
+  - `Combat/NRMagiaTypes.h`, `NREstruturaMagica` e `NRChuvaMeteoros`, com E e X no componente;
+  - o projétil agora também fere estruturas;
+  - a linha de magias do HUD;
+  - o `ue_mvp_setup.py` (IA_Magia2 no E, IA_Ultimate no X, M_Estrutura e `NivelUltimate` = 1 no MVP);
+  - o `pie_combate.py` com as ações novas.
+- **Compilação** com o editor fechado às 14:09, combinada com as sessões abertas. A primeira
+  falhou: o parâmetro `Slot` da lambda do HUD escondia o `UWidget::Slot`. Depois de corrigir,
+  compilou em 45 s.
+- **A sessão caiu às 15:11 e foi retomada às 15:17** numa conversa nova, com a transcrição colada
+  pelo usuário. Entre 15:06 e 15:09, o usuário jogou no PIE e usou as duas magias pelo teclado
+  (o log mostra muralhas a 2,5–4 m e uma chuva que matou 2 Imps).
+- **Testado em PIE no `L_Island`**, de 15:20 a 15:30, com o acampamento de Imps a 12 m:
+  - **E pelo teclado:** muralha a 5,7 m, entre o herói e os Imps, com 400 de vida. Recarga de
+    10,3 s (12 s com a Redução de Recarga). Some em 6 s. Um segundo E na recarga não faz nada;
+  - **custo exato** (chamada direta, mana antes e depois): 50 da muralha e 120 da chuva. A recarga
+    da chuva fica em 68,8 s (80 s com a redução). O segundo uso é recusado sem gastar mana;
+  - **muralha segurando o dardo:** o dardo mirado num Imp atrás dela não chegou (os 3 Imps ficaram
+    com 150 e sem alvo), e a muralha continuou com 400, porque o tiro do dono não estraga;
+  - **muralha quebrando com dano de inimigo:** 400 → 250 → 0, e ela se desfaz;
+  - **X pelo teclado:** a chuva caiu a 12,8 m, no centro do acampamento. Os meteoros acertaram 2, 1 e 0
+    alvos (cada Imp levou um só) e mataram os 3 Imps (120 × 1,27 = 152 ≥ 150), com +90 de XP;
+  - **HUD na captura:** "[E] Muralha de Gelo (50 de mana): 8,3 s" e "[X] Chuva de Meteoros (120 de
+    mana): 47,4 s". A muralha aparece ciano, com contorno.
+- **Sem verificar:** está na seção 3, "Muralha de Gelo e Chuva de Meteoros … sem verificar".
+- **No caminho:**
+  - o `pie_combate.py` passou a apagar as próprias opções;
+  - entraram três pegadinhas novas na seção 5 (globais do Python remoto, `set_editor_property` no
+    PIE e girar e apertar na mesma chamada).
+- **Ao sair:** PIE parado. Salvei só o `BP_HeroBase`, que ficou sujo por causa da reconstrução no PIE
+  e manteve os mesmos valores. Não sobrou nada sem salvar. O editor continua aberto, em inglês e no
+  `L_Island`. Avisei a sessão "Design system MCP motor", a única aberta, de que o editor está livre.
+- **Não feito:** commit no git. As mudanças desta sessão estão no working tree, junto com as das
+  outras sessões.

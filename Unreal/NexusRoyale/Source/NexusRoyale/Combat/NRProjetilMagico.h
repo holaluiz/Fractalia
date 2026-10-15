@@ -12,7 +12,7 @@ class UStaticMeshComponent;
 
 /**
  * Projétil de magia (dardo arcano, Bola de Fogo). Voa em linha reta, ignora quem lançou e, ao tocar em algo:
- * - RaioExplosao = 0: ApplyDamage só no ator atingido;
+ * - RaioExplosao = 0: ApplyDamage só no ator atingido (pawn ou estrutura mágica, como a Muralha de Gelo);
  * - RaioExplosao > 0: ApplyRadialDamage com dano cheio no raio (GDD §6: "explode num raio de 3 m").
  * O dano usa o ApplyDamage da Unreal: os creeps recebem pelo EventAnyDamage e os heróis pelo
  * UNRAbilitySystemComponent (que escuta o OnTakeAnyDamage do dono).
