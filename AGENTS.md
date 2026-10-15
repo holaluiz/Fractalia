@@ -6,7 +6,7 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 16:45 (horário de Brasília), por Claude (Claude Code), sessão "Testar muralha contra creeps e chão em chamas".
+Última atualização: 2026-10-15, por volta de 17:35 (horário de Brasília), por Claude (Claude Code), sessão "Instalador com atualização automática".
 
 ---
 
@@ -61,6 +61,21 @@
 
 ### Pronto
 
+- **Instalador e atualização automática** (sessão "Instalador com atualização automática", 15/10).
+  - **Versão 0.1.0 empacotada** (Development, 1,33 GB; zip de 1,07 GB) em `D:\NexusRoyale_Builds\0.1.0`.
+    Aberta direto da pasta do build às 17:22: carrega o `L_Island` sem erro de Blueprint, com o herói, o
+    HUD, os Imps e o visual aquarela.
+  - **Publicação:** Release `v0.1.0` no repositório privado `holaluiz/MOBA-BR`, com o
+    `NexusRoyale-Instalador.exe`, o zip e o `manifest.json` (veja a seção 9 para o que foi testado).
+  - **Instalador/launcher** (`Launcher/NexusRoyaleLauncher.cs`, um `.exe` só):
+    - instala em `<disco com mais espaço>:\Jogos\NexusRoyale`, cria os atalhos "Nexus Royale" e a
+      entrada em Aplicativos;
+    - a cada abertura, confere a última Release, baixa a versão nova, confere o SHA-256, troca a pasta
+      `game` e só então abre o jogo. Sem internet, abre o que já está instalado. Ele também troca a si
+      mesmo quando o manifest traz um launcher mais novo;
+    - pede o token do GitHub quando não acha um. **Neste PC está instalado em `D:\Jogos\NexusRoyale`.**
+  - **Publicar versão nova:** com a Unreal fechada, `Publicar-versao.bat` ou
+    `python -I Unreal/ue_release.py tudo` (seção 5, "Release").
 - **MVP jogável no `L_Island`** (testado em PIE em 15/10, de 12:12 a 13:33). Basta abrir o editor e
   dar Play. O ciclo completo funciona: dirigível → salto e planagem → baú → itens → creeps → XP e
   nível → tempestade → morte → a partida recomeça sozinha em 6 s.
@@ -287,7 +302,10 @@
   - o **nível 2 em diante**, na prática: o `GanharXP` foi conferido no código, e o teste chegou a 90 XP;
   - equipamento **trocando** com o do slot (`Trocou`) e consumíveis cheios (`Cheio`);
   - o Puglin contra as magias;
-  - o empacotado (a sessão "Git e versão jogável" está fazendo).
+  - **no jogo empacotado (0.1.0), o minimapa do canto superior direito não aparece.** O log não cita
+    `WBP_Mapa` nem `HUD_NexusRoyale`. Confira se o `HUD Class` chega ao jogo cozido. A praça também mostra
+    as estátuas dos heróis da v1;
+  - o jogo empacotado só foi aberto por 40 s: não foi jogado de ponta a ponta.
 - **Muralha de Gelo e Chuva de Meteoros.** Testadas em PIE nas sessões "Kit do Feiticeiro" (seção 9,
   entrada das 13:52) e "Testar muralha contra creeps e chão em chamas" (entrada das 15:37). Já
   conferidos: Bola de Fogo contra a muralha, chão em chamas e o visual dos meteoros e do disco.
@@ -382,6 +400,10 @@ XP e nível (o MVP em "Pronto"). Falta:
 4. XP e nível: falta o `OnPhaseEnded` (piso de nível) e a escolha de mutação a cada nível (GDD §7).
 5. Grimórios virando as magias E e R; tela de montagem (arquétipo + 20 pontos); prompt do F e relógio
    da tempestade no HUD.
+6. Corrigir o minimapa no jogo empacotado e publicar a 0.1.1 com `Publicar-versao.bat`. Isso também
+   testa a atualização de uma versão para outra pelo launcher.
+7. Multiplayer (o usuário perguntou em 15/10 se já dava para jogar online; não dá). Há um cartão de
+   sessão proposto: listen server com a Steam (app 480) ou EOS.
 
 A arquitetura alvo está no GDD, seção 16: `AS_Hero` em C++, `PS_Hero`, `BP_HeroBase`, `GA_*`/`GE_*`,
 `DT_*`/`DA_*`, `BP_StormController` e outros.
@@ -558,6 +580,32 @@ use os scripts de `Unreal/`:
 - **Se o MCP parar de responder,** veja se o editor fechou. Ele fecha sozinho quando o usuário
   instala alguma coisa ou quando falta memória. O log fica em `Unreal/NexusRoyale/Saved/Logs/`.
 
+### Release (versão instalável)
+
+- **Fluxo:** `Unreal/ue_release.py`. Rode com a Unreal **fechada**, porque o cook precisa da RAM.
+  - `tudo` faz tudo de uma vez: sobe a versão (`ProjectVersion` do `DefaultGame.ini`) se a atual já foi
+    publicada, empacota (BuildCookRun), zipa em partes de até 1,9 GB, compila o instalador e cria a
+    Release `v<versão>` em `holaluiz/MOBA-BR` pelo `gh`. O `Publicar-versao.bat` da raiz faz o mesmo.
+  - Também existem as ações separadas `versao`, `compilar`, `empacotar [--sem-cook]`, `launcher`, `zipar`
+    e `publicar`. O `--sem-cook` refaz só o stage, o pak e a cópia, reaproveitando o último cook.
+  - **Tempo nesta máquina:** compilar 7 min, o primeiro cook 15 min e os seguintes 5 min (cache de
+    shaders), o stage menos de 1 min e o zip 1 min.
+  - A saída fica em `D:\NexusRoyale_Builds\<versão>\`: `Windows/` (o jogo), o zip, o
+    `NexusRoyale-Instalador.exe`, o `manifest.json` e os logs.
+- **Launcher:** `Launcher/NexusRoyaleLauncher.cs` (C# 5, compilado pelo `csc` do .NET 4.8 que vem no
+  Windows). Detalhes no LEIA-ME e no cabeçalho do `.cs`. Se mudar o launcher, suba a constante `Versao`:
+  os launchers instalados se trocam pelo da próxima Release.
+- **O launcher só vê versões publicadas como Release.** Um `git push` sozinho não chega aos jogadores,
+  porque o GitHub não compila Unreal. Quem publica é o `tudo`.
+- **Pegadinhas do empacotamento:**
+  - **Erro 1455 no UBA** ("VirtualAlloc failed") logo no começo da compilação: falta memória virtual
+    (o arquivo de paginação fica no C:, que está cheio). O script já passa `-NoUBA`.
+  - **"Failure - 2 error(s)" no fim do cook (ExitCode 25),** com tudo cozido: era a regra
+    `GameFeatureData` do Asset Manager, que algum plugin exige. Foi posta no `DefaultGame.ini`.
+  - **O stage barra pastas com nome de plataforma** (`Apple`, `Android`, `Linux`, `Mac`, `IOS`…). A maçã
+    do Ultimate Food fica em `Quaternius/Items/Apple`, então ela foi liberada com
+    `[Staging] +AllowedDirectories`. Asset novo numa pasta com esses nomes precisa de outra linha.
+
 ### Blender
 
 - O add-on do usuário é o **"MCP for Blender"** (Siddharth Ahuja, porta 9876), e ele **não é
@@ -631,6 +679,8 @@ use os scripts de `Unreal/`:
 | `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h) e `UI/` (NRHudWidget) |
 | `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py`, `Unreal/pie_gravar.py` | Setup do combate (material, teclas e componente), teste do MVP no PIE e o gravador quadro a quadro do PIE |
 | `Unreal/ue_gas_compilar.py`, `Unreal/ue_gas_setup.py` | Compilar o módulo (com o editor fechado) e depois configurar o DT_Itens e os componentes do herói (com o editor aberto) |
+| `Launcher/` | Instalador/launcher (`NexusRoyaleLauncher.cs`), o `LEIA-ME.txt` e `bin/` (o `.exe` compilado, fora do git) |
+| `Unreal/ue_release.py`, `Publicar-versao.bat` | Empacotar e publicar uma versão (seção 5, "Release"). Os builds ficam em `D:\NexusRoyale_Builds\<versão>` |
 | `Blender/` | `NexusRoyale_Assets.blend` e os scripts de geração procedural (da v1) |
 | `Export/` | FBX da v1, `map_layout.json` e as capturas de conferência em `Previews/` |
 | `Quaternius/` | Packs baixados (`_zips/`) e extraídos, mais os scripts de download e de medição |
@@ -1032,4 +1082,45 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
   - O primeiro PIE depois disso não serviu: o GameMode embarcou o herói no dirigível depois do pouso.
   - Fechei o editor limpo às 16:31 (sem pacotes sujos), reabri, e o teste rodou no primeiro PIE.
   - A pegadinha da seção 5 foi reescrita.
-- **Ao sair:** PIE parado, sem pacotes sujos. O editor continua aberto, em inglês e no `L_Island`. Sem commit.
+- **Ao sair:** PIE parado, sem pacotes sujos. O editor continua aberto, em inglês e no `L_Island`.
+- **Commit `82b22bc` na `main`, sem push** (16:50, a pedido do usuário). Entraram:
+  - o `BP_Creep.uasset`;
+  - as DSLs `BP_Creep__Think`, `FindBlocker` e `AttackActor`;
+  - o `pie_gravar.py`;
+  - só o trecho do `BP_Creep` no `ue_br_build.py`. O trecho do `InteractNearby`, de outra sessão,
+    ficou fora;
+  - o `AGENTS.md`, com as duas entradas desta sessão. Esta linha ficou fora do commit.
+
+### 2026-10-15 16:44 → 17:35 · Claude (Claude Code) · Instalador com atualização automática
+- **Pedido do usuário:** "um MVP jogável que possa ser instalado e que, quando subirem atualizações
+  no git, baixe sozinho antes de iniciar". O usuário escolheu deixar as versões no repositório
+  **privado** `holaluiz/MOBA-BR` (cada PC precisa do login do `gh` ou de um token) e liberou fechar
+  a Unreal.
+- **Herdado da sessão "Git e versão jogável"** (não publicada): `Unreal/ue_release.py` e um launcher
+  em PowerShell. A compilação de 13:24 tinha morrido com o erro 1455 do UBA (memória virtual cheia).
+- **Feito** (detalhes na seção 3, "Instalador e atualização automática", e na seção 5, "Release"):
+  - `Launcher/NexusRoyaleLauncher.cs`: instalador + launcher num `.exe` só. Ele substitui o
+    `Jogar.bat`/`launcher.ps1`, que foram apagados;
+  - `ue_release.py`: ações `launcher`, `empacotar --sem-cook` e `tudo --versao` (sobe a versão
+    sozinho), o instalador no manifest e na Release, e `-NoUBA`. `Publicar-versao.bat` na raiz;
+  - `DefaultGame.ini`: a regra `GameFeatureData` e o `[Staging] +AllowedDirectories` da pasta `Apple`
+    (as pegadinhas estão na seção 5);
+  - **Release `v0.1.0` publicada às 17:29** (1,07 GB em cerca de 1 min de upload). A tag ficou na
+    `main` do GitHub (`e26d174`), porque os commits locais não foram enviados; o commit do build
+    (`82b22bc` + as mudanças sem commit) está no `manifest.json`.
+- **Testado:**
+  - o instalador (pelo UI Automation): a tela, a pasta sugerida `D:\Jogos\NexusRoyale`, os atalhos
+    do menu Iniciar e da área de trabalho, o registro em Aplicativos e o token do `gh` achado sozinho;
+  - o launcher sem Release mostra "Ainda não há nenhuma versão publicada";
+  - **com a Release:** o launcher baixou 1.073 MB a ~16 MB/s, conferiu, instalou e abriu o jogo em
+    97 s. Ficaram `game\versao.txt` = 0.1.0 e o `DisplayVersion` 0.1.0. O jogo abriu de
+    `D:\Jogos\NexusRoyale\game` com o HUD (captura).
+- **Sem verificar:**
+  - **a atualização de uma versão para outra** (com a pasta `game` antiga já instalada). O jogo ficou
+    aberto (o usuário estava jogando). Para testar: com o jogo fechado, ponha `0.0.9` no
+    `game\versao.txt` e abra o atalho;
+  - a troca do próprio launcher (só acontece quando `Versao` no `.cs` passar de 1.0.0);
+  - o pedido de token num PC sem `gh`, o `/desinstalar` e o Visual C++ num PC que não o tenha;
+  - o minimapa, que não aparece no jogo empacotado (seção 3).
+- **Ao sair:** a Unreal continua **fechada** desde 16:52, sem nada sujo, e está livre para abrir.
+  Nada foi commitado.

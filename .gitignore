@@ -35,11 +35,8 @@ __pycache__/
 .claude/hooks/state/
 .claude/settings.local.json
 
-# --- Launcher: o que ele baixa e instala na pasta dele ---
-Launcher/game/
-Launcher/download/
-Launcher/versao.txt
-Launcher/token.txt
+# --- Launcher: o .exe compilado (python -I Unreal/ue_release.py launcher) ---
+Launcher/bin/
 
 # --- Packs da Quaternius: dá para baixar de novo (Quaternius/download.ps1) ---
 # Os assets já importados estão em Unreal/NexusRoyale/Content/Quaternius e vão para o git.

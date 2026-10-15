@@ -1,0 +1,48 @@
+NEXUS ROYALE: INSTALADOR E LAUNCHER
+===================================
+
+Para quem joga
+--------------
+1. Baixe o NexusRoyale-Instalador.exe da última versão em
+   https://github.com/holaluiz/MOBA-BR/releases (precisa estar logado numa conta com acesso).
+2. Abra o arquivo. O Windows pode avisar "O Windows protegeu o computador", porque o .exe não é
+   assinado: clique em "Mais informações" e em "Executar assim mesmo".
+3. Escolha a pasta (ele sugere o disco com mais espaço; o jogo ocupa uns 3 GB) e clique em Instalar.
+   - Se este PC não tiver o login do GitHub CLI ("gh"), ele pede um token do GitHub (veja abaixo).
+   - Ele cria os atalhos "Nexus Royale" no menu Iniciar e na área de trabalho e registra o jogo em
+     Configurações > Aplicativos (é por lá que se desinstala).
+4. Depois disso, abra sempre pelo atalho "Nexus Royale". A cada abertura ele confere se há versão nova
+   no GitHub. Se houver, baixa, confere e instala antes de abrir o jogo. Sem internet, abre a versão
+   que já está instalada.
+
+O launcher também se atualiza sozinho quando uma versão nova traz um launcher mais novo.
+
+Token do GitHub (o repositório é privado)
+-----------------------------------------
+Em https://github.com/settings/personal-access-tokens/new crie um token "fine-grained":
+  - Repository access: Only select repositories > holaluiz/MOBA-BR
+  - Permissions: Contents: Read-only (só isso)
+Cole o token no instalador (ou no botão "Trocar token" do launcher). Ele fica guardado em token.dat,
+criptografado para o seu usuário do Windows. Ordem que o launcher procura: variável NEXUS_GH_TOKEN,
+token.dat, token.txt na pasta do jogo e o login do "gh".
+
+Opções (no atalho, depois do caminho do .exe)
+---------------------------------------------
+  /semAtualizar   abre a versão instalada sem consultar o GitHub
+  /forcar         baixa a última versão de novo (se a instalação estragou)
+  /soAtualizar    só atualiza, sem abrir o jogo
+  /instalar       mostra a tela de instalação de novo (trocar de pasta, refazer atalhos)
+  /desinstalar    o mesmo que desinstalar por Configurações > Aplicativos
+  Qualquer outra opção vai para o jogo. Exemplo: -windowed -ResX=1280 -ResY=720
+
+Para quem desenvolve: publicar uma versão nova
+----------------------------------------------
+Com a Unreal FECHADA, na raiz do projeto:
+  python -I Unreal/ue_release.py tudo
+Isso sobe o número da versão (se a atual já foi publicada), empacota, zipa e cria a Release no GitHub.
+Na próxima vez que alguém abrir o jogo pelo atalho, a versão nova é baixada. Detalhes no AGENTS.md,
+seção 5, "Release".
+
+Código: NexusRoyaleLauncher.cs (C# 5, compilado pelo csc que vem no Windows):
+  python -I Unreal/ue_release.py launcher   ->  Launcher/bin/NexusRoyale-Instalador.exe
+Se mudar o launcher, suba a constante Versao no .cs para os launchers instalados se atualizarem.
