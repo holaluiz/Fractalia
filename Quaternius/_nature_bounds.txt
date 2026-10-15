@@ -1,0 +1,68 @@
+﻿Bush_Common                                size(m) w= 1.91 d= 1.97 h= 1.58 | min x=-0.92 y=-0.23 z=-0.97 max x=+0.99 y=+1.35 z=+0.99 | node_t=None
+Bush_Common_Flowers                        size(m) w= 1.91 d= 1.97 h= 1.58 | min x=-0.92 y=-0.23 z=-0.97 max x=+0.99 y=+1.35 z=+0.99 | node_t=None
+Clover_1                                   size(m) w= 0.80 d= 0.76 h= 1.14 | min x=-0.50 y=-0.01 z=-0.40 max x=+0.29 y=+1.13 z=+0.36 | node_t=None
+Clover_2                                   size(m) w= 0.85 d= 0.84 h= 1.26 | min x=-0.50 y=-0.00 z=-0.47 max x=+0.35 y=+1.26 z=+0.36 | node_t=None
+CommonTree_1                               size(m) w= 4.31 d= 4.58 h= 7.26 | min x=-2.19 y=-0.24 z=-2.22 max x=+2.12 y=+7.02 z=+2.35 | node_t=None
+CommonTree_2                               size(m) w= 4.46 d= 4.28 h= 7.64 | min x=-2.22 y=-0.24 z=-1.85 max x=+2.24 y=+7.40 z=+2.42 | node_t=None
+CommonTree_3                               size(m) w= 4.06 d= 4.24 h= 9.43 | min x=-1.99 y=-0.24 z=-2.06 max x=+2.08 y=+9.18 z=+2.18 | node_t=None
+CommonTree_4                               size(m) w= 3.83 d= 3.76 h= 9.44 | min x=-1.80 y=-0.24 z=-2.08 max x=+2.03 y=+9.20 z=+1.68 | node_t=None
+CommonTree_5                               size(m) w= 3.67 d= 4.22 h= 7.01 | min x=-1.91 y=-0.24 z=-2.16 max x=+1.76 y=+6.76 z=+2.06 | node_t=None
+DeadTree_1                                 size(m) w= 6.15 d= 5.75 h= 9.50 | min x=-2.59 y=-0.34 z=-2.90 max x=+3.56 y=+9.16 z=+2.85 | node_t=None
+DeadTree_2                                 size(m) w= 6.73 d= 6.38 h=11.49 | min x=-2.33 y=-0.34 z=-2.52 max x=+4.40 y=+11.15 z=+3.86 | node_t=None
+DeadTree_3                                 size(m) w= 6.39 d= 6.43 h=13.28 | min x=-3.85 y=-0.34 z=-3.39 max x=+2.54 y=+12.94 z=+3.04 | node_t=None
+DeadTree_4                                 size(m) w= 7.96 d= 7.73 h=12.77 | min x=-3.36 y=-0.34 z=-3.60 max x=+4.60 y=+12.44 z=+4.13 | node_t=None
+DeadTree_5                                 size(m) w= 8.36 d= 8.41 h=16.44 | min x=-3.97 y=-0.34 z=-4.80 max x=+4.39 y=+16.10 z=+3.62 | node_t=None
+Fern_1                                     size(m) w= 9.05 d= 8.49 h= 2.69 | min x=-4.42 y=-0.25 z=-4.09 max x=+4.63 y=+2.44 z=+4.40 | node_t=None
+Flower_3_Group                             size(m) w= 1.49 d= 1.59 h= 2.05 | min x=-0.61 y=-0.03 z=-0.80 max x=+0.87 y=+2.02 z=+0.79 | node_t=None
+Flower_3_Single                            size(m) w= 0.91 d= 0.88 h= 2.07 | min x=-0.48 y=-0.02 z=-0.52 max x=+0.43 y=+2.05 z=+0.36 | node_t=None
+Flower_4_Group                             size(m) w= 1.78 d= 1.37 h= 2.49 | min x=-0.93 y=-0.06 z=-0.64 max x=+0.85 y=+2.43 z=+0.73 | node_t=None
+Flower_4_Single                            size(m) w= 1.07 d= 0.77 h= 2.42 | min x=-0.51 y=-0.03 z=-0.40 max x=+0.57 y=+2.39 z=+0.37 | node_t=None
+Grass_Common_Short                         size(m) w= 0.64 d= 0.74 h= 1.33 | min x=-0.36 y=-0.02 z=-0.48 max x=+0.28 y=+1.31 z=+0.26 | node_t=None
+Grass_Common_Tall                          size(m) w= 0.90 d= 0.99 h= 1.87 | min x=-0.40 y=-0.03 z=-0.48 max x=+0.49 y=+1.84 z=+0.51 | node_t=None
+Grass_Wispy_Short                          size(m) w= 1.32 d= 1.21 h= 1.07 | min x=-0.73 y=-0.09 z=-0.58 max x=+0.59 y=+0.99 z=+0.63 | node_t=None
+Grass_Wispy_Tall                           size(m) w= 1.54 d= 1.59 h= 1.67 | min x=-0.74 y=-0.04 z=-0.82 max x=+0.80 y=+1.64 z=+0.78 | node_t=None
+Mushroom_Common                            size(m) w= 0.56 d= 0.78 h= 0.46 | min x=-0.33 y=-0.02 z=-0.45 max x=+0.23 y=+0.45 z=+0.33 | node_t=None
+Mushroom_Laetiporus                        size(m) w= 1.37 d= 1.10 h= 0.77 | min x=-0.65 y=-0.16 z=-0.33 max x=+0.72 y=+0.61 z=+0.77 | node_t=None
+Pebble_Round_1                             size(m) w= 0.50 d= 0.37 h= 0.10 | min x=-0.22 y=-0.01 z=-0.16 max x=+0.28 y=+0.09 z=+0.21 | node_t=None
+Pebble_Round_2                             size(m) w= 0.45 d= 0.41 h= 0.09 | min x=-0.22 y=-0.00 z=-0.22 max x=+0.23 y=+0.09 z=+0.19 | node_t=None
+Pebble_Round_3                             size(m) w= 0.45 d= 0.48 h= 0.10 | min x=-0.23 y=-0.00 z=-0.22 max x=+0.22 y=+0.10 z=+0.26 | node_t=None
+Pebble_Round_4                             size(m) w= 0.41 d= 0.45 h= 0.10 | min x=-0.21 y=-0.01 z=-0.23 max x=+0.20 y=+0.09 z=+0.22 | node_t=None
+Pebble_Round_5                             size(m) w= 0.42 d= 0.35 h= 0.10 | min x=-0.22 y=-0.00 z=-0.20 max x=+0.20 y=+0.10 z=+0.15 | node_t=None
+Pebble_Square_1                            size(m) w= 0.43 d= 0.44 h= 0.13 | min x=-0.23 y=-0.00 z=-0.20 max x=+0.20 y=+0.13 z=+0.24 | node_t=None
+Pebble_Square_2                            size(m) w= 0.39 d= 0.28 h= 0.14 | min x=-0.20 y=-0.01 z=-0.12 max x=+0.19 y=+0.14 z=+0.16 | node_t=None
+Pebble_Square_3                            size(m) w= 0.37 d= 0.32 h= 0.16 | min x=-0.19 y=-0.01 z=-0.17 max x=+0.19 y=+0.15 z=+0.15 | node_t=None
+Pebble_Square_4                            size(m) w= 0.34 d= 0.29 h= 0.17 | min x=-0.17 y=-0.00 z=-0.16 max x=+0.17 y=+0.17 z=+0.13 | node_t=None
+Pebble_Square_5                            size(m) w= 0.35 d= 0.45 h= 0.15 | min x=-0.17 y=-0.01 z=-0.23 max x=+0.18 y=+0.14 z=+0.22 | node_t=None
+Pebble_Square_6                            size(m) w= 0.46 d= 0.26 h= 0.14 | min x=-0.22 y=-0.01 z=-0.12 max x=+0.25 y=+0.13 z=+0.14 | node_t=None
+Petal_1                                    size(m) w= 0.46 d= 0.45 h= 0.24 | min x=-0.26 y=+0.00 z=-0.23 max x=+0.20 y=+0.24 z=+0.23 | node_t=None
+Petal_2                                    size(m) w= 0.67 d= 0.63 h= 0.24 | min x=-0.32 y=+0.00 z=-0.33 max x=+0.35 y=+0.24 z=+0.30 | node_t=None
+Petal_3                                    size(m) w= 0.62 d= 0.61 h= 0.19 | min x=-0.31 y=+0.00 z=-0.27 max x=+0.30 y=+0.19 z=+0.33 | node_t=None
+Petal_4                                    size(m) w= 0.33 d= 0.24 h= 0.25 | min x=-0.14 y=-0.00 z=-0.12 max x=+0.19 y=+0.25 z=+0.12 | node_t=None
+Petal_5                                    size(m) w= 0.83 d= 0.80 h= 0.29 | min x=-0.40 y=+0.00 z=-0.42 max x=+0.43 y=+0.29 z=+0.38 | node_t=None
+Pine_1                                     size(m) w= 4.94 d= 4.54 h= 7.32 | min x=-2.45 y=-0.24 z=-2.48 max x=+2.50 y=+7.08 z=+2.06 | node_t=None
+Pine_2                                     size(m) w= 5.73 d= 5.22 h= 7.38 | min x=-2.89 y=-0.24 z=-2.69 max x=+2.84 y=+7.14 z=+2.53 | node_t=None
+Pine_3                                     size(m) w= 3.61 d= 4.00 h= 7.39 | min x=-2.11 y=-0.24 z=-2.29 max x=+1.50 y=+7.16 z=+1.70 | node_t=None
+Pine_4                                     size(m) w= 5.80 d= 5.37 h=10.24 | min x=-2.87 y=-0.24 z=-2.95 max x=+2.93 y=+10.00 z=+2.42 | node_t=None
+Pine_5                                     size(m) w= 6.42 d= 6.22 h= 8.72 | min x=-2.99 y=-0.24 z=-3.78 max x=+3.43 y=+8.49 z=+2.44 | node_t=None
+Plant_1                                    size(m) w= 1.27 d= 1.39 h= 1.01 | min x=-0.71 y=-0.04 z=-0.76 max x=+0.56 y=+0.98 z=+0.62 | node_t=None
+Plant_1_Big                                size(m) w= 2.89 d= 3.13 h= 3.76 | min x=-1.39 y=-0.06 z=-1.66 max x=+1.50 y=+3.70 z=+1.47 | node_t=None
+Plant_7                                    size(m) w= 1.05 d= 0.96 h= 0.25 | min x=-0.45 y=+0.08 z=-0.46 max x=+0.60 y=+0.33 z=+0.50 | node_t=None
+Plant_7_Big                                size(m) w= 1.31 d= 1.36 h= 0.25 | min x=-0.70 y=+0.05 z=-0.85 max x=+0.61 y=+0.30 z=+0.51 | node_t=None
+RockPath_Round_Small_1                     size(m) w= 1.06 d= 1.48 h= 0.11 | min x=-0.54 y=-0.01 z=-0.70 max x=+0.52 y=+0.10 z=+0.77 | node_t=None
+RockPath_Round_Small_2                     size(m) w= 1.14 d= 1.35 h= 0.10 | min x=-0.56 y=-0.01 z=-0.76 max x=+0.58 y=+0.10 z=+0.60 | node_t=None
+RockPath_Round_Small_3                     size(m) w= 1.18 d= 1.29 h= 0.11 | min x=-0.59 y=-0.01 z=-0.69 max x=+0.59 y=+0.10 z=+0.60 | node_t=None
+RockPath_Round_Thin                        size(m) w= 1.46 d= 2.09 h= 0.11 | min x=-0.70 y=-0.01 z=-1.09 max x=+0.76 y=+0.10 z=+1.00 | node_t=None
+RockPath_Round_Wide                        size(m) w= 2.11 d= 2.13 h= 0.11 | min x=-1.05 y=-0.01 z=-1.13 max x=+1.06 y=+0.10 z=+1.00 | node_t=None
+RockPath_Square_Small_1                    size(m) w= 1.02 d= 0.97 h= 0.15 | min x=-0.52 y=-0.01 z=-0.47 max x=+0.50 y=+0.14 z=+0.50 | node_t=None
+RockPath_Square_Small_2                    size(m) w= 0.99 d= 0.97 h= 0.15 | min x=-0.50 y=-0.01 z=-0.49 max x=+0.50 y=+0.14 z=+0.47 | node_t=None
+RockPath_Square_Small_3                    size(m) w= 0.84 d= 1.08 h= 0.17 | min x=-0.40 y=-0.01 z=-0.55 max x=+0.44 y=+0.17 z=+0.53 | node_t=None
+RockPath_Square_Thin                       size(m) w= 1.56 d= 1.99 h= 0.18 | min x=-0.77 y=-0.01 z=-1.00 max x=+0.79 y=+0.17 z=+0.98 | node_t=None
+RockPath_Square_Wide                       size(m) w= 2.05 d= 1.99 h= 0.18 | min x=-1.02 y=-0.01 z=-1.00 max x=+1.03 y=+0.17 z=+0.99 | node_t=None
+Rock_Medium_1                              size(m) w= 3.23 d= 2.99 h= 2.26 | min x=-1.73 y=-0.27 z=-1.15 max x=+1.50 y=+1.99 z=+1.84 | node_t=None
+Rock_Medium_2                              size(m) w= 3.05 d= 2.48 h= 1.90 | min x=-1.71 y=-0.05 z=-1.16 max x=+1.34 y=+1.85 z=+1.32 | node_t=None
+Rock_Medium_3                              size(m) w= 3.42 d= 3.48 h= 2.32 | min x=-1.82 y=-0.32 z=-0.89 max x=+1.60 y=+2.00 z=+2.59 | node_t=None
+TwistedTree_1                              size(m) w=13.52 d=11.55 h=16.73 | min x=-2.17 y=-0.20 z=-6.73 max x=+11.34 y=+16.52 z=+4.82 | node_t=None
+TwistedTree_2                              size(m) w=10.56 d= 9.20 h=18.95 | min x=-6.62 y=-0.20 z=-5.54 max x=+3.94 y=+18.75 z=+3.66 | node_t=None
+TwistedTree_3                              size(m) w=11.36 d=11.51 h=16.07 | min x=-4.49 y=-0.20 z=-6.52 max x=+6.87 y=+15.87 z=+4.99 | node_t=None
+TwistedTree_4                              size(m) w=10.38 d=11.29 h=18.74 | min x=-4.33 y=-0.20 z=-7.14 max x=+6.05 y=+18.54 z=+4.15 | node_t=None
+TwistedTree_5                              size(m) w= 9.49 d= 9.39 h=15.66 | min x=-3.75 y=-0.20 z=-6.34 max x=+5.75 y=+15.46 z=+3.05 | node_t=None

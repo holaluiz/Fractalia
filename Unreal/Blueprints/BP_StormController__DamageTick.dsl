@@ -1,0 +1,10 @@
+; Server, every 1 s: heroes outside the circle take DamagePct of the current phase (% of max health; applied by the hero)
+(fn DamageTick ()
+  (if (Variables|Default|GetStarted)
+    (bind pct (CallFunction|StormValue :Row "DamagePct" :Phase (Variables|Default|GetCurPhase)))
+    (bind c (Variables|Default|GetCurCenter))
+    (bind r (Variables|Default|GetCurRadius))
+    (bind heroes (Actor|GetAllActorsOfClass :ActorClass "/Game/NexusRoyale/Blueprints/Core/BP_HeroBase.BP_HeroBase_C"))
+    (for h heroes
+      (if (> (Math|Vector|Distance2D(Vector) (Transformation|GetActorLocation :self h) c) r)
+        (Class|BPHeroBase|StormTick :self h :DamagePercent pct)))))

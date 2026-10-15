@@ -1,0 +1,10 @@
+; Caps the fall speed: fast dive high up, slow glide once the ground is within GlideHeight
+(fn UpdateSkydive ()
+  (bind cm (Variables|Character|GetCharacterMovement))
+  (bind loc (Transformation|GetActorLocation))
+  (bind down (- loc (Math|Vector|MakeVector :X 0.0 :Y 0.0 :Z (Variables|Default|GetGlideHeight))))
+  (bind (hit near) (Collision|LineTraceByChannel :Start loc :End down :TraceChannel "TraceTypeQuery1" :bTraceComplex false :DrawDebugType "None" :bIgnoreSelf true))
+  (bind limit (select near (Variables|Default|GetGlideFallSpeed) (Variables|Default|GetDiveFallSpeed)))
+  (bind v (Transformation|GetVelocity))
+  (if (< (.z v) limit)
+    (Class|MovementComponent|SetVelocity :self cm :Velocity (Math|Vector|MakeVector :X (.x v) :Y (.y v) :Z limit))))

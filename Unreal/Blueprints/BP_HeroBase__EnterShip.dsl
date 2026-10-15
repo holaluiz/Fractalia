@@ -1,0 +1,10 @@
+; Rides the drop ship: hidden, no collision, no movement, camera pulled back
+(fn EnterShip (Ship)
+  (Variables|Default|SetCurrentShip Ship)
+  (Variables|Default|SetOnShip true)
+  (Variables|Default|SetSkydiving false)
+  (Pawn|Components|CharacterMovement|SetMovementMode :self (Variables|Character|GetCharacterMovement) :NewMovementMode "MOVE_None")
+  (Collision|SetActorEnableCollision :bNewActorEnableCollision false)
+  (Rendering|SetActorHiddenInGame :bNewHidden true)
+  (Transformation|AttachActorToActor :ParentActor Ship :LocationRule "SnapToTarget" :RotationRule "KeepWorld" :ScaleRule "KeepWorld")
+  (Class|SpringArmComponent|SetTargetArmLength :self (Variables|Camera|GetCameraBoom) :TargetArmLength (Variables|Default|GetShipCameraDistance)))

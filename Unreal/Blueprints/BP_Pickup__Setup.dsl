@@ -1,0 +1,13 @@
+; Shows the mesh at DisplaySize (cm, largest side) with the rarity colour on the glow
+(fn Setup (Mesh Label InKind InRarity)
+  (Variables|Default|SetItemName Label)
+  (Variables|Default|SetKind InKind)
+  (Variables|Default|SetRarity InRarity)
+  (bind pm (Variables|Default|GetPickupMesh))
+  (Components|StaticMesh|SetStaticMesh :self pm :NewMesh Mesh)
+  (bind (mn mx) (Components|StaticMesh|GetLocalBounds :self pm))
+  (bind ext (- mx mn))
+  (bind big (Math|Float|Max(Float) (Math|Float|Max(Float) (.x ext) (.y ext)) (.z ext)))
+  (bind sc (/ (Variables|Default|GetDisplaySize) (Math|Float|Max(Float) big 1.0)))
+  (Transformation|SetRelativeScale3D :self pm :NewScale3D (Math|Vector|MakeVector :X sc :Y sc :Z sc))
+  (Rendering|Components|Light|SetLightColor :self (Variables|Default|GetGlow) :NewLightColor (Utilities|Array|Get(acopy) (Variables|Default|GetRarityColors) InRarity) :bSRGB true))

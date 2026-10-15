@@ -1,0 +1,93 @@
+{
+  "_doc": [
+    "Ilha do Nexus Royale v2: cerca de 1 km de ponta a ponta (decisão do usuário em 15/10: '1 km com montanhas, água, cidade, vila, selva').",
+    "O Fortnite tem ~5,5 km²; com 20 jogadores em vez de 100, a ilha é bem menor.",
+    "Coordenadas de design em metros: x = leste, y = norte, origem no centro da ilha. Alturas em metros acima do mar.",
+    "Na Unreal: X = norte, Y = leste (ue_x = y*100, ue_y = x*100, cm). Quem converte é Unreal/mapa_gerar.py.",
+    "Altura 'auto' = nivela na média do terreno dentro do raio. O nível da água do rio e dos lagos é calculado pelo gerador."
+  ],
+  "terreno": {
+    "lado_m": 1260,
+    "resolucao": 1009,
+    "semente": 7,
+    "raio_costa_m": 520,
+    "ruido_costa_m": 40,
+    "altura_base_min_m": 4,
+    "altura_base_var_m": 6,
+    "fundo_mar_m": -7
+  },
+  "morros": [
+    {"nome": "Pico do Trovão", "x": 140, "y": 370, "altura": 82, "raio": 200, "aspereza": 0.35},
+    {"nome": "Serra Norte oeste", "x": -25, "y": 445, "altura": 46, "raio": 145, "aspereza": 0.35},
+    {"nome": "Serra Norte leste", "x": 330, "y": 305, "altura": 55, "raio": 150, "aspereza": 0.35},
+    {"nome": "Colina do Forte", "x": -300, "y": 290, "altura": 30, "raio": 120, "aspereza": 0.15},
+    {"nome": "Planalto das Ruínas", "x": 380, "y": 70, "altura": 20, "raio": 120, "aspereza": 0.15},
+    {"nome": "Colina Central", "x": -70, "y": -115, "altura": 10, "raio": 140, "aspereza": 0.1},
+    {"nome": "Colina da Selva", "x": 230, "y": -380, "altura": 14, "raio": 115, "aspereza": 0.2},
+    {"nome": "Colina Sudoeste", "x": -400, "y": -230, "altura": 12, "raio": 90, "aspereza": 0.2}
+  ],
+  "pois": [
+    {"id": "distrito_arcano", "nome": "Distrito Arcano", "tipo": "cidade", "kit": "Downtown City", "x": -185, "y": 45, "raio": 95, "altura": "auto",
+     "nota": "Cidade grande no centro-oeste: o ponto de queda mais disputado (como o Tilted Towers)"},
+    {"id": "vila_carvalho", "nome": "Vila Carvalho", "tipo": "vila", "kit": "Medieval Village", "x": -320, "y": -230, "raio": 75, "altura": "auto",
+     "nota": "Vila medieval em anel em volta de uma praça"},
+    {"id": "porto_sereno", "nome": "Porto Sereno", "tipo": "porto", "kit": "Medieval Village + Fantasy Props", "x": 25, "y": -460, "raio": 60, "altura": 2.5,
+     "nota": "Vila de pescadores na foz do rio, com píeres"},
+    {"id": "fazenda_girassol", "nome": "Fazenda Girassol", "tipo": "fazenda", "kit": "Medieval Village + Fantasy Props", "x": -400, "y": -25, "raio": 70, "altura": "auto",
+     "nota": "Celeiros, cercas e plantações (grama alta: combustível para Fogo)"},
+    {"id": "forte_corvo", "nome": "Forte Corvo", "tipo": "forte", "kit": "Medieval Village (muralhas)", "x": -300, "y": 290, "raio": 55, "altura": "auto",
+     "nota": "Fortim no alto da colina: briga por altura"},
+    {"id": "pico_trovao", "nome": "Pico do Trovão", "tipo": "montanha", "kit": "Stylized Nature (rochas)", "x": 140, "y": 365, "raio": 24, "altura": "auto",
+     "nota": "Topo da montanha com a arena do creep elite"},
+    {"id": "lago_espelho", "nome": "Lago Espelho", "tipo": "lago", "kit": "Stylized Nature + Fantasy Props", "x": 80, "y": -10, "raio": 0, "altura": "auto",
+     "nota": "Lago central com cais e ilhota"},
+    {"id": "selva_rubra", "nome": "Selva Rubra", "tipo": "selva", "kit": "Stylized Nature + Bestiary", "x": 335, "y": -240, "raio": 0, "altura": "auto",
+     "nota": "Selva fechada com a Lagoa Verde e a maior concentração de acampamentos de creeps"},
+    {"id": "ruinas_runicas", "nome": "Ruínas Rúnicas", "tipo": "ruinas", "kit": "Fantasy Props + Medieval (ruínas)", "x": 380, "y": 70, "raio": 60, "altura": "auto",
+     "nota": "Ruínas mágicas no planalto: mais grimórios no loot"}
+  ],
+  "rio": {
+    "nome": "Rio Prata",
+    "pontos": [[220, 245], [185, 185], [150, 105], [115, 35], [80, -10], [45, -80], [10, -175], [-35, -275], [-25, -380], [-45, -485], [-55, -590]],
+    "largura_m": [7, 16],
+    "profundidade_m": 1.8,
+    "abaixo_do_terreno_m": 1.2,
+    "meandro_m": 9,
+    "margem_m": 22
+  },
+  "lagos": [
+    {"nome": "Lago Espelho", "x": 80, "y": -10, "rx": 85, "ry": 62, "nivel": 3.0, "profundidade": 3.5},
+    {"nome": "Lagoa Verde", "x": 290, "y": -140, "rx": 50, "ry": 40, "nivel": 3.5, "profundidade": 2.5}
+  ],
+  "estradas": [
+    {"nome": "Distrito–Vila", "pontos": [[-185, 45], [-230, -70], [-290, -160], [-320, -230]]},
+    {"nome": "Distrito–Fazenda", "pontos": [[-185, 45], [-300, 10], [-400, -25]]},
+    {"nome": "Distrito–Forte", "pontos": [[-185, 45], [-230, 175], [-300, 290]]},
+    {"nome": "Distrito–Ruínas", "pontos": [[-185, 45], [-70, 35], [10, 70], [140, 110], [255, 80], [380, 70]]},
+    {"nome": "Vila–Porto", "pontos": [[-320, -230], [-185, -345], [-70, -415], [25, -460]]},
+    {"nome": "Porto–Selva", "pontos": [[25, -460], [150, -380], [265, -300], [335, -240]]},
+    {"nome": "Ruínas–Selva", "pontos": [[380, 70], [370, -70], [335, -240]]},
+    {"nome": "Trilha do Pico", "pontos": [[10, 70], [45, 205], [105, 300], [140, 365]]}
+  ],
+  "regioes": {
+    "selva": [{"x": 335, "y": -240, "rx": 195, "ry": 160}],
+    "floresta": [
+      {"nome": "Bosque Norte", "x": -90, "y": 265, "rx": 170, "ry": 105},
+      {"nome": "Mata do Forte", "x": -400, "y": 300, "rx": 110, "ry": 100},
+      {"nome": "Bosque da Encosta", "x": 300, "y": 185, "rx": 105, "ry": 70},
+      {"nome": "Mata Oeste", "x": -440, "y": -130, "rx": 70, "ry": 90},
+      {"nome": "Bosque Sul", "x": -160, "y": -440, "rx": 100, "ry": 60}
+    ],
+    "campos": [
+      {"nome": "Plantações", "x": -400, "y": -25, "rx": 125, "ry": 105},
+      {"nome": "Campina Central", "x": -70, "y": -160, "rx": 105, "ry": 70},
+      {"nome": "Prado Leste", "x": 230, "y": 25, "rx": 70, "ry": 60}
+    ]
+  },
+  "acampamentos": {
+    "_doc": "GDD §12: 12 pequenos (3 Imps), 6 médios (Puglin + 2 Imps), 3 elite (Puglin Ancião, acorda no fim da fase 1)",
+    "elite": [[140, 365], [345, -245], [385, 75]],
+    "medio": [[-80, 245], [275, 185], [-150, -310], [175, -405], [-415, 195], [445, -45]],
+    "pequeno": [[-290, 140], [-45, 125], [45, 230], [290, 140], [265, -10], [175, -195], [-105, -195], [-270, -340], [-435, 105], [90, -290], [420, -170], [-205, 290]]
+  }
+}

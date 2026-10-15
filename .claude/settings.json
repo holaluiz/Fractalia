@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit|Bash|PowerShell|mcp__unreal-mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -I \"D:/meus documentos/Fortnite/.claude/hooks/registro.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -I \"D:/meus documentos/Fortnite/.claude/hooks/registro.py\"",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+﻿Brick_90Angle_L                            size(m) w= 0.71 d= 0.70 h= 3.00 | min x=-1.00 y=+0.00 z=-0.70 max x=-0.29 y=+3.00 z=+0.00 | node_t=None
+Brick_90Angle_R                            size(m) w= 0.71 d= 0.70 h= 3.00 | min x=+0.29 y=+0.00 z=-0.70 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_BottomTrim                           size(m) w= 2.00 d= 0.23 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.03 | node_t=None
+Brick_Column_RedBricks                     size(m) w= 0.53 d= 0.72 h= 3.00 | min x=-0.14 y=-0.00 z=-0.61 max x=+0.38 y=+3.00 z=+0.11 | node_t=None
+Brick_Column_Small                         size(m) w= 0.25 d= 0.35 h= 3.00 | min x=-0.12 y=+0.00 z=-0.25 max x=+0.12 y=+3.00 z=+0.10 | node_t=None
+Brick_Column_TrimBricks                    size(m) w= 0.65 d= 0.64 h= 3.00 | min x=-0.15 y=-0.00 z=-0.52 max x=+0.50 y=+3.00 z=+0.12 | node_t=None
+Brick_CornerColumn_Bottom                  size(m) w= 1.26 d= 1.26 h= 3.00 | min x=-1.03 y=+0.00 z=-1.03 max x=+0.23 y=+3.00 z=+0.23 | node_t=None
+Brick_CornerColumn_Cap                     size(m) w= 1.26 d= 1.26 h= 1.01 | min x=-1.03 y=+2.00 z=-1.03 max x=+0.23 y=+3.01 z=+0.23 | node_t=None
+Brick_CornerColumn_CapShort                size(m) w= 1.26 d= 1.26 h= 0.24 | min x=-1.03 y=+2.80 z=-1.03 max x=+0.23 y=+3.04 z=+0.23 | node_t=None
+Brick_CornerColumn_Center                  size(m) w= 1.14 d= 1.14 h= 3.00 | min x=-0.97 y=+0.00 z=-0.97 max x=+0.17 y=+3.00 z=+0.17 | node_t=None
+Brick_CornerColumn_Center_Half             size(m) w= 1.14 d= 1.14 h= 2.00 | min x=-0.97 y=+0.00 z=-0.97 max x=+0.17 y=+2.00 z=+0.17 | node_t=None
+Brick_CornerColumn_Top                     size(m) w= 1.26 d= 1.26 h= 3.00 | min x=-1.03 y=+0.00 z=-1.03 max x=+0.23 y=+3.00 z=+0.23 | node_t=None
+Brick_Corner_Plain                         size(m) w= 2.00 d= 2.00 h= 3.00 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_HalfColumn_Bottom                    size(m) w= 1.11 d= 0.28 h= 3.00 | min x=-0.55 y=+0.00 z=-0.04 max x=+0.55 y=+3.00 z=+0.24 | node_t=None
+Brick_HalfColumn_Center                    size(m) w= 0.93 d= 0.21 h= 3.00 | min x=-0.47 y=-0.00 z=-0.04 max x=+0.47 y=+3.00 z=+0.17 | node_t=None
+Brick_HalfColumn_Top                       size(m) w= 1.11 d= 0.28 h= 3.00 | min x=-0.55 y=+0.00 z=-0.04 max x=+0.55 y=+3.00 z=+0.24 | node_t=None
+Brick_HalfTrim                             size(m) w= 2.00 d= 0.22 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.02 | node_t=None
+Brick_Inset                                size(m) w= 4.00 d= 0.20 h= 3.00 | min x=-2.00 y=+0.00 z=-0.20 max x=+2.00 y=+3.00 z=+0.00 | node_t=None
+Brick_Inset_Window                         size(m) w= 4.00 d= 0.37 h= 3.00 | min x=-2.00 y=+0.00 z=-0.25 max x=+2.00 y=+3.00 z=+0.13 | node_t=None
+Brick_Inset_Window_Curved                  size(m) w= 4.00 d= 0.37 h= 3.00 | min x=-2.00 y=-0.00 z=-0.24 max x=+2.00 y=+3.00 z=+0.13 | node_t=None
+Brick_Inset_Window_Curved_Small            size(m) w= 4.00 d= 0.34 h= 3.00 | min x=-2.00 y=+0.00 z=-0.24 max x=+2.00 y=+3.00 z=+0.10 | node_t=None
+Brick_InteriorWall_1                       size(m) w= 2.00 d= 0.00 h= 1.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+1.00 z=-0.20 | node_t=None
+Brick_InteriorWall_3                       size(m) w= 2.00 d= 0.00 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=-0.20 | node_t=None
+Brick_InteriorWall_4                       size(m) w= 2.00 d= 0.00 h= 4.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+4.00 z=-0.20 | node_t=None
+Brick_Ornament_Horizontal                  size(m) w= 2.00 d= 0.05 h= 0.31 | min x=-1.00 y=-0.17 z=+0.00 max x=+1.00 y=+0.15 z=+0.05 | node_t=None
+Brick_Plain_1                              size(m) w= 2.00 d= 0.20 h= 1.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Brick_Plain_3                              size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_Plain_3_noWear                       size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_Plain_4                              size(m) w= 2.00 d= 0.20 h= 4.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+4.00 z=+0.00 | node_t=None
+Brick_RedWhite_DoubleWindow                size(m) w= 4.00 d= 0.28 h= 3.00 | min x=-2.00 y=+0.00 z=-0.24 max x=+2.00 y=+3.00 z=+0.04 | node_t=None
+Brick_TopTrim                              size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_TopTrim_90Angle_L                    size(m) w= 0.71 d= 0.70 h= 3.00 | min x=-1.00 y=+0.00 z=-0.70 max x=-0.29 y=+3.00 z=+0.00 | node_t=None
+Brick_TopTrim_90Angle_R                    size(m) w= 0.71 d= 0.70 h= 3.00 | min x=+0.29 y=+0.00 z=-0.70 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_TopTrim_Corner                       size(m) w= 2.00 d= 2.00 h= 3.00 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Brick_Window_CurvedDouble                  size(m) w= 4.00 d= 0.26 h= 3.00 | min x=-2.00 y=+0.00 z=-0.26 max x=+2.00 y=+3.00 z=+0.00 | node_t=None
+Brick_Window_Square_Single                 size(m) w= 2.00 d= 0.27 h= 3.00 | min x=-1.00 y=+0.00 z=-0.24 max x=+1.00 y=+3.00 z=+0.04 | node_t=None
+Brick_Window_Trim                          size(m) w= 2.00 d= 0.30 h= 3.00 | min x=-1.00 y=+0.00 z=-0.26 max x=+1.00 y=+3.00 z=+0.05 | node_t=None
+Brick_Window_Trim_Single                   size(m) w= 2.00 d= 0.28 h= 3.00 | min x=-1.00 y=+0.00 z=-0.23 max x=+1.00 y=+3.00 z=+0.04 | node_t=None
+Building_Large_2                           size(m) w=20.64 d=16.64 h=28.00 | min x=-9.32 y=+0.00 z=-16.32 max x=+11.32 y=+28.00 z=+0.32 | node_t=None
+Building_Medium_2_001                      size(m) w=15.06 d=13.06 h=25.01 | min x=-7.53 y=-0.01 z=-12.49 max x=+7.53 y=+25.00 z=+0.57 | node_t=None
+Building_Small_1                           size(m) w=12.46 d=14.54 h=17.03 | min x=-7.23 y=-0.01 z=-12.23 max x=+5.23 y=+17.01 z=+2.31 | node_t=None
+Cornice_Brick_90Angle_L                    size(m) w= 2.00 d= 0.90 h= 1.00 | min x=-1.00 y=+0.00 z=-0.90 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Cornice_Brick_90Angle_R                    size(m) w= 2.00 d= 0.90 h= 1.00 | min x=-1.00 y=+0.00 z=-0.90 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Cornice_Brick_Center                       size(m) w= 2.00 d= 0.40 h= 1.00 | min x=-1.00 y=+0.00 z=-0.40 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Cornice_Brick_L                            size(m) w= 2.00 d= 0.40 h= 1.00 | min x=-1.00 y=+0.00 z=-0.40 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Cornice_Brick_R                            size(m) w= 2.00 d= 0.40 h= 1.00 | min x=-1.00 y=+0.00 z=-0.40 max x=+1.00 y=+1.00 z=+0.00 | node_t=None
+Cornice_Metal_90Angle_L                    size(m) w= 2.00 d= 0.70 h= 1.00 | min x=-1.00 y=+0.00 z=-0.60 max x=+1.00 y=+1.00 z=+0.10 | node_t=None
+Cornice_Metal_90Angle_R                    size(m) w= 2.00 d= 0.70 h= 1.00 | min x=-1.00 y=+0.00 z=-0.60 max x=+1.00 y=+1.00 z=+0.10 | node_t=None
+Cornice_Metal_Center                       size(m) w= 2.00 d= 0.20 h= 1.00 | min x=-1.00 y=+0.00 z=-0.10 max x=+1.00 y=+1.00 z=+0.10 | node_t=None
+Cornice_Metal_L                            size(m) w= 2.10 d= 0.20 h= 1.00 | min x=-1.10 y=+0.00 z=-0.10 max x=+1.00 y=+1.00 z=+0.10 | node_t=None
+Cornice_Metal_R                            size(m) w= 2.10 d= 0.20 h= 1.00 | min x=-1.00 y=+0.00 z=-0.10 max x=+1.10 y=+1.00 z=+0.10 | node_t=None
+Cornice_Trim_90Angle_L                     size(m) w= 2.00 d= 1.13 h= 1.00 | min x=-1.00 y=+0.00 z=-0.60 max x=+1.00 y=+1.00 z=+0.53 | node_t=None
+Cornice_Trim_90Angle_R                     size(m) w= 2.00 d= 1.13 h= 1.00 | min x=-1.00 y=+0.00 z=-0.60 max x=+1.00 y=+1.00 z=+0.53 | node_t=None
+Cornice_Trim_Center                        size(m) w= 2.00 d= 0.63 h= 1.00 | min x=-1.00 y=+0.00 z=-0.10 max x=+1.00 y=+1.00 z=+0.53 | node_t=None
+Cornice_Trim_L                             size(m) w= 2.53 d= 0.63 h= 1.00 | min x=-1.53 y=+0.00 z=-0.10 max x=+1.00 y=+1.00 z=+0.53 | node_t=None
+Cornice_Trim_R                             size(m) w= 2.53 d= 0.63 h= 1.00 | min x=-1.00 y=+0.00 z=-0.10 max x=+1.53 y=+1.00 z=+0.53 | node_t=None
+Decal_ArrowForwardLeft                     size(m) w= 1.78 d= 2.67 h= 0.00 | min x=-1.36 y=-0.13 z=-1.37 max x=+0.42 y=-0.13 z=+1.30 | node_t=None
+Decal_ArrowForwardRight                    size(m) w= 1.78 d= 2.67 h= 0.00 | min x=-0.42 y=-0.13 z=-1.37 max x=+1.36 y=-0.13 z=+1.30 | node_t=None
+Decal_ArrowStraight                        size(m) w= 0.94 d= 2.37 h= 0.00 | min x=-0.47 y=-0.13 z=-1.18 max x=+0.47 y=-0.13 z=+1.18 | node_t=None
+Decal_ArrowTurnLeft                        size(m) w= 1.99 d= 2.50 h= 0.00 | min x=-1.15 y=-0.13 z=-1.23 max x=+0.84 y=-0.13 z=+1.27 | node_t=None
+Decal_ArrowTurnRight                       size(m) w= 1.99 d= 2.50 h= 0.00 | min x=-0.84 y=-0.13 z=-1.23 max x=+1.15 y=-0.13 z=+1.27 | node_t=None
+Decal_Bikelane                             size(m) w= 2.97 d= 2.82 h= 0.00 | min x=-1.46 y=-0.13 z=-1.75 max x=+1.50 y=-0.13 z=+1.06 | node_t=None
+Decal_BrokenLine_Straight                  size(m) w= 6.00 d= 0.20 h= 0.00 | min x=-3.00 y=-0.13 z=-0.10 max x=+3.00 y=-0.13 z=+0.10 | node_t=None
+Decal_Crosswalk                            size(m) w= 4.54 d= 5.43 h= 0.00 | min x=-2.27 y=-0.15 z=-2.71 max x=+2.27 y=-0.15 z=+2.71 | node_t=None
+Decal_Crosswalk_Wide                       size(m) w= 4.67 d=11.42 h= 0.00 | min x=-1.57 y=-0.15 z=-5.71 max x=+1.57 y=-0.15 z=+5.71 | node_t=None
+Decal_Curve_2Lane_Stripe                   size(m) w= 8.80 d= 8.80 h= 0.00 | min x=-0.00 y=-0.15 z=-0.00 max x=+8.80 y=-0.15 z=+8.80 | node_t=None
+Decal_Curve_4LaneShort                     size(m) w= 9.10 d= 9.10 h= 0.00 | min x=+0.00 y=-0.15 z=-0.00 max x=+9.10 y=-0.15 z=+9.10 | node_t=None
+Decal_Curve_4LaneShort_DoubleYellow        size(m) w= 9.20 d= 9.20 h= 0.00 | min x=+0.00 y=-0.15 z=-0.00 max x=+9.20 y=-0.15 z=+9.20 | node_t=None
+Decal_Curve_4LaneShort_Stripe              size(m) w=14.80 d=14.80 h= 0.00 | min x=-0.00 y=-0.15 z=-0.00 max x=+14.80 y=-0.15 z=+14.80 | node_t=None
+Decal_DoubleYellow_Straight                size(m) w= 6.00 d= 0.39 h= 0.00 | min x=-3.00 y=-0.11 z=-0.20 max x=+3.00 y=-0.11 z=+0.20 | node_t=None
+Decal_Only                                 size(m) w= 2.90 d= 1.38 h= 0.00 | min x=-1.45 y=-0.13 z=-0.69 max x=+1.45 y=-0.13 z=+0.69 | node_t=None
+Decal_Slow                                 size(m) w= 2.94 d= 1.41 h= 0.00 | min x=-1.47 y=-0.13 z=-0.70 max x=+1.47 y=-0.13 z=+0.70 | node_t=None
+Decal_Stop                                 size(m) w= 2.96 d= 1.52 h= 0.00 | min x=-1.48 y=-0.13 z=-0.76 max x=+1.48 y=-0.13 z=+0.76 | node_t=None
+DoorFrame_Metal_Single                     size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+DoorFrame_Trim                             size(m) w= 2.00 d= 0.23 h= 3.00 | min x=-1.00 y=+0.00 z=-0.23 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+DoorFrame_Wooden                           size(m) w= 2.30 d= 0.48 h= 3.00 | min x=-1.15 y=+0.00 z=-0.26 max x=+1.15 y=+3.00 z=+0.22 | node_t=None
+Door_1                                     size(m) w= 1.00 d= 0.26 h= 2.20 | min x=-1.00 y=+0.00 z=-0.13 max x=+0.00 y=+2.20 z=+0.13 | node_t=None
+Door_2                                     size(m) w= 1.00 d= 0.21 h= 2.20 | min x=-1.00 y=+0.00 z=-0.10 max x=+0.00 y=+2.20 z=+0.11 | node_t=None
+Door_3                                     size(m) w= 1.00 d= 0.19 h= 2.20 | min x=-1.00 y=+0.00 z=-0.09 max x=+0.00 y=+2.20 z=+0.09 | node_t=None
+Entrance_Concrete_2x1                      size(m) w= 2.00 d= 1.00 h= 1.01 | min x=-1.00 y=+0.00 z=-0.00 max x=+1.00 y=+1.01 z=+1.00 | node_t=None
+Entrance_Concrete_2x2                      size(m) w= 2.00 d= 2.00 h= 1.01 | min x=-1.00 y=+0.00 z=-1.00 max x=+1.00 y=+1.01 z=+1.00 | node_t=None
+Floor_2x2                                  size(m) w= 2.00 d= 2.00 h= 0.10 | min x=-1.00 y=-0.10 z=-1.00 max x=+1.00 y=+0.00 z=+1.00 | node_t=None
+Floor_4x4                                  size(m) w= 4.00 d= 4.00 h= 0.10 | min x=-2.00 y=-0.10 z=-2.00 max x=+2.00 y=+0.00 z=+2.00 | node_t=None
+Floor_Inset                                size(m) w= 2.00 d= 1.33 h= 0.10 | min x=-1.00 y=-0.10 z=-1.00 max x=+1.00 y=+0.00 z=+0.33 | node_t=None
+Metal_Column_Bottom                        size(m) w= 0.57 d= 0.57 h= 3.00 | min x=-0.28 y=+0.00 z=-0.28 max x=+0.28 y=+3.00 z=+0.28 | node_t=None
+Metal_Column_Center                        size(m) w= 0.50 d= 0.50 h= 3.00 | min x=-0.25 y=+0.00 z=-0.25 max x=+0.25 y=+3.00 z=+0.25 | node_t=None
+Metal_Column_Small_Bottom                  size(m) w= 0.28 d= 0.28 h= 3.00 | min x=-0.14 y=+0.00 z=-0.14 max x=+0.14 y=+3.00 z=+0.14 | node_t=None
+Metal_Column_Small_Center                  size(m) w= 0.25 d= 0.25 h= 3.00 | min x=-0.12 y=+0.00 z=-0.12 max x=+0.12 y=+3.00 z=+0.12 | node_t=None
+Metal_Column_Small_Top                     size(m) w= 0.32 d= 0.32 h= 3.00 | min x=-0.16 y=+0.00 z=-0.16 max x=+0.16 y=+3.00 z=+0.16 | node_t=None
+Metal_Column_Top                           size(m) w= 0.64 d= 0.64 h= 3.00 | min x=-0.32 y=+0.00 z=-0.32 max x=+0.32 y=+3.00 z=+0.32 | node_t=None
+Metal_FirstFloor_Wall                      size(m) w= 2.00 d= 0.24 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.04 | node_t=None
+Metal_FirstFloor_Wall_1                    size(m) w= 2.00 d= 0.24 h= 1.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+1.00 z=+0.04 | node_t=None
+Metal_FirstFloor_Window                    size(m) w= 2.00 d= 0.26 h= 3.00 | min x=-1.00 y=+0.00 z=-0.22 max x=+1.00 y=+3.00 z=+0.04 | node_t=None
+Metal_FullWindow                           size(m) w= 2.00 d= 0.23 h= 3.00 | min x=-1.00 y=+0.00 z=-0.22 max x=+1.00 y=+3.00 z=+0.02 | node_t=None
+Metal_Plain_1                              size(m) w= 2.00 d= 0.20 h= 1.00 | min x=-1.00 y=-0.00 z=-0.20 max x=+1.00 y=+1.00 z=-0.00 | node_t=None
+Metal_Plain_3                              size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=-0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Metal_Window                               size(m) w= 4.00 d= 0.22 h= 3.00 | min x=-2.00 y=-0.00 z=-0.22 max x=+2.00 y=+3.00 z=+0.00 | node_t=None
+Metal_Window_Half                          size(m) w= 2.00 d= 0.23 h= 3.00 | min x=-1.00 y=-0.00 z=-0.21 max x=+1.00 y=+3.00 z=+0.02 | node_t=None
+Prop_ACUnit                                size(m) w= 0.89 d= 0.35 h= 0.60 | min x=-0.41 y=-0.00 z=-0.02 max x=+0.48 y=+0.60 z=+0.33 | node_t=None
+Prop_Bollard                               size(m) w= 0.22 d= 0.23 h= 0.89 | min x=-0.11 y=+0.00 z=-0.11 max x=+0.11 y=+0.89 z=+0.11 | node_t=None
+Prop_Drain                                 size(m) w= 0.59 d= 0.59 h= 0.04 | min x=-0.29 y=+0.00 z=-0.29 max x=+0.29 y=+0.04 z=+0.29 | node_t=None
+Prop_ManholeCover                          size(m) w= 0.93 d= 0.93 h= 0.03 | min x=-0.46 y=-0.01 z=-0.46 max x=+0.46 y=+0.02 z=+0.46 | node_t=None
+Prop_Planter_Single                        size(m) w= 2.00 d= 2.00 h= 0.60 | min x=-1.00 y=+0.00 z=-1.00 max x=+1.00 y=+0.60 z=+1.00 | node_t=None
+Roof_2x2                                   size(m) w= 2.00 d= 2.00 h= 0.00 | min x=-1.00 y=-0.20 z=-1.00 max x=+1.00 y=-0.20 z=+1.00 | node_t=None
+Roof_2x2_90Angle_Center                    size(m) w= 2.00 d= 1.60 h= 0.00 | min x=-1.00 y=-0.20 z=-1.00 max x=+1.00 y=-0.20 z=+0.60 | node_t=None
+Roof_2x2_90Angle_L                         size(m) w= 2.00 d= 2.00 h= 0.00 | min x=-1.00 y=-0.20 z=-1.00 max x=+1.00 y=-0.20 z=+1.00 | node_t=None
+Roof_2x2_90Angle_R                         size(m) w= 2.00 d= 2.00 h= 0.00 | min x=-1.00 y=-0.20 z=-1.00 max x=+1.00 y=-0.20 z=+1.00 | node_t=None
+Roof_4x4                                   size(m) w= 4.00 d= 4.00 h= 0.00 | min x=-2.00 y=-0.20 z=-2.00 max x=+2.00 y=-0.20 z=+2.00 | node_t=None
+Roof_SlateCornice_Center                   size(m) w= 2.00 d= 2.00 h= 3.20 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.20 z=+0.00 | node_t=None
+Roof_SlateCornice_Corner                   size(m) w= 2.02 d= 2.03 h= 3.21 | min x=-1.02 y=-0.01 z=-2.00 max x=+1.00 y=+3.20 z=+0.03 | node_t=None
+Roof_SlateCornice_InnerCorner              size(m) w= 2.00 d= 2.00 h= 3.20 | min x=-2.00 y=+0.00 z=-0.00 max x=+0.00 y=+3.20 z=+2.00 | node_t=None
+Roof_SlateCornice_Window_1                 size(m) w= 2.00 d= 2.12 h= 3.20 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.20 z=+0.12 | node_t=None
+Roof_Slate_Center                          size(m) w= 2.00 d= 2.00 h= 3.00 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Roof_Slate_Corner                          size(m) w= 2.02 d= 2.03 h= 3.03 | min x=-1.02 y=-0.01 z=-2.00 max x=+1.00 y=+3.01 z=+0.03 | node_t=None
+Roof_Slate_InnerCorner                     size(m) w= 2.00 d= 2.00 h= 3.00 | min x=-2.00 y=+0.00 z=-0.00 max x=+0.00 y=+3.00 z=+2.00 | node_t=None
+Roof_Slate_Window_1                        size(m) w= 2.00 d= 2.12 h= 3.00 | min x=-1.00 y=+0.00 z=-2.00 max x=+1.00 y=+3.00 z=+0.12 | node_t=None
+Sidewalk_Corner_Flat_3m                    size(m) w= 3.01 d= 3.01 h= 0.15 | min x=-1.51 y=-0.15 z=-1.50 max x=+1.50 y=+0.00 z=+1.51 | node_t=None
+Sidewalk_Corner_Flat_3m_Stripe             size(m) w= 3.40 d= 3.40 h= 0.00 | min x=-1.90 y=-0.15 z=-1.50 max x=+1.50 y=-0.15 z=+1.90 | node_t=None
+Sidewalk_Corner_Round_3m                   size(m) w= 3.01 d= 3.01 h= 0.15 | min x=-1.51 y=-0.15 z=-1.50 max x=+1.50 y=+0.00 z=+1.51 | node_t=None
+Sidewalk_Corner_Round_3m_Stripe            size(m) w= 3.40 d= 3.40 h= 0.00 | min x=-1.90 y=-0.15 z=-1.50 max x=+1.50 y=-0.15 z=+1.90 | node_t=None
+Sidewalk_NoCurb_3m                         size(m) w= 3.00 d= 3.00 h= 0.15 | min x=-1.50 y=-0.15 z=-1.50 max x=+1.50 y=+0.00 z=+1.50 | node_t=None
+Sidewalk_Planter                           size(m) w= 1.97 d= 1.77 h= 0.51 | min x=-0.99 y=+0.00 z=-0.88 max x=+0.99 y=+0.51 z=+0.88 | node_t=None
+Sidewalk_Straight_3m                       size(m) w= 3.00 d= 3.01 h= 0.15 | min x=-1.50 y=-0.15 z=-1.50 max x=+1.50 y=+0.00 z=+1.51 | node_t=None
+Sidewalk_Straight_3m_Stripe                size(m) w= 3.00 d= 0.20 h= 0.00 | min x=-1.50 y=-0.15 z=+1.70 max x=+1.50 y=-0.15 z=+1.90 | node_t=None
+Stairs_Entrance_Concrete                   size(m) w= 2.00 d= 1.99 h= 1.01 | min x=-1.00 y=+0.00 z=+0.00 max x=+1.00 y=+1.01 z=+1.99 | node_t=None
+Stairs_Rails_Metal                         size(m) w= 1.96 d= 2.31 h= 1.98 | min x=-0.98 y=-0.01 z=+0.00 max x=+0.98 y=+1.97 z=+2.31 | node_t=None
+Stairs_Rails_Metal_Straight_1              size(m) w= 1.94 d= 1.00 h= 1.00 | min x=-0.97 y=+0.97 z=+0.00 max x=+0.97 y=+1.97 z=+1.00 | node_t=None
+Stairs_Rails_Metal_Straight_2              size(m) w= 1.94 d= 2.00 h= 1.00 | min x=-0.97 y=+0.97 z=-1.00 max x=+0.97 y=+1.97 z=+1.00 | node_t=None
+Street_2Lane                               size(m) w= 6.00 d=12.00 h= 0.15 | min x=-3.00 y=-0.15 z=-6.00 max x=+3.00 y=+0.00 z=+6.00 | node_t=None
+Street_2Lane_noSidewalk                    size(m) w= 6.00 d= 6.00 h= 0.00 | min x=-3.00 y=-0.15 z=-3.00 max x=+3.00 y=-0.15 z=+3.00 | node_t=None
+Street_4Lane                               size(m) w= 6.00 d=18.00 h= 0.15 | min x=-3.00 y=-0.15 z=-9.00 max x=+3.00 y=+0.00 z=+9.00 | node_t=None
+Street_4Lane_noSidewalk                    size(m) w= 6.00 d=12.00 h= 0.00 | min x=-3.00 y=-0.15 z=-6.00 max x=+3.00 y=-0.15 z=+6.00 | node_t=None
+Street_4WayIntersection                    size(m) w=24.67 d=24.67 h= 0.15 | min x=-12.33 y=-0.15 z=-12.33 max x=+12.33 y=+0.00 z=+12.33 | node_t=None
+Street_Asphalt_6x6                         size(m) w= 6.00 d= 6.00 h= 0.00 | min x=-3.00 y=-0.15 z=-3.00 max x=+3.00 y=-0.15 z=+3.00 | node_t=None
+Street_Asphalt_9x9                         size(m) w= 9.00 d= 9.00 h= 0.00 | min x=-9.00 y=-0.15 z=-9.00 max x=+0.00 y=-0.15 z=+0.00 | node_t=None
+Street_Asphalt_Curve_2Lane                 size(m) w=10.00 d=10.00 h= 0.00 | min x=-0.00 y=-0.15 z=+0.00 max x=+10.00 y=-0.15 z=+10.00 | node_t=None
+Street_Asphalt_Curve_4Lane_Short           size(m) w=16.00 d=16.00 h= 0.00 | min x=-0.00 y=-0.15 z=+0.00 max x=+16.00 y=-0.15 z=+16.00 | node_t=None
+Street_Curve_2Lane                         size(m) w=12.00 d=12.00 h= 0.15 | min x=-0.00 y=-0.15 z=-0.00 max x=+12.00 y=+0.00 z=+12.00 | node_t=None
+Street_Curve_2Lane_Curb                    size(m) w=12.00 d=12.00 h= 0.15 | min x=-0.00 y=-0.15 z=-0.00 max x=+12.00 y=+0.00 z=+12.00 | node_t=None
+Street_Curve_4LaneShort                    size(m) w=18.00 d=18.00 h= 0.15 | min x=-0.00 y=-0.15 z=-0.00 max x=+18.00 y=+0.00 z=+18.00 | node_t=None
+Street_Curve_4Lane_Short_Curb              size(m) w=18.00 d=18.00 h= 0.15 | min x=-0.00 y=-0.15 z=-0.00 max x=+18.00 y=+0.00 z=+18.00 | node_t=None
+Street_TIntersection                       size(m) w=24.67 d=21.33 h= 0.15 | min x=-12.33 y=-0.15 z=-12.33 max x=+12.33 y=+0.00 z=+9.00 | node_t=None
+Trim_90Angle_TopCover                      size(m) w= 2.00 d= 0.70 h= 0.02 | min x=-1.00 y=-0.02 z=-0.70 max x=+1.00 y=+0.00 z=+0.00 | node_t=None
+Trim_Column_Bottom                         size(m) w= 0.72 d= 0.72 h= 3.00 | min x=-0.36 y=-0.00 z=-0.36 max x=+0.36 y=+3.00 z=+0.36 | node_t=None
+Trim_Column_Center                         size(m) w= 0.67 d= 0.67 h= 3.00 | min x=-0.34 y=+0.00 z=-0.34 max x=+0.34 y=+3.00 z=+0.34 | node_t=None
+Trim_Column_Top                            size(m) w= 0.72 d= 0.72 h= 3.00 | min x=-0.36 y=-0.00 z=-0.36 max x=+0.36 y=+3.00 z=+0.36 | node_t=None
+Trim_Corner                                size(m) w= 2.05 d= 2.05 h= 3.00 | min x=-1.05 y=+0.00 z=-2.00 max x=+1.00 y=+3.00 z=+0.05 | node_t=None
+Trim_FirstFloor_Wall                       size(m) w= 2.00 d= 0.25 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.05 | node_t=None
+Trim_FirstFloor_Window_001                 size(m) w= 2.00 d= 0.22 h= 3.01 | min x=-1.00 y=-0.01 z=-0.22 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Trim_FirstFloor_Window_Columns             size(m) w= 2.15 d= 0.09 h= 2.34 | min x=-1.07 y=+0.59 z=-0.12 max x=+1.07 y=+2.93 z=-0.03 | node_t=None
+Trim_Plain_3                               size(m) w= 2.00 d= 0.20 h= 3.00 | min x=-1.00 y=+0.00 z=-0.20 max x=+1.00 y=+3.00 z=+0.00 | node_t=None
+Trim_Wall_Guard                            size(m) w= 2.00 d= 0.12 h= 0.64 | min x=-1.00 y=+0.00 z=+0.00 max x=+1.00 y=+0.64 z=+0.12 | node_t=None
+Trim_Window                                size(m) w= 2.00 d= 0.24 h= 3.00 | min x=-1.00 y=+0.00 z=-0.24 max x=+1.00 y=+3.00 z=+0.00 | node_t=None

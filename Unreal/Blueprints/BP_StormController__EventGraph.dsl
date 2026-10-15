@@ -1,0 +1,15 @@
+; BP_StormController: shows the initial circle, then follows CT_Storm once StartStorm runs (called by GM_NexusRoyale)
+(event EventBeginPlay
+  (Variables|Default|SetCurCenter (Math|Vector|MakeVector :X 0.0 :Y 0.0 :Z 0.0))
+  (bind r0 (CallFunction|StormValue :Row "Radius" :Phase 0))
+  (Variables|Default|SetCurRadius (* r0 100.0))
+  (CallFunction|UpdateWall)
+  (if (Networking|HasAuthority)
+    (Utilities|Time|SetTimerbyFunctionName :Object self :FunctionName "DamageTick" :Time 1.0 :bLooping true)))
+
+(event EventTick (DeltaSeconds)
+  (if (Variables|Default|GetStarted)
+    (CallFunction|UpdateCircle)
+    (CallFunction|UpdateWall)
+    (if (Networking|HasAuthority)
+      (CallFunction|CheckPhaseEvents))))

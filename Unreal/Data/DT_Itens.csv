@@ -1,0 +1,34 @@
+﻿Name,Nome,Tipo,Slot,Malha,bLendario,VidaMax,ManaMax,Armadura,DanoFisico,PoderMagico,VelocMov,VelocAtaque,ReducaoRecarga,RegenMana,EscalaComAtributo,Cura,CuraDuracao,Mana,ManaDuracao,Pressa,PressaDuracao,Pilha,Magia
+CouracaCouro,Couraça de Couro,Equipamento,Armadura,/Game/Quaternius/Items/Armor_Leather/Armor_Leather.Armor_Leather,False,60,0,0,0,0,0.04,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+CotaPlacas,Cota de Placas,Equipamento,Armadura,/Game/Quaternius/Items/Armor_Metal/Armor_Metal.Armor_Metal,False,100,0,4,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+MantoRunico,Manto Rúnico,Equipamento,Armadura,/Game/Quaternius/Items/Armor_Black/Armor_Black.Armor_Black,False,60,50,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+ElmoFerro,Elmo de Ferro,Equipamento,Cabeca,/Game/Quaternius/Items/Crown2/Crown2.Crown2,False,50,0,3,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+DiademaArcano,Diadema Arcano,Equipamento,Cabeca,/Game/Quaternius/Items/Crown/Crown.Crown,False,0,40,0,0,0.05,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+CapuzRastreador,Capuz do Rastreador,Equipamento,Cabeca,/Game/Quaternius/Items/Glove/Glove.Glove,False,0,0,0,0,0,0.03,0.05,0,0,Nenhum,0,0,0,0,0,0,1,None
+AnelForca,Anel da Força,Equipamento,Anel,/Game/Quaternius/Items/Ring1/Ring1.Ring1,False,0,0,0,0.06,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+AnelFoco,Anel do Foco,Equipamento,Anel,/Game/Quaternius/Items/Ring2/Ring2.Ring2,False,0,0,0,0,0.06,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+AnelVento,Anel do Vento,Equipamento,Anel,/Game/Quaternius/Items/Ring3/Ring3.Ring3,False,0,0,0,0,0,0.05,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+AnelFonte,Anel da Fonte,Equipamento,Anel,/Game/Quaternius/Items/Ring4/Ring4.Ring4,False,0,0,0,0,0,0,0,0,0.6,Nenhum,0,0,0,0,0,0,1,None
+AmuletoTempo,Amuleto do Tempo,Equipamento,Amuleto,/Game/Quaternius/Items/Necklace1/Necklace1.Necklace1,False,0,0,0,0,0,0,0,0.06,0,Nenhum,0,0,0,0,0,0,1,None
+AmuletoVital,Amuleto Vital,Equipamento,Amuleto,/Game/Quaternius/Items/Heart/Heart.Heart,False,100,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,None
+AmuletoDuelista,Amuleto do Duelista,Equipamento,Amuleto,/Game/Quaternius/Items/Necklace2/Necklace2.Necklace2,False,0,0,0,0.01,0,0,0,0,0,Forca,0,0,0,0,0,0,1,None
+AmuletoErudito,Amuleto do Erudito,Equipamento,Amuleto,/Game/Quaternius/Items/Necklace3/Necklace3.Necklace3,False,0,0,0,0,0.01,0,0,0,0,Intelecto,0,0,0,0,0,0,1,None
+AmuletoEremita,Amuleto do Eremita,Equipamento,Amuleto,/Game/Quaternius/Items/Necklace1/Necklace1.Necklace1,False,0,0,0,0,0,0,0,0.006,0,Espirito,0,0,0,0,0,0,1,None
+ComidaLeve,Comida leve,Consumivel,Nenhum,/Game/Quaternius/Items/Apple/Apple.Apple,False,0,0,0,0,0,0,0,0,0,Nenhum,60,2,0,0,0,0,6,None
+Refeicao,Refeição,Consumivel,Nenhum,/Game/Quaternius/Items/Burger/Burger.Burger,False,0,0,0,0,0,0,0,0,0,Nenhum,200,5,0,0,0,0,3,None
+PocaoMana,Poção de Mana,Consumivel,Nenhum,/Game/Quaternius/Items/Potion5_Filled/Potion5_Filled.Potion5_Filled,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,120,1,0,0,3,None
+PocaoPressa,Poção de Pressa,Consumivel,Nenhum,/Game/Quaternius/Items/Potion9_Filled/Potion9_Filled.Potion9_Filled,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0.25,6,2,None
+Grimorio_Arremetida,Grimório: Arremetida,Grimorio,Nenhum,/Game/Quaternius/Items/Book1_Closed/Book1_Closed.Book1_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Arremetida
+Grimorio_TiroRasante,Grimório: Tiro Rasante,Grimorio,Nenhum,/Game/Quaternius/Items/Book2_Closed/Book2_Closed.Book2_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,TiroRasante
+Grimorio_BolaDeFogo,Grimório: Bola de Fogo,Grimorio,Nenhum,/Game/Quaternius/Items/Book3_Closed/Book3_Closed.Book3_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,BolaDeFogo
+Grimorio_MuroDeChamas,Grimório: Muro de Chamas,Grimorio,Nenhum,/Game/Quaternius/Items/Book4_Closed/Book4_Closed.Book4_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,MuroDeChamas
+Grimorio_MuralhaDeGelo,Grimório: Muralha de Gelo,Grimorio,Nenhum,/Game/Quaternius/Items/Book1_Closed/Book1_Closed.Book1_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,MuralhaDeGelo
+Grimorio_CoracaoGelido,Grimório: Coração Gélido,Grimorio,Nenhum,/Game/Quaternius/Items/Book2_Closed/Book2_Closed.Book2_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,CoracaoGelido
+Grimorio_PilarDePedra,Grimório: Pilar de Pedra,Grimorio,Nenhum,/Game/Quaternius/Items/Book3_Closed/Book3_Closed.Book3_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,PilarDePedra
+Grimorio_Fissura,Grimório: Fissura,Grimorio,Nenhum,/Game/Quaternius/Items/Book4_Closed/Book4_Closed.Book4_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Fissura
+Grimorio_Rajada,Grimório: Rajada,Grimorio,Nenhum,/Game/Quaternius/Items/Book1_Closed/Book1_Closed.Book1_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Rajada
+Grimorio_CargaEstatica,Grimório: Carga Estática,Grimorio,Nenhum,/Game/Quaternius/Items/Book2_Closed/Book2_Closed.Book2_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,CargaEstatica
+Grimorio_NevoaSombria,Grimório: Névoa Sombria,Grimorio,Nenhum,/Game/Quaternius/Items/Book3_Closed/Book3_Closed.Book3_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,NevoaSombria
+Grimorio_Sifao,Grimório: Sifão,Grimorio,Nenhum,/Game/Quaternius/Items/Book4_Closed/Book4_Closed.Book4_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Sifao
+Grimorio_Farol,Grimório: Farol,Grimorio,Nenhum,/Game/Quaternius/Items/Book1_Closed/Book1_Closed.Book1_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Farol
+Grimorio_Graca,Grimório: Graça,Grimorio,Nenhum,/Game/Quaternius/Items/Book2_Closed/Book2_Closed.Book2_Closed,False,0,0,0,0,0,0,0,0,0,Nenhum,0,0,0,0,0,0,1,Graca

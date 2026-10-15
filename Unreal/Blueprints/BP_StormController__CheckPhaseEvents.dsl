@@ -1,0 +1,11 @@
+; Server: fires OnPhaseEnded (with the level floor from CT_Storm) and OnPhaseStarted when the phase changes
+(fn CheckPhaseEvents ()
+  (bind p (Variables|Default|GetCurPhase))
+  (bind last (Variables|Default|GetLastPhase))
+  (if (!= p last)
+    (if (> last 0)
+      (bind floor (CallFunction|StormValue :Row "LevelFloor" :Phase last))
+      (Default|CallOnPhaseEnded :Phase last :LevelFloor (Math|Float|Truncate floor)))
+    (if (<= p 6)
+      (Default|CallOnPhaseStarted :Phase p))
+    (Variables|Default|SetLastPhase p)))

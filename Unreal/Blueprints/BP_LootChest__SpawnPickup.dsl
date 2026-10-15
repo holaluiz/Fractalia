@@ -1,0 +1,7 @@
+; Pickups land in a row in front of the chest (Slot 0..2)
+(fn SpawnPickup (Mesh Label Kind Rarity Slot)
+  (bind side (* (Math|Conversions|ToFloat(Integer) (- Slot 1)) 90.0))
+  (bind off (+ (* (Transformation|GetActorForwardVector) 140.0) (* (Transformation|GetActorRightVector) side)))
+  (bind loc (+ (Transformation|GetActorLocation) off))
+  (bind p (Game|SpawnActorfromClass :Class "/Game/NexusRoyale/Blueprints/Loot/BP_Pickup.BP_Pickup_C" :SpawnTransform (Math|Transform|MakeTransform :Location loc) :CollisionHandlingOverride "AlwaysSpawn"))
+  (Class|BPPickup|Setup :self p :Mesh Mesh :Label Label :InKind Kind :InRarity Rarity))

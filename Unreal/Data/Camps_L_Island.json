@@ -1,0 +1,4 @@
+{
+  "_doc": "Creep camps of L_Island (test level, 400 m island). Same shape as mapa_ue.json 'acampamentos': cm, z is only a hint (ue_creeps_camp.py drops the camp onto the ground). One small camp 18 m west of the plaza PlayerStart, in a flat clearing.",
+  "pequeno": [{"x": -1560, "y": -700, "z": 700}]
+}

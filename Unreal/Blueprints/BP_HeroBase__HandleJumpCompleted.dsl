@@ -1,0 +1,2 @@
+(fn HandleJumpCompleted ()
+  (Character|StopJumping))
