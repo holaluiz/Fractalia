@@ -73,7 +73,7 @@ Fluxo no servidor, quando a vida de um herói chega a 0 (implementado no M1, men
 - **Hoje (existe):** `UNRAbilitySystemComponent.GanharXP` com a curva do GDD v2 §7.1; creeps dão XP no `Die`
   (`DarXP`); piso de nível no fim de cada fase da tempestade (`AplicarPisoDeNivel`).
 - **M1:** XP de abate de jogador. O `ANRPlayerState` espelha `Nivel` e `XP` (replicados) para HUD, placar e espectador.
-- **M11:** pontos de atributo por nível e mutações só nos níveis 3, 6 e 9 (⚑ D-002e).
+- **M11:** pontos de atributo por nível e mutações só nos níveis 3, 6 e 9 (D-002e).
 
 ## 5. Zona (existe)
 

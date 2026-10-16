@@ -5,7 +5,7 @@ Architect"). É a foto do projeto **antes** da nova direção (multiplayer de 20
 
 **Como foi feita:** leitura do C++ (29 arquivos, 4.826 linhas), das 58 DSLs de Blueprint (`Unreal/Blueprints/`), dos
 73 scripts de `Unreal/`, das configurações, do git, do [AGENTS.md](../../AGENTS.md), do [PLANO.md](../../PLANO.md), do
-[GDD v2](../../Design/GDD.md) e do [Mapa.md](../../Design/Mapa.md).
+[GDD v2](../../Design/GDD_v2.md) e do [Mapa.md](../../Design/Mapa.md).
 
 **Limite:** a Unreal estava fechada e o MCP da Unreal não conectou nesta sessão. Nenhum asset foi aberto no editor. O
 conteúdo dos `.uasset` foi deduzido dos scripts que os geram, das DSLs e dos testes registrados no AGENTS.md. O que

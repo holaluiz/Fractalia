@@ -64,3 +64,18 @@ automático de cada edição, em [Registro/atividade.md](../../Registro/atividad
 - **Decisões:** D-015 (atrasado assiste), D-016 (Espera aguarda humanos), D-017 (bot de teste e modo treino).
 - **Próxima ação:** M2 (autoridade do loop atual).
 
+### 2026-10-15 22:25 → 22:45 · Claude (Claude Code) · Decisões do usuário: 0.1.2 publicada e GDD v3 oficial
+- **Decisões** (respostas do usuário, 22:30): D-002 aprovada como proposta; D-007 = serpente em 4 faixas; publicar a
+  0.1.2; commit + push.
+- **Feito:**
+  - commit `cbc9739` (todo o trabalho da 0.1.2) enviado à `main`;
+  - `ue_release.py`: o zip pula pastas `Saved` (o teste do build tinha criado uma); Release `v0.1.2` publicada com a
+    tag no `cbc9739` (zip de 976 MB, instalador e manifest);
+  - `Design/GDD.md` → `Design/GDD_v2.md` (arquivado, com nota); `Design/GDD.md` só aponta para o v3;
+    `GAME_DESIGN_DOCUMENT.md` oficial; marcas de pendência tiradas; MASTER_PLAN com M6–M9 e M11 desbloqueados;
+  - `ANRGameMode`: XP de abate com fator 0,4–2,0 (D-002m). Compilado no editor; **entra no jogo na próxima versão**.
+- **Testado:** a Release tem os 3 arquivos nos tamanhos certos e a tag aponta para o `cbc9739`; o zip não tem `Saved`.
+  **Sem verificar:** a atualização pelo launcher para a 0.1.2 (o usuário estava com o jogo aberto; o launcher atualiza
+  na próxima vez que o atalho for aberto); a fórmula nova em jogo (só compilada).
+- **Próxima ação:** M2 (autoridade do loop atual).
+

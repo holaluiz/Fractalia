@@ -68,13 +68,13 @@ public:
 
 	// ---------------------------------------------------------------- XP de abate (Docs/Game/BALANCE.md §4)
 	// XP = max(Minimo, PorNivel × NívelVítima) × clamp(1 + FatorPorNivel × (NívelVítima − NívelAssassino), Min, Max).
-	// Os valores padrão reproduzem o GDD v2 §7.2 (só bônus, nunca redução). A redução proposta (FatorMinimo 0,4,
-	// FatorMaximo 2,0) espera a decisão D-002m do usuário.
+	// O fator também REDUZ quando a vítima é mais fraca (D-002m, aprovada em 15/10): quem está na frente ganha pouco
+	// caçando os fracos e quem está atrás ganha muito derrubando o forte (anti-bola-de-neve, BALANCE.md §4).
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") int32 XPAbateMinimo = 100;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") int32 XPAbatePorNivel = 80;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") float XPAbateFatorPorNivel = 0.2f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") float XPAbateFatorMinimo = 1.f;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") float XPAbateFatorMaximo = 10.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") float XPAbateFatorMinimo = 0.4f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Nexus|Balanceamento") float XPAbateFatorMaximo = 2.f;
 
 	UFUNCTION(BlueprintPure, Category = "Nexus|Balanceamento")
 	int32 XPDeAbate(int32 NivelVitima, int32 NivelAssassino) const;

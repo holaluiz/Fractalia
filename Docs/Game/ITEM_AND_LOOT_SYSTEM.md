@@ -24,7 +24,7 @@
 | Arma de longe | 1 | 2 (e roda do mouse) | todos |
 | Itens | 6 | Z X C V B N (remapeáveis) | só o dono |
 
-Armas não ocupam os 6 slots (⚑ D-002c).
+Armas não ocupam os 6 slots (D-002c).
 
 ### 2.2 Tipos de item
 
@@ -33,7 +33,7 @@ Armas não ocupam os 6 slots (⚑ D-002c).
 | **Passivo** | não (a tecla mostra a dica) | Couraça de Couro (+60 vida, +4% velocidade), Anel do Foco, Amuleto do Tempo |
 | **Ativo** | sim; recarga ou cargas | Pergaminho de Salto (avança 6 m, 2 cargas), Lanterna de Luz (revela 15 m) — **novos, a desenhar** |
 | **Consumível** | sim; pilha | Comida leve (6), Refeição (3), Poção de Mana (3), Poção de Pressa (2) |
-| **Tomo** | sim; some | +1 rank numa habilidade à escolha (⚑ D-002d) |
+| **Tomo** | sim; some | +1 rank numa habilidade à escolha (D-002d) |
 
 **Regra anti-acúmulo:** passivos do mesmo item não somam (o segundo igual não faz nada e a UI avisa), para 6 slots
 cheios de "Anel do Foco" não virarem a build ótima.

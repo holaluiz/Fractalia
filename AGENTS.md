@@ -6,39 +6,43 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 22:15 (horário de Brasília), por Claude (Claude Code), sessão "Lead Game Architect: auditoria e M1".
+Última atualização: 2026-10-15, por volta de 22:45 (horário de Brasília), por Claude (Claude Code), sessão "Lead Game Architect: auditoria e M1".
 
 > **Plano central (desde 15/10, 20:30):** [Docs/Game/MASTER_PLAN.md](Docs/Game/MASTER_PLAN.md). A pasta
-> [Docs/Game/](Docs/Game/) tem a auditoria, o design v3 (**proposta**, espera o usuário), a arquitetura, a rede, o
+> [Docs/Game/](Docs/Game/) tem a auditoria, o design v3 (**oficial**), a arquitetura, a rede, o
 > balanceamento, os testes, as decisões e os problemas conhecidos. Ao terminar uma tarefa, siga o roteiro do topo do
 > MASTER_PLAN (status, documento do assunto, CHANGELOG_AI, DECISIONS, KNOWN_ISSUES). O [PLANO.md](PLANO.md) ficou como
 > histórico da 0.1.x.
 >
-> **Nova direção (pedido do usuário em 15/10, 19:38):** multiplayer de até 20 jogadores (listen server, lobby, bots),
-> draft de habilidades únicas, armas, 6 slots de item. Ela conflita com o GDD v2 em vários pontos: veja
-> [Docs/Game/DECISIONS.md](Docs/Game/DECISIONS.md), D-002. **Até o usuário responder, o GDD v2 continua oficial.**
+> **Nova direção (pedido do usuário em 15/10, 19:38; aprovada em 15/10, 22:30):** multiplayer de até 20 jogadores
+> (listen server, lobby, bots), draft de habilidades únicas, armas, 6 slots de item. O design oficial agora é o
+> **GDD v3** ([Docs/Game/GAME_DESIGN_DOCUMENT.md](Docs/Game/GAME_DESIGN_DOCUMENT.md)); o v2 virou `Design/GDD_v2.md`.
+> As decisões estão em [Docs/Game/DECISIONS.md](Docs/Game/DECISIONS.md) (D-002, D-007).
 
 ---
 
 ## 1. O projeto em 30 segundos
 
-- **Nexus Royale** é um battle royale **solo** de magias com progressão de MOBA, feito na
-  **Unreal Engine 5.8**. Até agora o projeto é só Blueprint e usa assets gratuitos da **Quaternius**.
-- **Antes da partida**, o jogador monta o campeão:
-  - escolhe um arquétipo (Guerreiro, Patrulheiro, Feiticeiro ou Místico);
-  - distribui 20 pontos em 5 atributos;
-  - escolhe uma magia principal e uma ultimate.
-- **Na partida**, abre baús e encontra grimórios, mata creeps e sobe do nível 1 ao 10. A cada
-  nível escolhe uma mutação. Tem barra de vida e de mana, e a tempestade fecha o mapa.
+- **Nexus Royale** é um battle royale **solo** de magias com progressão de MOBA, para **até 20 jogadores**
+  (listen server: quem cria a sala hospeda), feito na **Unreal Engine 5.8** (C++ + Blueprint) com assets gratuitos da
+  **Quaternius**.
+- **Antes da partida**, um **draft**: cada jogador escolhe 1 ultimate e 3 habilidades básicas, **únicas** na partida
+  (ninguém repete). Formato: serpente em 4 faixas (~2,4 min).
+- **Na partida**, acha **armas** (1 de perto, 1 de longe) e **itens** (6 slots, Z X C V B N), mata creeps e jogadores e
+  sobe do nível 1 ao 10 (1 ponto de atributo por nível; mutação nos níveis 3, 6 e 9). Vida e mana; a tempestade fecha o
+  mapa; o último vivo vence. Bots completam as vagas.
 - **Não tem construção.** O campo de batalha muda com as **magias de campo**.
-- **O design oficial está em [Design/GDD.md](Design/GDD.md) (v2).** A v1 (heróis fixos, construção,
-  torres, Guardião) está em `Design/GDD_v1.md` e **foi abandonada**. Nada dela vale.
+- **O design oficial é o GDD v3:** [Docs/Game/GAME_DESIGN_DOCUMENT.md](Docs/Game/GAME_DESIGN_DOCUMENT.md) (aprovado em
+  15/10). O v2 (arquétipos, 20 pontos, grimórios) está em `Design/GDD_v2.md` e ainda dá os números de magias, itens,
+  creeps e tempestade. A v1 (heróis fixos, construção, torres) está em `Design/GDD_v1.md` e **foi abandonada**.
+- **O que o jogo tem hoje** é menos que isso: o loop solo do v2 (Feiticeiro de Fogo fixo) com a máquina de estados da
+  partida em rede (M1). O caminho está no `Docs/Game/MASTER_PLAN.md`.
 - **O usuário fala português (pt-BR).** Responda e escreva os documentos em português.
 
 ## 2. Regras para quem continuar
 
-1. Os números do GDD são valores iniciais de balanceamento. **Não altere o GDD sem perguntar ao
-   usuário.** Proponha a mudança e espere a resposta.
+1. Os números do GDD são valores iniciais de balanceamento. **Não altere o GDD (v3, em
+   `Docs/Game/GAME_DESIGN_DOCUMENT.md`) sem perguntar ao usuário.** Proponha a mudança e espere a resposta.
 2. **Não apague a pasta `Personagens/`.** São modelos do próprio usuário (feitos no Tripo). Eles
    saíram do jogo, mas os arquivos ficam no disco.
 3. Personagem novo usa o **esqueleto compartilhado da Quaternius** (seção 6).
@@ -80,11 +84,11 @@
   **Testado em PIE** (solo, com bots de teste e com PIE listen server + cliente sem render): ver TEST_PLAN.md §5.
 - **Marco 0 da nova direção: auditoria e documentação** (sessão "Lead Game Architect: auditoria e M1", 15/10,
   19:40–20:30). Pasta `Docs/Game/` com o `MASTER_PLAN.md` (plano central, marcos M0–M25 e a fatia vertical), a
-  `AUDITORIA.md` e os outros 16 documentos pedidos. O GDD v3 é **proposta**: os conflitos com o GDD v2 estão na
-  `DECISIONS.md`, D-002 (draft no lugar de arquétipo + pontos; armas; 6 slots Z X C V B N; Tomo no lugar do grimório;
-  ponto de atributo por nível; 4 atributos; ultimate no T; XP de abate) e esperam o usuário. Formato do draft simulado
-  (`Docs/Game/ferramentas/simular_draft.py`): serpente em 4 faixas = 2,4 min; reserva simultânea = 1,1 min;
-  sequencial = 7,3 min (D-007, espera o usuário).
+  `AUDITORIA.md` e os outros 16 documentos pedidos. O GDD v3 foi **aprovado pelo usuário às 22:30** (D-002: draft no
+  lugar de arquétipo + pontos; armas; 6 slots Z X C V B N; Tomo no lugar do grimório; ponto de atributo por nível;
+  4 atributos; ultimate no T; XP de abate 0,4–2,0, já no código). Formato do draft simulado
+  (`Docs/Game/ferramentas/simular_draft.py`): serpente em 4 faixas = 2,4 min (escolhido, D-007); reserva simultânea =
+  1,1 min; sequencial = 7,3 min.
 - **Fase 1 do PLANO.md, para a versão 0.1.1** (sessão "Plano de melhorias e versão 0.1.1", 15/10; testado em PIE
   das 18:30 às 18:50, detalhes na seção 9):
   - **Mutações** (GDD §7.4), no componente C++ novo `Mutacoes` (`UNRMutacoesComponent`, em `Progression/`):
@@ -318,9 +322,9 @@
 
 - **Teclas de combate no jogo empacotado (0.1.0 e 0.1.1 publicadas sem elas): CORRIGIDO em 15/10, 21:05** (M0.5 do
   `Docs/Game/MASTER_PLAN.md`). O `ue_mvp_setup.py` agora marca o IMC, salva sem depender da marca e confere os nomes das
-  ações no `.uasset` (8,3 → 12,5 KB). **A 0.1.2 está empacotada em `D:/NexusRoyale_Builds/0.1.2`** e testada (as teclas
-  aparecem no jogo cozido; o usuário usou Q, E e X). **Falta publicar** (OK do usuário). Antes de zipar, apague a pasta
-  `Saved` que o teste criou dentro de `Windows/`.
+  ações no `.uasset` (8,3 → 12,5 KB). **A 0.1.2 foi publicada** (Release `v0.1.2`, 15/10, 22:38, tag no `cbc9739`),
+  testada no jogo empacotado (as teclas aparecem no jogo cozido; o usuário usou Q, E e X). O zip agora pula a pasta
+  `Saved` que um teste do build cria.
 - **M1 (máquina de estados da partida), sem verificar:** a câmera indo para quem matou; o HUD do lado de um cliente (o
   cliente de teste não tem render); a câmera do espectador que chega atrasado; a contagem de espectadores no recomeço
   (última correção, compilada e não testada); a partida no jogo empacotado. **Antes do lobby (M4), a primeira partida
@@ -756,7 +760,7 @@ use os scripts de `Unreal/`:
 | `PLANO.md` | Plano da 0.1.x (criado em 15/10, 18:10). Histórico: o que estava aberto foi para o `Docs/Game/MASTER_PLAN.md` |
 | `CLAUDE.md` | Lido automaticamente pelo Claude Code. Só aponta para este arquivo |
 | `README.md` | Visão geral para humanos |
-| `Design/GDD.md` | Design oficial (v2). `GDD_v1.md` é o antigo, abandonado |
+| `Design/GDD.md` | Só aponta para o design oficial (v3, `Docs/Game/GAME_DESIGN_DOCUMENT.md`). `GDD_v2.md` (arquivado em 15/10) e `GDD_v1.md` (abandonado) ficam para consulta |
 | `Design/Mapa.md` | Mapa v2 (ilha de cerca de 1 km): POIs, os três mapas da interface, direção de arte cartoon/aquarela e plano de montagem |
 | `Registro/atividade.md` | Uma linha por mudança no projeto. Automático no Claude Code, à mão nas outras IAs |
 | `Unreal/Data/Mapa/` | `mapa_v2.json` (layout da ilha, a fonte da verdade) e `gerado/` (saída do `Unreal/mapa_gerar.py`) |
@@ -799,6 +803,8 @@ use os scripts de `Unreal/`:
 | 15/10, por volta de 03:25 | **Direção de arte: cartoon + aquarela.** Só o cenário recebe o filtro de aquarela; personagens e magias ficam com contorno nítido (GDD §10) |
 | 15/10, por volta de 11:00 | **Balanceamento: pacote B da planilha de TTK aplicado ao GDD** (ver seção 3, "Planilha de TTK"). Os bônus de dano passam a somar entre categorias |
 | 15/10, por volta de 03:00 | **Mapa no estilo do Fortnite, com 25% do tamanho** (porque são menos jogadores), mais um **minimapa** para o lançamento. Substitui a ilha de 400 m. O Fortnite tem cerca de 5,5 km². **Atenção, sessão de gameplay:** os raios de `Unreal/Data/CT_Storm.csv` vão mudar com o mapa |
+| 15/10, por volta de 19:38 | **Nova direção ("Lead Game Architect"):** multiplayer de até 20 (listen server, lobby, bots), draft de habilidades únicas, armas, 6 slots de item, ponto de atributo por nível, estilo pintado; começar pela auditoria e pela documentação em `Docs/Game/` |
+| 15/10, por volta de 22:30 | **GDD v3 aprovado como proposto** (D-002: draft no lugar de arquétipo e pontos, armas, 6 slots, Tomo, 4 atributos, mutações em 3/6/9, ultimate no T, XP de abate 0,4–2,0) e **draft em serpente de 4 faixas** (D-007). **Publicar a 0.1.2** e **commit + push** autorizados |
 
 ## 9. Diário de sessões
 
@@ -1300,7 +1306,13 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
 - **No caminho:** a compilação falhou por falta de memória (`C1060`): `ue_gas_compilar.py --pouca-memoria` (1 `cl.exe`,
   sem unity). Compilar o módulo inteiro levou 13,6 min; os incrementais, 5–8 min. Pegadinhas novas na seção 5 (PIE listen
   server pelo ini, Python remoto em clientes, DSL que não apaga evento, CDO antes do PIE).
+- **22:30, decisões do usuário** (perguntas no fim do trabalho): GDD v3 aprovado como proposto, draft em serpente,
+  publicar a 0.1.2 e commit + push. Feito: commit `cbc9739` (tudo da 0.1.2) enviado; Release `v0.1.2` publicada com a tag
+  nele; GDD v2 arquivado em `Design/GDD_v2.md` e o v3 oficial; XP de abate 0,4–2,0 no código (fica para a próxima
+  versão); segundo commit com a aprovação. Ficaram fora dos commits: o `pie_press.py` (outra sessão), a pasta
+  `Unreal/NexusRoyale/Build/` e as 159 malhas com o Nanite desligado.
 - **Ao sair:** o editor está **fechado**, sem nada sujo; as opções do PIE voltaram para standalone. **A 0.1.2 empacotada
-  está aberta** (o usuário estava jogando). Nada foi commitado nem publicado.
+  ficou aberta** (o usuário estava jogando; a pasta `Saved` que ela cria em `D:/NexusRoyale_Builds/0.1.2/Windows` não
+  vai para o zip).
 - **Sem verificar:** está na seção 3 e no `MASTER_PLAN.md` (M0.5 e M1, "Falta ver").
 

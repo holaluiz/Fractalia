@@ -1,7 +1,7 @@
 # Nexus Royale
 
 Battle royale solo de magias com progressão de MOBA, na Unreal Engine 5.8 com assets da Quaternius.
-O design completo está em [Design/GDD.md](Design/GDD.md) (v2).
+O design completo está em [Docs/Game/GAME_DESIGN_DOCUMENT.md](Docs/Game/GAME_DESIGN_DOCUMENT.md) (v3); o plano, em [Docs/Game/MASTER_PLAN.md](Docs/Game/MASTER_PLAN.md).
 
 **IAs e quem for continuar o trabalho:** o estado atual, as regras, o ambiente e o diário de sessões
 estão em [AGENTS.md](AGENTS.md).

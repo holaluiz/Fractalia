@@ -1,9 +1,10 @@
-# Nexus Royale: documento de design (v3, PROPOSTA)
+# Nexus Royale: documento de design (v3)
 
-> **Status: proposta, aguardando o usuário.** O design oficial continua sendo o [GDD v2](../../Design/GDD.md) até o
-> usuário aprovar a decisão [D-002](DECISIONS.md#d-002--a-nova-direção-contra-o-gdd-v2--aguardando-o-usuário). Os
-> pontos que dependem dessa resposta estão marcados com **⚑ D-002x**. Os números são **valores iniciais**; as fórmulas
-> e as tabelas ficam no [BALANCE.md](BALANCE.md).
+> **Status: OFICIAL.** Aprovado pelo usuário em 15/10/2026, por volta de 22:30, como proposto (decisões D-002 e D-007
+> em [DECISIONS.md](DECISIONS.md)). Substitui o [GDD v2](../../Design/GDD_v2.md), que fica arquivado e continua sendo a
+> referência dos números que o v3 reaproveita (magias, itens, creeps, tempestade). As marcas "D-002x" dizem de qual
+> item da decisão cada ponto veio. Os números são **valores iniciais**; as fórmulas e as tabelas ficam no
+> [BALANCE.md](BALANCE.md). **Mudar este documento continua exigindo o OK do usuário** (regra 1 do AGENTS.md).
 
 Escrito em 2026-10-15 a partir do pedido "Lead Game Architect" do usuário e do GDD v2.
 
@@ -43,7 +44,7 @@ Cada fase é um estado explícito do servidor (`ENRFaseDaPartida`, [GAMEPLAY_SYS
 | Final | — | Quando sobra 1 vivo: combate congela, vencedor anunciado |
 | Resultados | 15 s | Colocação, abates, dano, build; volta ao lobby |
 
-**Sessão completa: ~18 min** (⚑ D-002h). O pedido sugere 18–25 min de partida; o GDD v2 dizia 14. O teste de 20
+**Sessão completa: ~18 min** (D-002h). O pedido sugere 18–25 min de partida; o GDD v2 dizia 14. O teste de 20
 jogadores decide.
 
 ## 4. Sala, lobby e host
@@ -79,9 +80,9 @@ jogadores decide.
 - **Tempo esgotado:** o servidor escolhe pela lista de preferências que o jogador marcou (ou, sem lista, pela
   sugestão do jogo).
 
-### 6.2 Formato (⚑ D-007)
+### 6.2 Formato (D-007)
 
-**Recomendado: serpente em 4 faixas paralelas.** Os 20 jogadores são divididos em 4 faixas de 5. Em cada faixa, um
+**Escolhido (D-007): serpente em 4 faixas paralelas.** Os 20 jogadores são divididos em 4 faixas de 5. Em cada faixa, um
 escolhe por vez (janela de 8 s); as 4 faixas andam juntas sobre o pool global. A composição das faixas e a ordem
 mudam a cada rodada. Simulado: **2,4 min** em média; o sequencial levaria 7,3 min. Alternativa já desenhada: reserva
 simultânea (1,1 min). Detalhes e números no [BALANCE.md](BALANCE.md), §3.
@@ -110,7 +111,7 @@ Sifão, Graça, Carga Estática) contam como básicas. O pool cresce por dados a
 
 ## 7. Combate
 
-### 7.1 Armas (⚑ D-002b)
+### 7.1 Armas (D-002b)
 
 - **Dois slots:** 1 de **perto** e 1 de **longe**. Teclas 1 e 2 (e a roda do mouse). Não ocupam os slots de item.
 - A arma é a ferramenta principal; as habilidades complementam. A arma **nunca** pode ficar irrelevante no fim: o
@@ -132,9 +133,9 @@ Sifão, Graça, Carga Estática) contam como básicas. O pool cresce por dados a
 
 ### 7.2 Habilidades
 
-- **Q, E, R:** as 3 básicas do draft. **T:** a ultimate (⚑ D-002g). Liberada no **nível 6**.
+- **Q, E, R:** as 3 básicas do draft. **T:** a ultimate (D-002g). Liberada no **nível 6**.
 - Custam **mana** e têm recarga. A mana limita o volume numa luta; a recarga, a frequência (do GDD v2 §5).
-- **Esquiva** (Shift), comum a todos: 5 m, 0,2 s de invulnerabilidade, recarga de 6 s (⚑ D-002j).
+- **Esquiva** (Shift), comum a todos: 5 m, 0,2 s de invulnerabilidade, recarga de 6 s (D-002j).
 - **Regras de contrajogo** (valem para todo o pool; checklist no [ABILITY_SYSTEM.md](ABILITY_SYSTEM.md), §5):
   - dano ≥ 100 tem projétil visível ou aviso no chão por pelo menos 0,3 s; ultimates, 0,5–1 s;
   - controle dura no máximo 1,5 s; depois dele, 2 s de controles pela metade;
@@ -151,7 +152,7 @@ Sifão, Graça, Carga Estática) contam como básicas. O pool cresce por dados a
 
 ## 8. Itens e loot
 
-### 8.1 Inventário (⚑ D-002c)
+### 8.1 Inventário (D-002c)
 
 - **6 slots de item**, teclas **Z X C V B N** (remapeáveis). Armas ficam nos 2 slots próprios.
 - Tipos: **ativo** (tem efeito ao usar, com recarga ou cargas), **passivo** (bônus enquanto estiver no slot),
@@ -159,7 +160,7 @@ Sifão, Graça, Carga Estática) contam como básicas. O pool cresce por dados a
 - Cada slot mostra: ícone, pilha, recarga, cargas, se dá para usar, dica.
 - Os **equipamentos do GDD v2** (Couraça, Anel do Foco, Amuleto do Tempo…) viram **passivos**. Os consumíveis do v2
   (Comida, Refeição, Poções) continuam, com pilha.
-- **Tomo** (antigo grimório, ⚑ D-002d): consumível; ao usar, escolhe uma das suas habilidades e ela sobe +1 rank
+- **Tomo** (antigo grimório, D-002d): consumível; ao usar, escolhe uma das suas habilidades e ela sobe +1 rank
   (máximo 3; ranks do GDD v2 §6.3).
 
 ### 8.2 Baús e tabelas
@@ -192,7 +193,7 @@ Sifão, Graça, Carga Estática) contam como básicas. O pool cresce por dados a
 - **Abate de jogador** escala com a diferença de nível (BALANCE.md, §4): matar alguém muito mais fraco rende pouco;
   matar alguém mais forte rende muito.
 
-### 10.2 Atributos (⚑ D-002e/f)
+### 10.2 Atributos (D-002e/f)
 
 - **1 ponto por nível** (9 pontos até o 10), distribuído na hora (painel ou atalho) e guardado se não for usado.
 - **4 atributos:**
@@ -260,13 +261,13 @@ vida baixa, aviso da zona, nível, eliminação. Áudio espacial; sons críticos
 
 ## 17. Controles
 
-Resumo (⚑ D-002g; tabela completa no [UI_UX.md](UI_UX.md)): WASD, Espaço, Ctrl; botão esquerdo ataca com a arma;
+Resumo (D-002g; tabela completa no [UI_UX.md](UI_UX.md)): WASD, Espaço, Ctrl; botão esquerdo ataca com a arma;
 direito mira; 1/2 armas; Q/E/R básicas; T ultimate; Shift esquiva; F interage; Z X C V B N itens; Tab inventário e
 atributos; M mapa; Esc menu. **Tudo remapeável.**
 
-## 18. O que fica e o que sai do GDD v2
+## 18. O que ficou e o que saiu do GDD v2
 
-| Fica | Sai (se D-002 for aprovada) |
+| Ficou | Saiu |
 |---|---|
 | Battle royale solo de 20, dirigível, tempestade em 6 fases com piso de nível | Arquétipos e silhueta por arquétipo |
 | Vida e mana; esquiva | 20 pontos na montagem e builds salvas |

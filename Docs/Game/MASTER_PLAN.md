@@ -16,17 +16,17 @@ Criado em 2026-10-15 (Marco 0). Substitui o [PLANO.md](../../PLANO.md) como plan
 
 - **Feito em 15/10 (noite):** M0 (auditoria e documentos); M0.5 corrigido no projeto (teclas salvas no `IMC_Default`,
   conferido no arquivo); M1 implementado e testado em PIE (solo, com bots e em rede com um cliente sem render).
-- **Próxima ação:** publicar a 0.1.2 (empacotada e testada, em `D:/NexusRoyale_Builds/0.1.2`) com o OK do usuário; depois
-  M2 (autoridade do loop atual: interação, salto, loot, inventário, creeps).
-- **Esperando o usuário:** D-002 (nova direção × GDD v2) e D-007 (formato do draft). Bloqueiam M6–M9 e M11.
-- **Esperando o usuário (antigo):** importar o Landscape do `L_Ilha` (bloqueia M17); OK para publicar a 0.1.2 (M0.5).
+- **Próxima ação:** M2 (autoridade do loop atual: interação, salto, loot, inventário, creeps).
+- **Decidido pelo usuário em 15/10, 22:30:** D-002 (GDD v3 aprovado como proposto) e D-007 (serpente em 4 faixas).
+  M6–M9 e M11 deixaram de estar bloqueados. A 0.1.2 foi publicada (Release `v0.1.2`, tag no `cbc9739`).
+- **Esperando o usuário:** importar o Landscape do `L_Ilha` (bloqueia M17).
 
 ## Documentos
 
 | Documento | Assunto |
 |---|---|
 | [AUDITORIA.md](AUDITORIA.md) | Foto do projeto em 15/10: o que existe, funciona, quebrou e falta |
-| [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md) | Design v3 (**proposta**, espera D-002) |
+| [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md) | Design v3 (**oficial** desde 15/10, 22:30) |
 | [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md) | Classes alvo, dados, migração |
 | [NETWORKING_ARCHITECTURE.md](NETWORKING_ARCHITECTURE.md) | Autoridade, replicação, sessões, listen × dedicado |
 | [GAMEPLAY_SYSTEMS.md](GAMEPLAY_SYSTEMS.md) | Máquina de estados, morte, XP, zona, queda, loot, creeps |
@@ -52,7 +52,7 @@ de rede vem antes do conteúdo.
 Fase A · Fundação (não depende de D-002)
   M0 Auditoria ✔ → M0.5 Estabilizar 0.1.x → M1 Estados/morte/vitória → M2 Autoridade do loop atual
   → M3 Sessões e menu → M4 Lobby de 20 + staging → M5 GAS (portar as 4 magias)
-Fase B · Fatia vertical (depende de D-002 e D-007)
+Fase B · Fatia vertical (D-002 e D-007 aceitas)
   M6 Draft → M7/M8 Combate com armas → M9 Inventário e loot → M10 Creeps → M11 XP e atributos
   → M12 Queda → M13 Zona → M14 Morte/espectador/resultados → M15 Bots (fases 1–3) → M16 UI e configurações
   → ★ FATIA VERTICAL
@@ -90,14 +90,15 @@ Fase C · Escala
 - **Feito:** [AUDITORIA.md](AUDITORIA.md); documentos desta pasta; decisões D-001 a D-014; simulação do draft.
 - **Testado:** conferido contra o código, as DSLs e os scripts. **Limite:** o editor não foi aberto.
 
-### M0.5 · Estabilizar a 0.1.x · [TESTING]
+### M0.5 · Estabilizar a 0.1.x · [DONE]
 - **Feito (15/10, 21:05):** `ue_mvp_setup.py` marca o IMC (`modify()`), salva com `only_if_is_dirty=False` e confere o
   arquivo no disco (falha se faltar ação). O `IMC_Default.uasset` passou de 8,3 KB (11:38) para 12,5 KB e tem as 9 ações.
   Versão 0.1.2 gravada no `DefaultGame.ini`.
 - **Jogo empacotado 0.1.2 (22:21):** cook com "0 error(s), 0 warning(s)"; o painel `showdebug enhancedinput` lista todas as
   ações do `IMC_Default`; o usuário jogou e o log mostra Muralha de Gelo (E), Chuva de Meteoros (X) e a Bola de Fogo (Q)
   em recarga. A partida passou por Espera → Queda → Partida (modo treino).
-- **Falta:** publicar a 0.1.2 (OK do usuário); abrir baú, consumível e mutação no empacotado não foram vistos no log.
+- **Publicada** em 15/10, 22:38: Release `v0.1.2` com a tag no commit `cbc9739` (o do build). Abrir baú, consumível e
+  mutação no empacotado não foram vistos no log, mas as teclas deles estão no mapeamento cozido.
 - **Objetivo:** o jogo publicado volta a ter combate.
 - **Depende de:** nada.
 - **Tarefas:** corrigir o `ue_mvp_setup.py` (marcar o IMC, salvar sem `only_if_is_dirty`); rodar com o editor aberto;
@@ -168,8 +169,7 @@ Fase C · Escala
 
 ### M5 · Fundação de habilidades (GAS) · [TODO]
 - **Objetivo:** habilidades viram Gameplay Abilities configuradas por dados (D-008), em rede.
-- **Depende de:** M2. **Parte depende de D-002:** a tecla da ultimate (T ou X) e o atributo de escala (Arcano ou
-  Poder Mágico); dá para começar com os nomes atuais.
+- **Depende de:** M2. Com a D-002 aceita: ultimate no **T** e escala pelo **Arcano** (até o M11, o Poder Mágico atual).
 - **Tarefas:** `NRGameplayTags`; `UNRGameplayAbility`; `UNRAbilityDefinition` + Asset Manager; `GE_Custo`/`GE_Recarga`
   genéricos; comportamentos `Projetil`, `AreaComAviso`, `Estrutura`; portar dardo, Bola de Fogo, Muralha de Gelo e
   Chuva de Meteoros; atores das magias com `bReplicates`; Gameplay Cues; HUD lendo recargas pelas tags; remover as
@@ -178,7 +178,7 @@ Fase C · Escala
 - **Aceite:** TEST_PLAN.md, M5.
 - **Riscos:** curva do GAS; predição mal configurada (começar sem).
 
-### M6 · Draft de habilidades · [BLOCKED: D-002a, D-007]
+### M6 · Draft de habilidades · [TODO]
 - **Objetivo:** draft único e sincronizado, em 2–4 min.
 - **Depende de:** M4, M5, decisões.
 - **Tarefas:** `UNRDraftComponent` + `DA_Draft_Padrao`; tela do draft; lista de preferências; escolha automática;
@@ -187,7 +187,7 @@ Fase C · Escala
 - **Aceite:** TEST_PLAN.md, M6.
 - **Riscos:** UI do pool grande (128) ficar ilegível; corridas.
 
-### M7 + M8 · Combate em terceira pessoa com armas · [BLOCKED: D-002b]
+### M7 + M8 · Combate em terceira pessoa com armas · [TODO]
 - **Objetivo:** 2 slots de arma; 4 armas da fatia vertical; mira; recarga; dano validado no servidor.
 - **Depende de:** M5.
 - **Tarefas:** `UNRWeaponDefinition`, `UNRArmasComponent`, `UNRGA_DispararArma`/`GolpeArma` (Target Data validado),
@@ -195,7 +195,7 @@ Fase C · Escala
 - **Multiplayer:** "a favor de quem atira" com validação (NETWORKING_ARCHITECTURE.md §5).
 - **Riscos:** animações da Quaternius para arco e arma de fogo; sensação do tiro.
 
-### M9 · Inventário de 6 slots, itens e loot · [BLOCKED: D-002c/d]
+### M9 · Inventário de 6 slots, itens e loot · [TODO]
 - **Objetivo:** Z X C V B N; passivos, ativos, consumíveis, Tomo; `DT_Loot`; bolsa da morte.
 - **Depende de:** M2, M8.
 - **Tarefas:** refazer os slots do `UNRInventoryComponent` (Fast Array); colunas novas no `DT_Itens`; `DT_Loot`;
@@ -209,7 +209,7 @@ Fase C · Escala
 - **Tarefas:** sono do acampamento; aggro visível; `DT_Creeps`; creep à distância; elite; avaliar StateTree.
 - **Riscos:** custo do servidor com ~70 creeps (medir no M18).
 
-### M11 · XP, níveis e atributos · [BLOCKED: D-002e/f]
+### M11 · XP, níveis e atributos · [TODO]
 - **Objetivo:** ponto de atributo por nível; 4 atributos; mutações nos níveis marcados.
 - **Depende de:** M1, M5.
 - **Tarefas:** `AS_Hero` com os atributos novos; `CT_Atributos`, `CT_XP`; `Server_GastarPonto`; painel no Tab;

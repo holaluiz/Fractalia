@@ -1,7 +1,8 @@
 # Balanceamento
 
 Todas as fórmulas e constantes do jogo. **Quando um número mudar, mude aqui e no dado (tabela ou Data Asset), e
-anote em §9.** Números marcados **(v2, em uso)** estão implementados hoje; **(proposta)** dependem de D-002.
+anote em §9.** Números marcados **(v2, em uso)** estão implementados hoje; **(aprovado, ainda não implementado)** vêm do GDD v3
+(D-002, aceita em 15/10) e entram no código nos marcos indicados.
 
 ---
 
@@ -62,7 +63,7 @@ em 80% das vezes); 10 s de prévia; 0,5 s entre escolhas; 3 s entre rodadas; lat
 - **Corrida** (A): ~0,5 por draft; o host ganha esses empates (latência zero).
 - **Falta medir com gente:** o tempo de decisão real e se o draft parece estratégico ou chato (§8).
 
-## 4. XP e níveis (proposta)
+## 4. XP e níveis (aprovado; XP de abate no código desde 15/10)
 
 - **Teto:** nível 10 (testar 12 só se as partidas terminarem com quase todos no 10).
 - **Curva:** a do v2 (§2) até o teste.
@@ -82,7 +83,7 @@ em 80% das vezes); 10 s de prévia; 0,5 s entre escolhas; 3 s entre rodadas; lat
   (pedido: nada de bônus de recuperação arbitrário).
 - **Piso de nível** do v2: fica (garante a ultimate no fim).
 
-## 5. Atributos (proposta, ⚑ D-002f)
+## 5. Atributos (aprovado, ainda não implementado: M11)
 
 1 ponto por nível (9 até o nível 10). Retorno decrescente: pontos 1–4 valem 1,0; 5–7 valem 0,6; 8–9 valem 0,3 (9 num
 atributo só = 6,4 efetivos; 3/3/3 = 9 efetivos).
@@ -94,10 +95,10 @@ atributo só = 6,4 efetivos; 3/3/3 = 9 efetivos).
 | Arcano | +4% dano e cura de habilidade, +20 mana máxima |
 | Agilidade | +1,5% velocidade de movimento, −2,5% recarga de habilidade, +5% velocidade de recarga/troca de arma |
 
-**Base sem arquétipo (proposta):** 500 de vida, 200 de mana, 6,0 m/s. Por nível: +80 vida, +20 mana, +4% de dano
+**Base sem arquétipo (aprovado, M11):** 500 de vida, 200 de mana, 6,0 m/s. Por nível: +80 vida, +20 mana, +4% de dano
 (arma e habilidade). **Precisa da planilha de TTK nova** antes de travar (M8/M22).
 
-## 6. Armas e loot (proposta)
+## 6. Armas e loot (aprovado, ainda não implementado: M8, M9)
 
 **Raridade de arma:** +5% de dano por nível de raridade (Comum 1,00 … Lendária 1,20).
 

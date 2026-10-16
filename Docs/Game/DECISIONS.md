@@ -3,8 +3,8 @@
 Cada decisão tem: problema, alternativas, escolha, motivo e status.
 
 - **Decidida:** escolha técnica do arquiteto. Pode ser revista, mas vale até alguém mudar aqui.
-- **Aguardando o usuário:** muda o design aprovado (GDD v2). Pela regra 1 do [AGENTS.md](../../AGENTS.md), nada disso
-  entra no [Design/GDD.md](../../Design/GDD.md) nem no código antes da resposta do usuário.
+- **Aguardando o usuário:** muda o design aprovado. Pela regra 1 do [AGENTS.md](../../AGENTS.md), nada disso entra no
+  [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md) nem no código antes da resposta do usuário.
 - **Aceita:** o usuário respondeu.
 
 Formato do número: `D-NNN`. Não renumere; marque as substituídas como "Substituída por D-NNN".
@@ -21,14 +21,16 @@ Formato do número: `D-NNN`. Não renumere; marque as substituídas como "Substi
   - `Docs/Game/MASTER_PLAN.md` passa a ser **o plano central**. O PLANO.md fica como histórico da 0.1.x; o que estava
     aberto nele foi levado para o MASTER_PLAN.
   - O AGENTS.md continua sendo o contexto e o diário para IAs (estado atual, ambiente, pegadinhas) e aponta para cá.
-  - `Design/GDD.md` (v2) continua oficial até o usuário aprovar a proposta v3 ([GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md)).
+  - Até 15/10, 22:30, o `Design/GDD.md` (v2) era o oficial. Com a D-002 aceita, o oficial é o
+    [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md) (v3); o v2 virou `Design/GDD_v2.md` e o `Design/GDD.md` só aponta.
   - Texto em português (regra do projeto); nomes de arquivo em inglês (pedido).
 - **Motivo:** um só lugar para o plano, sem apagar o histórico nem duplicar o contexto.
 
-## D-002 · A nova direção contra o GDD v2 · Aguardando o usuário
+## D-002 · A nova direção contra o GDD v2 · Aceita (15/10, 22:30)
 
 O pedido de 15/10 descreve um jogo diferente do GDD v2 em pontos centrais. A tabela lista cada conflito e a
-recomendação. **Nada disso foi aplicado ao GDD v2 nem ao código.**
+recomendação. **O usuário aprovou todas as recomendações como propostas** (resposta "Aprovar como proposto", 15/10,
+por volta de 22:30). O GDD v3 virou o oficial; o item (m) já está no código (`ANRGameMode`, fator 0,4–2,0).
 
 | # | Tema | GDD v2 (aprovado, parte implementada) | Pedido de 15/10 | Recomendação |
 |---|---|---|---|---|
@@ -44,7 +46,7 @@ recomendação. **Nada disso foi aplicado ao GDD v2 nem ao código.**
 | j | Esquiva | Shift, comum a todos | Não fala | **Fica** como habilidade comum (contrajogo de projéteis) |
 | k | Rede | Servidor dedicado na etapa 3 | Listen server (host) agora, dedicado depois | **Listen server agora** (D-003) |
 | l | Pilares do v2 | Campo como arma (magias de campo), terreno reativo, legibilidade | Contrajogo, combinações, legibilidade | **Ficam.** As 14 magias + 7 ultimates do v2 viram o primeiro pool do draft |
-| m | XP de abate | 80 × nível da vítima (mín. 100), +20% por nível que a vítima tiver acima | "Quem tem nível alto não deve ganhar demais matando os fracos" | **Fator entre 0,4 e 2,0** (também reduz quando a vítima é mais fraca). Fórmula no BALANCE.md §4. **O código do M1 usa a do v2** (fator mínimo 1,0) até a resposta; mudar é só um número no `ANRGameMode` |
+| m | XP de abate | 80 × nível da vítima (mín. 100), +20% por nível que a vítima tiver acima | "Quem tem nível alto não deve ganhar demais matando os fracos" | **Fator entre 0,4 e 2,0** (também reduz quando a vítima é mais fraca). Fórmula no BALANCE.md §4. No código desde 15/10, 22:40 (a 0.1.2 publicada ainda usa a do v2) |
 
 **Por que essas recomendações:**
 - (a)/(b) O pedido diz que o herói "não é preso a uma classe" e que a build sai de arma + draft + itens + pontos. Manter
@@ -57,8 +59,9 @@ recomendação. **Nada disso foi aplicado ao GDD v2 nem ao código.**
   ótimo para todos. Resiliência entra no Vigor; o Espírito se divide entre Arcano (mana) e Agilidade (recarga).
 - (g) Z X C V B N ocupa o X da ultimate. T fica perto do Q/E/R e não briga com nada que já existe.
 
-**Se aprovado:** o GDD v2 vira `Design/GDD_v2.md` (arquivado), o [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md)
-vira o oficial, e o `AS_Hero` troca os 5 atributos da build pelos 4 novos (marcos M5 e M11).
+**Aplicado em 15/10:** o GDD v2 virou `Design/GDD_v2.md` (arquivado) e o [GAME_DESIGN_DOCUMENT.md](GAME_DESIGN_DOCUMENT.md)
+é o oficial. Falta no código: o `AS_Hero` trocar os 5 atributos da build pelos 4 novos (M11), armas (M7/M8), 6 slots e
+Tomo (M9), draft (M6), teclas novas (M5/M16).
 
 ## D-003 · Listen server agora, servidor dedicado depois · Decidida (15/10)
 
@@ -114,7 +117,7 @@ vira o oficial, e o `AS_Hero` troca os 5 atributos da build pelos 4 novos (marco
   que o projeto não tem.
 - **Revisar se:** o mapa v2 virar World Partition (então a Ilha de Espera pode virar uma célula sempre carregada).
 
-## D-007 · Formato do draft · Aguardando o usuário (recomendação: serpente em 4 faixas)
+## D-007 · Formato do draft · Aceita (15/10, 22:30): serpente em 4 faixas
 
 - **Problema:** 20 jogadores × 4 escolhas = 80 escolhas. Um de cada vez leva de 7 a 13 min.
 - **Alternativas, simuladas** com [ferramentas/simular_draft.py](ferramentas/simular_draft.py) (400 drafts cada;

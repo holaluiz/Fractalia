@@ -42,7 +42,7 @@ estados acima da barra de vida.
 **Visual:** herda o mundo pintado (bordas de pincel, papel), mas com contraste alto e leitura instantânea. Números
 grandes só para o que importa na luta (vida, munição, recarga).
 
-## 4. Controles padrão (⚑ D-002g)
+## 4. Controles padrão (D-002g)
 
 | Ação | Tecla | Hoje |
 |---|---|---|
