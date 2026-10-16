@@ -1,7 +1,7 @@
 using UnrealBuildTool;
 
-// Módulo C++ do Nexus Royale: só o que o Blueprint não consegue fazer sozinho
-// (AttributeSet do GAS, efeitos com SetByCaller, inventário e a tabela de itens). O resto é Blueprint.
+// Módulo C++ do Nexus Royale: o núcleo replicado (estado da partida, GAS, inventário, combate) e o que o Blueprint
+// não consegue fazer sozinho. Conteúdo, visual e números ficam em Blueprint e dados (Docs/Game/TECHNICAL_ARCHITECTURE.md).
 public class NexusRoyale : ModuleRules
 {
 	public NexusRoyale(ReadOnlyTargetRules Target) : base(Target)
@@ -14,6 +14,7 @@ public class NexusRoyale : ModuleRules
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
+			"AIModule",
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks",

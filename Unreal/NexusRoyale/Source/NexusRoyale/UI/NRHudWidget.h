@@ -17,7 +17,7 @@ class UNRMutacoesComponent;
  * - como base de um WBP_HUD: o Widget Blueprint só precisa ter widgets com estes nomes (todos opcionais):
  *   BarraVida, BarraMana, BarraXP (ProgressBar); TextoVida, TextoMana, TextoNivel, TextoMagias, TextoAviso, Mira,
  *   TextoConsumivel0..2, TextoEquipados, TextoTempestade, TextoForaDaZona, TextoPrompt, TextoMutacoes,
- *   TextoMutacoesEscolhidas (TextBlock).
+ *   TextoMutacoesEscolhidas, TextoPartida (TextBlock).
  * A cada frame o C++ lê os componentes Nexus do pawn do jogador.
  *
  * Duas coisas vêm de Blueprints, lidas pelo nome das variáveis (se o nome mudar no BP, o texto some sem erro):
@@ -50,6 +50,8 @@ protected:
 	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoConsumivel1;
 	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoConsumivel2;
 	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoEquipados;
+	/** "5 vivos" / "Treino" / "Esperando jogadores": lido do ANRGameState (fase da partida). */
+	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoPartida;
 	/** "Fase 2 · a tempestade fecha em 1:05". */
 	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoTempestade;
 	UPROPERTY(meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> TextoForaDaZona;
@@ -77,6 +79,11 @@ private:
 	void AtualizarTempestade();
 	void AtualizarPrompt();
 	void AtualizarMutacoes();
+	/**
+	 * Fase da partida, vivos e os avisos grandes de eliminação, vitória e resultados (ANRGameState/ANRPlayerState).
+	 * Sem ANRGameState (outro GameMode), não mexe no aviso.
+	 */
+	void AtualizarPartida(bool bMorto, FText& Aviso, FLinearColor& CorAviso);
 
 	/** O BP_StormController do nível (procurado de novo a cada 2 s enquanto não achar). */
 	TWeakObjectPtr<AActor> Tempestade;

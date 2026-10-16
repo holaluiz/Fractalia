@@ -1,6 +1,6 @@
 """Compila o módulo C++ NexusRoyale (GAS: AS_Hero, UNRAbilitySystemComponent, inventário, HUD).
 
-Uso (com a Unreal FECHADA):   python -I Unreal/ue_gas_compilar.py [--abrir]
+Uso (com a Unreal FECHADA):   python -I Unreal/ue_gas_compilar.py [--abrir] [--pouca-memoria]
   1. confere se há Visual Studio com o MSVC (UE 5.8: 14.44.35211+ do VS 2022 17.14 ou 14.50.35723+ do VS 2026);
   2. recusa rodar com o editor aberto (o módulo novo só carrega numa abertura nova);
   3. põe o módulo "NexusRoyale" e o plugin GameplayAbilities no NexusRoyale.uproject (só se faltarem);
@@ -75,8 +75,13 @@ def main():
     ajustar_uproject()
     # -NoUBA: com pouca memória virtual (arquivo de paginação no C: cheio) o UBA trava o cl.exe sem erro (15/10, 18:10).
     # -MaxParallelActions=2: cada cl.exe da Unreal reserva até ~2,5 GB; quatro de uma vez estouram a memória virtual.
+    # --pouca-memoria: 1 cl.exe por vez e sem unity build (cada arquivo compila sozinho, com menos heap). Foi o que
+    # resolveu o "C1060: espaço de heap do compilador insuficiente" no arquivo unity do módulo (15/10, 20:38).
+    pouca = "--pouca-memoria" in sys.argv
     cmd = [BUILD, "NexusRoyaleEditor", "Win64", "Development", f"-Project={UPROJECT}", "-WaitMutex", "-NoHotReloadFromIDE",
-           "-NoUBA", "-MaxParallelActions=2"]
+           "-NoUBA", "-MaxParallelActions=1" if pouca else "-MaxParallelActions=2"]
+    if pouca:
+        cmd.append("-DisableUnity")
     print("compilando:", " ".join(cmd))
     r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     linhas = (r.stdout + r.stderr).splitlines()

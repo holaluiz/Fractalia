@@ -4,6 +4,7 @@
 #include "Combat/NREstruturaMagica.h"
 #include "Combat/NRProjetilMagico.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Core/NRGameState.h"
 #include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/Character.h"
@@ -478,7 +479,10 @@ void UNRCombateComponent::AoMorrer(AActor* Assassino)
 	if (APlayerController* PC = Cast<APlayerController>(Heroi->GetController()))
 	{
 		Heroi->DisableInput(PC);
-		if (TempoParaRecomecar > 0.f)
+		// Com a máquina de estados da partida (ANRGameState), quem decide o fim e o recomeço é o ANRGameMode. O
+		// recomeço local só vale em mapas sem ela (e nunca num cliente: OpenLevel derrubaria a conexão).
+		const bool bPartidaControlada = Cast<ANRGameState>(GetWorld()->GetGameState()) != nullptr;
+		if (TempoParaRecomecar > 0.f && !bPartidaControlada && Heroi->HasAuthority())
 		{
 			GetWorld()->GetTimerManager().SetTimer(TimerRecomecar, this, &ThisClass::Recomecar, TempoParaRecomecar, false);
 		}

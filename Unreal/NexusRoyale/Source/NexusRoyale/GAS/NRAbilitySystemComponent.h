@@ -77,6 +77,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNRMorreu, AActor*, Assassino);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNRSubiuNivel, int32, NovoNivel);
 
 class UDamageType;
+class UNRAbilitySystemComponent;
+
+/** Morte vista pelo C++ (servidor): diz QUEM morreu, o que o OnMorreu de Blueprint não diz. O ANRGameMode escuta. */
+DECLARE_MULTICAST_DELEGATE_TwoParams(FNRMorreuNativo, UNRAbilitySystemComponent* /*QuemMorreu*/, AActor* /*Assassino*/);
 
 /**
  * AbilitySystemComponent do herói. Fica no próprio BP_HeroBase (no battle royale não há respawn,
@@ -99,6 +103,7 @@ public:
 	virtual void InitializeComponent() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// ---------------------------------------------------------------- Herói
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
@@ -107,7 +112,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
 	FNRPontosBuild Build;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
+	/** Replica para todos (HUD, barras acima do herói); o ANRPlayerState guarda um espelho para o placar. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Nexus|Heroi")
 	int32 Nivel = 1;
 
 	/** Se ligado, o BeginPlay chama InicializarHeroi com o Arquetipo e a Build acima (só no servidor). */
@@ -122,8 +128,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Heroi")
 	void DefinirNivel(int32 NovoNivel);
 
-	/** XP acumulado na partida. */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Nexus|Heroi")
+	/** XP acumulado na partida. Replica só para o dono (a barra de XP é só dele). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Nexus|Heroi")
 	int32 XP = 0;
 
 	/** Soma XP e sobe quantos níveis o XP acumulado permitir (GDD §7.1). Só no servidor. */
@@ -175,6 +181,16 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Efeitos")
 	void AplicarDano(float Quantidade, AActor* Instigador, bool bDeJogador = false, bool bIgnorarArmadura = false);
 
+	/**
+	 * Fase Final da partida: o herói não toma mais dano de nada (o resultado anunciado não muda). Só no servidor;
+	 * quem chama é o ANRGameMode.
+	 */
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Efeitos")
+	void DefinirInvulneravel(bool bSim);
+
+	UFUNCTION(BlueprintPure, Category = "Nexus|Efeitos")
+	bool IsInvulneravel() const { return bInvulneravel; }
+
 	/** Tempestade: porcentagem da vida máxima, ignorando a armadura (GDD §13). */
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category = "Nexus|Efeitos")
 	void AplicarDanoTempestade(float PorcentagemDaVidaMax);
@@ -220,6 +236,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Nexus|Eventos") FNRDanoRecebido OnDanoRecebido;
 	UPROPERTY(BlueprintAssignable, Category = "Nexus|Eventos") FNRMorreu OnMorreu;
 	UPROPERTY(BlueprintAssignable, Category = "Nexus|Eventos") FNRSubiuNivel OnSubiuNivel;
+	/** Só no servidor, junto com o OnMorreu. */
+	FNRMorreuNativo OnMorreuNativo;
 
 	/** Chamado pelo AS_Hero depois de descontar a vida (servidor). */
 	void NotificarDano(float DanoFinal, AActor* Instigador, bool bMatou);
@@ -265,9 +283,23 @@ private:
 
 	float PontosExtras(int32 Indice) const;
 
+	/**
+	 * Morte replicada: o servidor decide (NotificarDano) e os clientes recebem pelo OnRep, que dispara o mesmo OnMorreu.
+	 * Antes do M1 a morte só existia no servidor, e um cliente nunca veria a própria (nem a animação dos outros).
+	 */
+	UPROPERTY(ReplicatedUsing = OnRep_Morto)
+	bool bMorto = false;
+
+	/** Quem deu o golpe final (pode ser nulo: tempestade, ou um ator que o cliente não enxerga). */
+	UPROPERTY(Replicated)
+	TObjectPtr<AActor> UltimoAssassino;
+
+	UFUNCTION()
+	void OnRep_Morto();
+
 	FTimerHandle TimerRegen;
 	double UltimoCombate = -1000.0;
-	bool bMorto = false;
+	bool bInvulneravel = false;
 	bool bInicializado = false;
 	/** Para refazer a velocidade quando o herói entra ou sai de combate. */
 	bool bEmCombateAntes = false;

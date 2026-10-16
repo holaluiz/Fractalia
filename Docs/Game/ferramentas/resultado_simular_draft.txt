@@ -1,0 +1,12 @@
+400 drafts por formato, 20 jogadores, pool 32 ultimates + 96 básicas (1,6×)
+
+A  serpente em 4 faixas (janela 8 s)          2.41 min  p90  2.52 min  favorita  41.2%  posição média  3.01  corridas 0.53  esgotados 2.37
+A' serpente em 4 faixas (janela 6 s)          2.15 min  p90  2.23 min  favorita  40.4%  posição média  3.45  corridas 0.74  esgotados 4.60
+A5 serpente em 5 faixas de 4 (janela 8 s)     2.07 min  p90  2.18 min  favorita  41.4%  posição média  3.04  corridas 0.78  esgotados 2.38
+B  reserva simultânea, top 3 (janela 12 s)    1.14 min  p90  1.16 min  favorita  41.8%  posição média  2.83  corridas 0.00  esgotados 1.65
+C  serpente sequencial, 1 por vez (8 s)       7.32 min  p90  7.66 min  favorita  41.0%  posição média  3.00  corridas 0.00  esgotados 2.33
+
+Fatia vertical: 4 jogadores, pool de desenvolvimento 7 ultimates + 14 básicas (GDD v2)
+
+A  1 faixa de 4 (janela 8 s)                  1.77 min  p90  1.94 min  favorita  49.1%  posição média  1.75  corridas 0.00  esgotados 0.51
+B  reserva simultânea (janela 12 s)           1.01 min  p90  1.10 min  favorita  49.3%  posição média  1.75  corridas 0.00  esgotados 0.35

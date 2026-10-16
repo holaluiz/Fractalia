@@ -13,6 +13,29 @@ sys.path.append(ENGINE_PY)
 import remote_execution as rx  # noqa: E402
 
 
+SONDA = "import unreal; print('EDITOR' if unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem) else 'JOGO')"
+
+
+def editor(ex):
+    """
+    O nó que é o EDITOR. Um jogo aberto do mesmo projeto (por exemplo, um cliente de rede -game do rede_testar.py)
+    também responde à descoberta, com os mesmos dados; com mais de um nó, pergunta a cada um se tem os subsistemas do
+    editor (15/10: chamadas do ue_py.py caíram no cliente de teste e falharam).
+    """
+    nos = list(ex.remote_nodes)
+    if len(nos) == 1:
+        return nos[0]["node_id"]
+    for no in nos:
+        ex.open_command_connection(no["node_id"])
+        try:
+            res = ex.run_command(SONDA, unattended=True, exec_mode=rx.MODE_EXEC_STATEMENT)
+        finally:
+            ex.close_command_connection()
+        if any("EDITOR" in linha.get("output", "") for linha in res.get("output", [])):
+            return no["node_id"]
+    raise RuntimeError("nenhum dos processos da Unreal que responderam é o editor")
+
+
 def run(command, mode=rx.MODE_EXEC_FILE, wait=20.0):
     cfg = rx.RemoteExecutionConfig()
     cfg.multicast_bind_address = "127.0.0.1"
@@ -24,7 +47,8 @@ def run(command, mode=rx.MODE_EXEC_FILE, wait=20.0):
             time.sleep(0.25)
         if not ex.remote_nodes:
             raise RuntimeError("no Unreal Editor answered the remote-execution discovery")
-        ex.open_command_connection(ex.remote_nodes[0]["node_id"])
+        time.sleep(1.5)  # dá tempo de os outros processos (clientes de teste) também responderem
+        ex.open_command_connection(editor(ex))
         return ex.run_command(command, unattended=True, exec_mode=mode)
     finally:
         ex.stop()

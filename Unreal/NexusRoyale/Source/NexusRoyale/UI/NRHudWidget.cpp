@@ -2,6 +2,8 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Combat/NRCombateComponent.h"
+#include "Core/NRGameState.h"
+#include "Core/NRPlayerState.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/HorizontalBox.h"
@@ -216,8 +218,10 @@ void UNRHudWidget::MontarLayoutPadrao()
 	SlotAviso->SetAlignment(FVector2D(0.5f, 0.5f));
 	SlotAviso->SetAutoSize(true);
 
-	// Topo, no centro: relógio da tempestade e, embaixo, o aviso de fora da zona.
+	// Topo, no centro: a partida (vivos), o relógio da tempestade e, embaixo, o aviso de fora da zona.
 	UVerticalBox* Topo = WidgetTree->ConstructWidget<UVerticalBox>(UVerticalBox::StaticClass(), TEXT("Topo"));
+	TextoPartida = Texto(TEXT("TextoPartida"), 16, FLinearColor(1.f, 0.95f, 0.85f));
+	Topo->AddChildToVerticalBox(TextoPartida)->SetHorizontalAlignment(HAlign_Center);
 	TextoTempestade = Texto(TEXT("TextoTempestade"), 14, FLinearColor(0.88f, 0.75f, 1.f));
 	Topo->AddChildToVerticalBox(TextoTempestade)->SetHorizontalAlignment(HAlign_Center);
 	TextoForaDaZona = Texto(TEXT("TextoForaDaZona"), 20, FLinearColor(1.f, 0.35f, 0.9f));
@@ -498,6 +502,7 @@ void UNRHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			CorAviso = FLinearColor(1.f, 0.25f, 0.2f);
 		}
 	}
+	AtualizarPartida(ASC && ASC->IsMorto(), Aviso, CorAviso);
 	if (TextoAviso)
 	{
 		TextoAviso->SetText(Aviso);
@@ -579,4 +584,103 @@ void UNRHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	AtualizarTempestade();
 	AtualizarPrompt();
 	AtualizarMutacoes();
+}
+
+void UNRHudWidget::AtualizarPartida(bool bMorto, FText& Aviso, FLinearColor& CorAviso)
+{
+	const UWorld* World = GetWorld();
+	const ANRGameState* GS = World ? World->GetGameState<ANRGameState>() : nullptr;
+	if (!GS)
+	{
+		return;
+	}
+	const ANRPlayerState* Eu = GetOwningPlayerState<ANRPlayerState>();
+	const int32 Vivos = GS->ContarVivos();
+
+	if (TextoPartida)
+	{
+		FText Linha;
+		switch (GS->Fase)
+		{
+		case ENRFaseDaPartida::Espera:
+			Linha = FText::Format(NSLOCTEXT("Nexus", "HudEspera", "Esperando jogadores  ·  {0} na partida"), GS->PlayerArray.Num());
+			break;
+		case ENRFaseDaPartida::Draft:
+			Linha = NSLOCTEXT("Nexus", "HudDraft", "Draft");
+			break;
+		case ENRFaseDaPartida::Queda:
+			Linha = GS->bModoTreino
+				? NSLOCTEXT("Nexus", "HudQuedaTreino", "Treino  ·  salte do dirigível com Espaço")
+				: FText::Format(NSLOCTEXT("Nexus", "HudQueda", "{0} vivos  ·  salte do dirigível com Espaço"), Vivos);
+			break;
+		case ENRFaseDaPartida::EmJogo:
+			Linha = GS->bModoTreino ? NSLOCTEXT("Nexus", "HudTreino", "Treino")
+				: FText::Format(NSLOCTEXT("Nexus", "HudVivos", "{0} vivos"), Vivos);
+			break;
+		default:
+			Linha = ANRGameState::NomeDaFase(GS->Fase);
+			break;
+		}
+		TextoPartida->SetText(Linha);
+	}
+
+	const bool bFim = GS->Fase == ENRFaseDaPartida::Final || GS->Fase == ENRFaseDaPartida::Resultados;
+	if (bFim)
+	{
+		const bool bVenci = Eu && GS->Vencedor == Eu;
+		FText Titulo;
+		if (bVenci)
+		{
+			Titulo = NSLOCTEXT("Nexus", "Vitoria", "VITÓRIA!");
+		}
+		else if (GS->bModoTreino)
+		{
+			Titulo = NSLOCTEXT("Nexus", "FimTreino", "FIM DO TREINO");
+		}
+		else if (Eu && Eu->Colocacao > 0)
+		{
+			Titulo = FText::Format(NSLOCTEXT("Nexus", "Colocacao", "#{0} de {1}"), Eu->Colocacao, GS->JogadoresNoInicio);
+		}
+		else
+		{
+			Titulo = NSLOCTEXT("Nexus", "FimPartida", "FIM DA PARTIDA");
+		}
+		FString Texto = Titulo.ToString();
+		if (GS->Fase == ENRFaseDaPartida::Resultados)
+		{
+			// Placar por colocação (até 5) e a linha do próprio jogador.
+			TArray<const ANRPlayerState*> Placar;
+			for (const APlayerState* PS : GS->PlayerArray)
+			{
+				if (const ANRPlayerState* NRPS = Cast<ANRPlayerState>(PS))
+				{
+					Placar.Add(NRPS);
+				}
+			}
+			Placar.Sort([](const ANRPlayerState& A, const ANRPlayerState& B)
+			{
+				const int32 CA = A.Colocacao > 0 ? A.Colocacao : MAX_int32, CB = B.Colocacao > 0 ? B.Colocacao : MAX_int32;
+				return CA != CB ? CA < CB : A.Abates > B.Abates;
+			});
+			for (int32 i = 0; i < FMath::Min(5, Placar.Num()); ++i)
+			{
+				const ANRPlayerState* P = Placar[i];
+				// No treino (1 jogador) a colocação não diz nada.
+				const FString Posicao = P->Colocacao > 0 && !GS->bModoTreino ? FString::Printf(TEXT("#%d "), P->Colocacao) : FString();
+				Texto += FString::Printf(TEXT("\n%s%s  ·  %d abates  ·  nível %d"),
+					*Posicao, *P->GetPlayerName(), P->Abates, P->Nivel);
+			}
+			Texto += FString::Printf(TEXT("\n\nNova partida em %d s"), FMath::CeilToInt(GS->TempoRestanteDaFase()));
+		}
+		Aviso = FText::FromString(Texto);
+		CorAviso = bVenci ? FLinearColor(1.f, 0.82f, 0.25f) : FLinearColor::White;
+	}
+	else if (bMorto && Eu)
+	{
+		Aviso = GS->bModoTreino
+			? FText::Format(NSLOCTEXT("Nexus", "EliminadoTreino", "VOCÊ FOI ELIMINADO\npor {0}"), FText::FromString(Eu->CausaDaEliminacao))
+			: FText::Format(NSLOCTEXT("Nexus", "EliminadoPartida", "VOCÊ FOI ELIMINADO\n#{0} de {1}  ·  por {2}"),
+				Eu->Colocacao, GS->JogadoresNoInicio, FText::FromString(Eu->CausaDaEliminacao));
+		CorAviso = FLinearColor(1.f, 0.25f, 0.2f);
+	}
 }

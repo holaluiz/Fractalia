@@ -1,5 +1,8 @@
 # PLANO.md: plano de melhorias do Nexus Royale
 
+> **Histórico.** Desde 15/10, 20:30, o plano central é o [Docs/Game/MASTER_PLAN.md](Docs/Game/MASTER_PLAN.md). Os itens
+> abertos daqui foram levados para lá (tabela "Itens herdados do PLANO.md"). Não marque mais nada aqui.
+
 Criado em 2026-10-15, por volta de 18:10 (Brasília), por Claude (Claude Code), a pedido do usuário: "analise
 tudo, crie um plano, guarde o plano na pasta e comece a seguir esse plano".
 

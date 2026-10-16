@@ -1,10 +1,10 @@
-; GM_NexusRoyale: when the match starts, a drop ship crosses the island on a random line with every hero aboard,
-; and the storm clock starts (GDD 3 and 13)
-(event EventBeginPlay
-  (if (Networking|HasAuthority)
-    (Utilities|Time|SetTimerbyFunctionName :Object self :FunctionName "StartMatch" :Time 0.5 :bLooping false)))
+; GM_NexusRoyale (filho do ANRGameMode, C++). A máquina de estados da partida (Docs/Game/GAMEPLAY_SYSTEMS.md §1)
+; decide QUANDO a queda começa e chama IniciarQueda; este grafo só faz o "como": um dirigível cruza a ilha numa reta
+; sorteada com todos os heróis a bordo, e o relógio da tempestade começa (GDD 3 e 13). Roda só no servidor.
+; Antes do M1 o BeginPlay disparava a partida por um timer de 0,5 s (evento StartMatch). Os dois foram apagados com
+; Unreal/ue_bp_apagar_cadeia.py: gravar um evento com corpo vazio pela DSL não apaga o corpo antigo.
 
-(event Custom|StartMatch
+(event Nexus|Partida|EventIniciarQueda
   (bind storm (Actor|GetActorOfClass :ActorClass "/Game/NexusRoyale/Blueprints/Match/BP_StormController.BP_StormController_C"))
   (bind ang (Math|Random|RandomFloatinRange :Min 0.0 :Max 360.0))
   (bind cs (Math|Trig|Cos(Degrees) ang))

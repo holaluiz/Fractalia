@@ -6,10 +6,17 @@
 > **Ao terminar uma sessão de trabalho:** atualize a seção 3 (Estado atual) e acrescente uma
 > entrada no fim da seção 9 (Diário). Seja curto e diga o que ficou **sem verificar**.
 
-Última atualização: 2026-10-15, por volta de 19:00 (horário de Brasília), por Claude (Claude Code), sessão "Plano de melhorias e versão 0.1.1".
+Última atualização: 2026-10-15, por volta de 22:15 (horário de Brasília), por Claude (Claude Code), sessão "Lead Game Architect: auditoria e M1".
 
-> **Plano de trabalho:** [PLANO.md](PLANO.md) (diagnóstico, fases e decisões para o usuário revisar). Marque lá o
-> que ficar pronto.
+> **Plano central (desde 15/10, 20:30):** [Docs/Game/MASTER_PLAN.md](Docs/Game/MASTER_PLAN.md). A pasta
+> [Docs/Game/](Docs/Game/) tem a auditoria, o design v3 (**proposta**, espera o usuário), a arquitetura, a rede, o
+> balanceamento, os testes, as decisões e os problemas conhecidos. Ao terminar uma tarefa, siga o roteiro do topo do
+> MASTER_PLAN (status, documento do assunto, CHANGELOG_AI, DECISIONS, KNOWN_ISSUES). O [PLANO.md](PLANO.md) ficou como
+> histórico da 0.1.x.
+>
+> **Nova direção (pedido do usuário em 15/10, 19:38):** multiplayer de até 20 jogadores (listen server, lobby, bots),
+> draft de habilidades únicas, armas, 6 slots de item. Ela conflita com o GDD v2 em vários pontos: veja
+> [Docs/Game/DECISIONS.md](Docs/Game/DECISIONS.md), D-002. **Até o usuário responder, o GDD v2 continua oficial.**
 
 ---
 
@@ -64,6 +71,20 @@
 
 ### Pronto
 
+- **M1 da nova direção: máquina de estados da partida, morte e vitória, em rede** (15/10, 20:00–22:05; detalhes no
+  `Docs/Game/MASTER_PLAN.md` e no `CHANGELOG_AI.md`). C++ em `Source/NexusRoyale/Core/` (`ANRGameMode`, `ANRGameState`,
+  `ANRPlayerState`, `UNRSessaoSubsystem`) e `AI/ANRBotController`. Fases Espera → (Draft, pulado até o M6) → Queda →
+  EmJogo → Final → Resultados → recomeço. Partida com 1 jogador = **modo treino** (acaba quando ele morre). Eliminação
+  com colocação, abate e XP de abate; vitória uma vez só; invulnerável no Final; quem chega atrasado assiste.
+  O `GM_NexusRoyale` é filho do `ANRGameMode`: o `StartMatch` virou o evento `IniciarQueda`. Morte, nível e XP replicam.
+  **Testado em PIE** (solo, com bots de teste e com PIE listen server + cliente sem render): ver TEST_PLAN.md §5.
+- **Marco 0 da nova direção: auditoria e documentação** (sessão "Lead Game Architect: auditoria e M1", 15/10,
+  19:40–20:30). Pasta `Docs/Game/` com o `MASTER_PLAN.md` (plano central, marcos M0–M25 e a fatia vertical), a
+  `AUDITORIA.md` e os outros 16 documentos pedidos. O GDD v3 é **proposta**: os conflitos com o GDD v2 estão na
+  `DECISIONS.md`, D-002 (draft no lugar de arquétipo + pontos; armas; 6 slots Z X C V B N; Tomo no lugar do grimório;
+  ponto de atributo por nível; 4 atributos; ultimate no T; XP de abate) e esperam o usuário. Formato do draft simulado
+  (`Docs/Game/ferramentas/simular_draft.py`): serpente em 4 faixas = 2,4 min; reserva simultânea = 1,1 min;
+  sequencial = 7,3 min (D-007, espera o usuário).
 - **Fase 1 do PLANO.md, para a versão 0.1.1** (sessão "Plano de melhorias e versão 0.1.1", 15/10; testado em PIE
   das 18:30 às 18:50, detalhes na seção 9):
   - **Mutações** (GDD §7.4), no componente C++ novo `Mutacoes` (`UNRMutacoesComponent`, em `Progression/`):
@@ -295,13 +316,15 @@
 
 ### Sem verificação ou com problema conhecido
 
-- **BUG GRAVE, achado em 15/10 às 19:25: no jogo empacotado (0.1.0 e 0.1.1) as teclas de combate não funcionam.**
-  O `IMC_Default.uasset` no disco é o das 11:38 e só tem `IA_Jump`, `IA_Look`, `IA_Mapa` e `IA_Move`. Botão
-  esquerdo, Q, E, X, F, 1-3 e 4 só existiam na memória do editor (por isso tudo funcionava no PIE). Causa: o
-  `ue_mvp_setup.py` chama `imc.map_key(...)`, que não marca o pacote como alterado, e depois
-  `save_loaded_asset(imc)`, que só salva pacote marcado. Explica a partida da 0.1.0 sem nenhum creep morto.
-  **Correção:** marcar o IMC (`imc.modify()`) ou salvar com `only_if_is_dirty=False`, rodar o setup, conferir no
-  arquivo e lançar a 0.1.2 (PLANO.md, item 1.9).
+- **Teclas de combate no jogo empacotado (0.1.0 e 0.1.1 publicadas sem elas): CORRIGIDO em 15/10, 21:05** (M0.5 do
+  `Docs/Game/MASTER_PLAN.md`). O `ue_mvp_setup.py` agora marca o IMC, salva sem depender da marca e confere os nomes das
+  ações no `.uasset` (8,3 → 12,5 KB). **A 0.1.2 está empacotada em `D:/NexusRoyale_Builds/0.1.2`** e testada (as teclas
+  aparecem no jogo cozido; o usuário usou Q, E e X). **Falta publicar** (OK do usuário). Antes de zipar, apague a pasta
+  `Saved` que o teste criou dentro de `Windows/`.
+- **M1 (máquina de estados da partida), sem verificar:** a câmera indo para quem matou; o HUD do lado de um cliente (o
+  cliente de teste não tem render); a câmera do espectador que chega atrasado; a contagem de espectadores no recomeço
+  (última correção, compilada e não testada); a partida no jogo empacotado. **Antes do lobby (M4), a primeira partida
+  não espera clientes** (use `pie_partida.py esperar` no teste; Docs/Game/KNOWN_ISSUES.md, K-23).
 
 - **Fase 1 / 0.1.1** (PLANO.md): **publicada** (Release `v0.1.1`, 15/10, 19:09) e instalada neste PC pela
   atualização automática do launcher. Sem verificar: Alt+1/2/3 e Alt+4 no teclado; as chamas da Bola de Fogo
@@ -587,6 +610,16 @@ use os scripts de `Unreal/`:
   acertar o centro do acampamento a 12 m é cerca de -4,9°.
 - **Captura com HUD:** `ue_capture.py <png> --editor` mostra o UMG. O `pie_capture.py` (screenshot de
   alta resolução) renderiza só a cena, sem interface.
+- **PIE como listen server:** a classe `LevelEditorPlaySettings` não existe no Python da 5.8. Com o editor fechado, troque
+  `PlayNetMode=PIE_Standalone` por `PIE_ListenServer` em `Saved/Config/WindowsEditor/EditorPerProjectUserSettings.ini`
+  (seção `[/Script/UnrealEd.LevelEditorPlaySettings]`); o PIE escuta na porta 17777. Clientes sem render:
+  `python -I Unreal/rede_testar.py abrir 1` (e `fechar`). **Volte para `PIE_Standalone` no fim.**
+- **Um jogo `-game` do mesmo projeto também responde ao Python remoto** (com os mesmos dados do editor). O `ue_py.py`
+  agora pergunta a cada processo se é o editor; o `rede_testar.py` abre os clientes com o Python remoto desligado.
+- **A DSL não apaga corpo de evento:** gravar `(event EventBeginPlay)` vazio é ignorado e o corpo antigo fica. Para
+  apagar, `Unreal/ue_bp_apagar_cadeia.py <grafo> <evento> [--manter-evento] --sim` (usa o `delete_node` do MCP).
+- **Mudar o CDO de um Blueprint pelo Python antes do PIE (sem salvar) não valeu no PIE** (15/10). Para números de
+  teste, use uma função `BlueprintCallable` chamada no PIE.
 - **Iniciar e parar o PIE pelo Python:** `LevelEditorSubsystem.editor_request_begin_play()` e
   `editor_request_end_play()` (o `EditorApp StartPIE` do MCP exige um JSON de opções).
 - **`add_object_variable` do MCP cria `int` para algumas classes**, como `CurveTable`. Corrija com
@@ -621,6 +654,12 @@ use os scripts de `Unreal/`:
   (o do jogo empacotado fica em `.../x64/NexusRoyale/Development/Engine/SharedPCH.Engine.*.pch`).
   - Na 5.8 o UBT **sempre** usa o executor do UBA. O `-NoUBA` só desliga o detour (`ExecutorFactory.cs`).
   - O `ue_gas_compilar.py` agora passa `-NoUBA -MaxParallelActions=2` (dois `cl.exe` de ~2,5 GB cada, no máximo).
+  - **"C1060: espaço de heap do compilador insuficiente"** (15/10, 20:38): falta de memória virtual (2 GB de RAM livres,
+    25,7 de 28,9 GB em uso). Acontece no arquivo unity do módulo, que junta vários `.cpp`. Use
+    `python -I Unreal/ue_gas_compilar.py --pouca-memoria` (1 `cl.exe` por vez e `-DisableUnity`). Mudar dependências no
+    `Build.cs` recompila o módulo inteiro.
+  - **O `cl.exe` "parado" (quase sem CPU por minutos) volta a andar** logo depois de pôr o PCH no cache de novo: o
+    cache se perde quando outro processo usa a memória. Repita o `cat ... > /dev/null` antes de cada compilação.
   - Fechar outros apps antes de compilar ajuda; isso é com o usuário (regra 6).
 - **Salvar pelo Python não salva o que não foi marcado como alterado.** `EditorAssetLibrary.save_loaded_asset` e
   `save_asset` têm `only_if_is_dirty=True` por padrão, e algumas funções mexem no asset sem marcar o pacote (como o
@@ -713,7 +752,8 @@ use os scripts de `Unreal/`:
 | Caminho | Conteúdo |
 |---|---|
 | `AGENTS.md` | Este arquivo: o contexto para IAs |
-| `PLANO.md` | Plano de melhorias por fases (criado em 15/10, 18:10). Marque `[x]` no que ficar pronto |
+| `Docs/Game/` | **Plano central** (`MASTER_PLAN.md`) e documentação viva da nova direção (criada em 15/10, 20:30): auditoria, GDD v3 (proposta), arquitetura, rede, sistemas, habilidades, itens, IA, arte, mapa, UI, balanceamento, desempenho, testes, decisões, changelog das IAs, problemas conhecidos. `ferramentas/simular_draft.py` compara formatos de draft |
+| `PLANO.md` | Plano da 0.1.x (criado em 15/10, 18:10). Histórico: o que estava aberto foi para o `Docs/Game/MASTER_PLAN.md` |
 | `CLAUDE.md` | Lido automaticamente pelo Claude Code. Só aponta para este arquivo |
 | `README.md` | Visão geral para humanos |
 | `Design/GDD.md` | Design oficial (v2). `GDD_v1.md` é o antigo, abandonado |
@@ -732,6 +772,10 @@ use os scripts de `Unreal/`:
 | `Unreal/NexusRoyale/Source/NexusRoyale/` | Módulo C++ compilado e listado no `.uproject`: `GAS/` (AS_Hero, ASC, efeitos), `Items/` (inventário, tabela, biblioteca), `Combat/` (UNRCombateComponent, ANRProjetilMagico, ANREstruturaMagica, ANRChuvaMeteoros e as structs das magias em NRMagiaTypes.h), `Progression/` (UNRMutacoesComponent) e `UI/` (NRHudWidget) |
 | `Unreal/ue_mvp_setup.py`, `Unreal/pie_combate.py`, `Unreal/pie_gravar.py` | Setup do combate (material, teclas e os componentes Combate e Mutacoes), teste do MVP no PIE (inclui mutações e piso de nível) e o gravador quadro a quadro do PIE |
 | `Unreal/ue_dsl_grafos.py` | Grava só alguns grafos DSL de um BP, compila e (com `--ler`) lê de volta |
+| `Unreal/pie_partida.py` | Teste da máquina de estados no PIE (M1): `estado`, `bot`, `matar`, `saltar`, `esperar`, `xp` |
+| `Unreal/rede_testar.py` | Abre e fecha clientes de rede sem render (`-nullrhi`) e lê os logs deles |
+| `Unreal/ue_m1_setup.py` | Troca o pai do `GM_NexusRoyale` para o `ANRGameMode` preservando os valores (M1) |
+| `Unreal/ue_bp_apagar_cadeia.py` | Apaga a cadeia de nós de um evento de Blueprint pelo MCP |
 | `Unreal/ue_l_island_011.py` | `L_Island`: lista e apaga os restos da v1, e acha clareiras para acampamentos |
 | `Unreal/ue_gas_compilar.py`, `Unreal/ue_gas_setup.py` | Compilar o módulo (com o editor fechado) e depois configurar o DT_Itens e os componentes do herói (com o editor aberto) |
 | `Launcher/` | Instalador/launcher (`NexusRoyaleLauncher.cs`), o `LEIA-ME.txt` e `bin/` (o `.exe` compilado, fora do git) |
@@ -1229,9 +1273,34 @@ Acrescente as entradas **no fim**, no formato `### AAAA-MM-DD HH:MM (Brasília) 
     (`Export/Previews/teste_011_instalado_atualizado.png`): **o mapa da queda aparece inteiro e centralizado**
     (conferindo o conserto das âncoras também no mapa grande), com o relógio da tempestade. Log sem erros;
   - o jogo ficou aberto para o usuário jogar. Feche-o antes de um PIE (a placa de vídeo é pouca).
-- **Ao sair:** a Unreal está **fechada**, sem nada sujo. O código da 0.1.1 **não foi commitado**. A sessão
-  "Fase 2.1: grimórios viram as magias E e R" (proposta por esta) está trabalhando no mesmo checkout.
+- **19:25: achado o bug das teclas no jogo empacotado** (seção 3, primeiro item de "Sem verificação"; PLANO.md 1.9).
+- **Commit `b63f296` na `main`, enviado ao GitHub** (19:35, a pedido do usuário: "só os arquivos da 0.1.1"). Entraram
+  os 49 arquivos da 0.1.1, mais as DSLs `HandleInteract` e `InteractNearby` (da sessão do MVP, fonte de grafos que
+  já estão no `BP_HeroBase.uasset`) e os assets `IA_Magia2`, `IA_Ultimate` e `M_Estrutura` (da sessão do kit, que o
+  herói referencia). **Ficaram fora:** o `pie_press.py`, a pasta `Unreal/NexusRoyale/Build/` e as 159 malhas da
+  Quaternius e do LevelPrototyping com o Nanite desligado (sessão do visual). A tag `v0.1.1` continua no `2ff3965`.
+  Esta linha ficou fora do commit.
+- **Ao sair:** a Unreal está **fechada**, sem nada sujo. A sessão "Fase 2.1: grimórios viram as magias E e R"
+  (proposta por esta) está trabalhando no mesmo checkout.
 - **No caminho:**
   - a compilação travou duas vezes no HD lento; a saída foi pôr o PCH no cache (pegadinha nova na seção 5);
   - o herói morreu uma vez no PIE (a tempestade, depois de um `DebugSkipTo`), e a partida recomeçou num mundo novo
     sem derrubar o editor. Depois disso, zerei o relógio da tempestade entre os testes.
+
+### 2026-10-15 19:38 → 22:25 · Claude (Claude Code) · Lead Game Architect: auditoria, documentação, M0.5 e M1
+- **Pedido do usuário:** prompt longo de "Lead Game Architect": transformar o projeto num battle royale multiplayer de até
+  20 jogadores (listen server, lobby de 20 vagas com bots, draft de habilidades únicas, armas, 6 slots de item, níveis com
+  pontos, estilo pintado), começando pela auditoria (Marco 0) e pela documentação em `Docs/Game/`, e seguindo sozinho.
+- **Marco 0:** `Docs/Game/` com 17 documentos + `AUDITORIA.md` + `ferramentas/simular_draft.py`. O GDD v3 é **proposta**:
+  o pedido conflita com o GDD v2 (D-002 e D-007 esperam o usuário). O `MASTER_PLAN.md` virou o plano central; o
+  PLANO.md ficou como histórico.
+- **M0.5:** teclas salvas no `IMC_Default` (K-01). 0.1.2 empacotada (16 min; cook sem erro) e testada; não publicada.
+- **M1:** máquina de estados da partida em C++ (seção 3, "Pronto"). Testado em PIE solo, com bots de teste e em rede
+  (PIE listen + cliente `-nullrhi`). Três defeitos achados nos testes e corrigidos; detalhes no `Docs/Game/CHANGELOG_AI.md`.
+- **No caminho:** a compilação falhou por falta de memória (`C1060`): `ue_gas_compilar.py --pouca-memoria` (1 `cl.exe`,
+  sem unity). Compilar o módulo inteiro levou 13,6 min; os incrementais, 5–8 min. Pegadinhas novas na seção 5 (PIE listen
+  server pelo ini, Python remoto em clientes, DSL que não apaga evento, CDO antes do PIE).
+- **Ao sair:** o editor está **fechado**, sem nada sujo; as opções do PIE voltaram para standalone. **A 0.1.2 empacotada
+  está aberta** (o usuário estava jogando). Nada foi commitado nem publicado.
+- **Sem verificar:** está na seção 3 e no `MASTER_PLAN.md` (M0.5 e M1, "Falta ver").
+

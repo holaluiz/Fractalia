@@ -137,8 +137,9 @@ def empacotar(cfg):
            "-compressed", "-prereqs", "-nodebuginfo", "-archive", f"-archivedirectory={destino}",
            "-nocompileeditor", "-unattended", "-utf8output",
            # Sem o Unreal Build Accelerator: com a memória virtual quase cheia ele morre com o erro 1455
-           # (VirtualAlloc) logo no começo da compilação.
-           "-ubtargs=-NoUBA"]
+           # (VirtualAlloc) logo no começo da compilação. Com --pouca-memoria, também 1 cl.exe por vez e sem unity
+           # (o "C1060: espaço de heap do compilador insuficiente" de 15/10, 20:38).
+           "-ubtargs=-NoUBA -MaxParallelActions=1 -DisableUnity" if "--pouca-memoria" in sys.argv else "-ubtargs=-NoUBA"]
     if "--sem-cook" in sys.argv:   # reaproveita o build e o cook da última vez (só stage, pak e cópia)
         cmd = [{"-build": "-skipbuild", "-cook": "-skipcook"}.get(c, c) for c in cmd]
     r = rodar(cmd, os.path.join(destino, f"BuildCookRun_{cfg}.log"))
@@ -189,7 +190,9 @@ def sha256(caminho):
 
 def zipar_pasta(origem, zip_path, prefixo=""):
     with zipfile.ZipFile(zip_path, "w", allowZip64=True) as z:
-        for d, _, arqs in os.walk(origem):
+        for d, pastas, arqs in os.walk(origem):
+            # A pasta Saved só existe se alguém abriu o build para testar (logs, config do PC): não vai para o jogador.
+            pastas[:] = [p for p in pastas if p != "Saved"]
             for a in sorted(arqs):
                 cheio = os.path.join(d, a)
                 nome = prefixo + os.path.relpath(cheio, origem).replace(os.sep, "/")

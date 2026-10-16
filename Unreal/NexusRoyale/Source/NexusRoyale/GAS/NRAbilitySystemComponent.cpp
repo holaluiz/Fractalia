@@ -1,5 +1,6 @@
 #include "GAS/NRAbilitySystemComponent.h"
 
+#include "Core/NRPlayerState.h"
 #include "GAS/AS_Hero.h"
 #include "GAS/NRGameplayEffects.h"
 #include "Engine/Engine.h"
@@ -7,6 +8,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
+#include "Net/UnrealNetwork.h"
 #include "NexusRoyale.h"
 #include "TimerManager.h"
 
@@ -95,6 +98,15 @@ void UNRAbilitySystemComponent::BeginPlay()
 	}
 }
 
+void UNRAbilitySystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UNRAbilitySystemComponent, Nivel);
+	DOREPLIFETIME_CONDITION(UNRAbilitySystemComponent, XP, COND_OwnerOnly);
+	DOREPLIFETIME(UNRAbilitySystemComponent, bMorto);
+	DOREPLIFETIME(UNRAbilitySystemComponent, UltimoAssassino);
+}
+
 void UNRAbilitySystemComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (UWorld* World = GetWorld())
@@ -167,6 +179,15 @@ void UNRAbilitySystemComponent::InicializarHeroi(const FNRArquetipoBase& NovoArq
 	AtualizarVelocidade();
 	OnVidaMudou.Broadcast(GetVida(), GetVidaMax());
 	OnManaMudou.Broadcast(GetMana(), GetManaMax());
+
+	// Espelho do nível no PlayerState, para o placar e o espectador (o ASC continua sendo a fonte da verdade).
+	if (const APawn* Dono = Cast<APawn>(GetOwner()))
+	{
+		if (ANRPlayerState* PS = Dono->GetPlayerState<ANRPlayerState>())
+		{
+			PS->Nivel = Nivel;
+		}
+	}
 
 	UE_LOG(LogNexus, Log, TEXT("%s: %s nivel %d -> Vida %.0f, Mana %.0f, PoderMagico +%.0f%%"),
 		*GetNameSafe(GetOwner()), *Arquetipo.Nome.ToString(), Nivel, GetVidaMax(), GetManaMax(),
@@ -333,7 +354,7 @@ FGameplayEffectSpecHandle UNRAbilitySystemComponent::CriarSpec(TSubclassOf<UGame
 
 void UNRAbilitySystemComponent::AplicarDano(float Quantidade, AActor* Instigador, bool bDeJogador, bool bIgnorarArmadura)
 {
-	if (!IsOwnerActorAuthoritative() || bMorto || Quantidade <= 0.f)
+	if (!IsOwnerActorAuthoritative() || bMorto || bInvulneravel || Quantidade <= 0.f)
 	{
 		return;
 	}
@@ -354,6 +375,14 @@ void UNRAbilitySystemComponent::AplicarDano(float Quantidade, AActor* Instigador
 		Spec.Data->SetSetByCallerMagnitude(NRSetByCaller::Dano, bIgnorarArmadura ? 0.f : Quantidade);
 		Spec.Data->SetSetByCallerMagnitude(NRSetByCaller::DanoVerdadeiro, bIgnorarArmadura ? Quantidade : 0.f);
 		ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+	}
+}
+
+void UNRAbilitySystemComponent::DefinirInvulneravel(bool bSim)
+{
+	if (IsOwnerActorAuthoritative())
+	{
+		bInvulneravel = bSim;
 	}
 }
 
@@ -497,8 +526,21 @@ void UNRAbilitySystemComponent::NotificarDano(float DanoFinal, AActor* Instigado
 	if (bMatou && !bMorto)
 	{
 		bMorto = true;
+		// Sem instigador (tempestade), o GAS põe o próprio dono no contexto do efeito: não é "assassino".
+		UltimoAssassino = Instigador == GetOwner() ? nullptr : Instigador;
 		UE_LOG(LogNexus, Log, TEXT("%s morreu (assassino: %s)"), *GetNameSafe(GetOwner()), *GetNameSafe(Instigador));
 		OnMorreu.Broadcast(Instigador);
+		OnMorreuNativo.Broadcast(this, Instigador);
+	}
+}
+
+void UNRAbilitySystemComponent::OnRep_Morto()
+{
+	// Cliente: a mesma reação do servidor (animação de morte, sem input; UNRCombateComponent::AoMorrer).
+	if (bMorto)
+	{
+		UE_LOG(LogNexus, Log, TEXT("%s morreu (visto no cliente; assassino: %s)"), *GetNameSafe(GetOwner()), *GetNameSafe(UltimoAssassino));
+		OnMorreu.Broadcast(UltimoAssassino);
 	}
 }
 

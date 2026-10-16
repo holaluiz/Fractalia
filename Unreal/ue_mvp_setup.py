@@ -77,21 +77,33 @@ eal.save_loaded_asset(mat_estrutura)
 print("material:", mat_estrutura.get_path_name())
 
 # --- teclas
+# O map_key muda o IMC na memória sem marcar o pacote como alterado, e o save_loaded_asset (only_if_is_dirty=True por
+# padrão) pula pacote não marcado: até a 0.1.1 as teclas existiam só no editor, e o jogo empacotado saiu sem combate
+# (KNOWN_ISSUES K-01). Por isso: modify() antes de mexer e salvar sem depender da marca. Depois, conferir o ARQUIVO.
 imc = eal.load_asset(IMC)
+imc.modify()
 acoes = {}
 for nome, tecla in TECLAS:
     path = f"{ACTIONS}/{nome}"
     ia = eal.load_asset(path) if eal.does_asset_exist(path) else \
         at.create_asset(nome, ACTIONS, unreal.InputAction, unreal.InputAction_Factory())
-    eal.save_loaded_asset(ia)
+    eal.save_loaded_asset(ia, False)
     acoes[nome] = ia
     if not any(m.action == ia for m in imc.get_editor_property("default_key_mappings").mappings):
         key = unreal.Key()
         key.set_editor_property("key_name", tecla)
         imc.map_key(ia, key)
-eal.save_loaded_asset(imc)
+assert eal.save_loaded_asset(imc, False), "IMC_Default não foi salvo"
 print("IMC_Default:", sorted((m.action.get_name(), str(m.key.get_editor_property("key_name")))
                              for m in imc.get_editor_property("default_key_mappings").mappings))
+
+# Confere no disco: os nomes das Input Actions entram na tabela de nomes do pacote salvo.
+_arquivo = unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_content_dir() + "Input/IMC_Default.uasset")
+with open(_arquivo, "rb") as _f:
+    _bytes = _f.read()
+_faltando = [nome for nome, _ in TECLAS if nome.encode() not in _bytes]
+print("IMC_Default no disco:", "OK, todas as ações" if not _faltando else f"FALTAM {_faltando}")
+assert not _faltando, f"IMC_Default no disco sem {_faltando}"
 
 # --- componente de combate no herói
 bp = eal.load_asset(HERO)
@@ -131,5 +143,5 @@ combate.set_editor_property("AcaoTrocarMutacoes", acoes["IA_TrocarMutacoes"])
 add_component(unreal.NRMutacoesComponent, "Mutacoes")
 
 unreal.BlueprintEditorLibrary.compile_blueprint(bp)
-eal.save_loaded_asset(bp)
+eal.save_loaded_asset(bp, False)
 print("BP_HeroBase componentes:", sorted(handles()))
